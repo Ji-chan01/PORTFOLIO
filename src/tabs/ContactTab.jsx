@@ -64,9 +64,9 @@ export default function ContactTab() {
           {/* Quick Contact Cards */}
           <div className="grid sm:grid-cols-3 gap-3">
             {[
-              { icon: FaEnvelope, label: 'Email', value: 'briolchristian040@gmail.com', href: 'mailto:cjbriol@gmail.com', id: 'quick-email' },
-              { icon: FaFacebookF, label: 'Facebook', value: 'facebook.com/jirehkun.briol.1', href: 'https://facebook.com/cjbriol', id: 'quick-facebook' },
-              { icon: FaGithub, label: 'GitHub', value: 'github.com/Ji-chan01', href: 'https://github.com/cjbriol', id: 'quick-github' },
+              { icon: FaEnvelope, label: 'Email', value: 'briolchristian040@gmail.com', href: 'mailto:briolchristian040@gmail.com', id: 'quick-email' },
+              { icon: FaFacebookF, label: 'Facebook', value: 'facebook.com/jirehkun.briol.1', href: 'https://facebook.com/jirehkun.briol.1', id: 'quick-facebook' },
+              { icon: FaGithub, label: 'GitHub', value: 'github.com/Ji-chan01', href: 'https://github.com/Ji-chan01', id: 'quick-github' },
             ].map(({ icon: Icon, label, value, href, id }) => (
               <a
                 key={id}
