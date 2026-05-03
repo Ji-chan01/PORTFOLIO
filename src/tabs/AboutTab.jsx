@@ -1,0 +1,223 @@
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import SkillBar from '../components/about/SkillBar';
+import TestimonialCard from '../components/about/TestimonialCard';
+import {
+  frontendSkills, mobileSkills, backendSkills, designSkills
+} from '../data/skills';
+import { testimonials } from '../data/testimonials';
+import {
+  FaCode, FaHeart, FaChess, FaBasketballBall, FaMusic, FaTimes, FaStar
+} from 'react-icons/fa';
+import meImage from '../assets/me.jpg';
+
+const fadeIn = {
+  initial: { opacity: 0, y: 24 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.45 },
+};
+
+function SkillGroup({ title, skills, barColor, delay = 0 }) {
+  return (
+    <div className="mb-6">
+      <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 mb-3">
+        {title}
+      </h4>
+      {skills.map((s, i) => (
+        <SkillBar
+          key={s.name}
+          name={s.name}
+          level={s.level}
+          color={barColor}
+          delay={delay + i * 120}
+        />
+      ))}
+    </div>
+  );
+}
+
+export default function AboutTab() {
+  const [selectedTestimonial, setSelectedTestimonial] = useState(null);
+
+  return (
+    <motion.div
+      key="about"
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
+      className="p-6 md:p-8 space-y-14 bg-grid"
+    >
+      {/* ── Hero ─────────────────────────────────────── */}
+      <section className="flex flex-col-reverse lg:flex-row gap-8 items-center">
+        <div className="flex-1">
+          <p className="section-subtitle">Introduction</p>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-zinc-100 leading-tight mb-4">
+            Building Experiences.<br />
+            Solving Problems.<br />
+            <span className="text-accent">One Pixel at a Time.</span>
+          </h2>
+          <p className="text-sm font-semibold text-accent mb-6">
+            UI/UX Designer &amp; Full-Stack Developer · 2 Years Freelance
+          </p>
+          <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed max-w-2xl">
+            Hi, I'm Christian Jireh — a full-stack developer and UI/UX designer with two years of freelance
+            experience turning ideas into fully functional, visually refined digital products. I work across
+            the entire stack: from wireframing and prototyping in Figma to building robust backends in Django
+            and PHP, and shipping polished frontends with React and Tailwind CSS.
+          </p>
+          <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed max-w-2xl mt-3">
+            What sets me apart isn't just technical range — it's a design-first mindset applied to every layer
+            of development. Whether I'm architecting a database or crafting a component, I'm always thinking
+            about the person on the other side of the screen.
+          </p>
+        </div>
+        <div className="w-full lg:w-1/3 flex justify-center lg:justify-end">
+          <div className="relative inline-flex">
+            <img src={meImage} alt="Christian Jireh A. Briol" className="max-w-full h-auto rounded-3xl" />
+            {/* Bottom fade overlay - Light Mode */}
+            <div
+              className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-3xl pointer-events-none dark:hidden"
+              style={{
+                background: 'linear-gradient(to top, rgba(249,250,251,1) 0%, rgba(249,250,251,0.6) 50%, transparent 100%)',
+              }}
+            />
+            {/* Bottom fade overlay - Dark Mode */}
+            <div
+              className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-3xl pointer-events-none hidden dark:block"
+              style={{
+                background: 'linear-gradient(to top, rgba(24,24,27,1) 0%, rgba(24,24,27,0.6) 50%, transparent 100%)',
+              }}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ── What Drives Me ───────────────────────────── */}
+      {/* <section> */}
+      {/* Stats strip */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          { value: '6+', label: 'Projects Delivered' },
+          { value: '100%', label: 'Client Satisfaction' },
+          { value: '2 Yrs', label: 'Freelance Experience' },
+        ].map(({ value, label }) => (
+          <div key={label} className="p-4 text-center">
+            <p className="text-4xl font-extrabold text-accent">{value}</p>
+            <p className="text-sm text-gray-500 dark:text-zinc-400 mt-1">{label}</p>
+          </div>
+        ))}
+      </div>
+      {/* <p className="section-subtitle">Passion</p>
+      <h2 className="section-title mb-5">What Drives Me</h2> */}
+
+      {/* <div className="grid sm:grid-cols-3 gap-4 mb-6">
+          {[
+            { icon: FaChess, label: 'Chess', desc: 'Strategize three moves ahead — how I approach architecture & system design.' },
+            { icon: FaBasketballBall, label: 'Basketball', desc: 'A great team with clear roles wins every time — applied to every collab.' },
+            { icon: FaMusic, label: 'Music', desc: 'Structure and creativity aren\'t opposites. They\'re partners.' },
+          ].map(({ icon: Icon, label, desc }) => (
+            <div key={label} className="card p-4 flex gap-3 items-start">
+              <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-zinc-700 flex items-center justify-center flex-shrink-0">
+                <Icon className="text-accent" size={16} />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-900 dark:text-zinc-100 mb-0.5">{label}</p>
+                <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed">{desc}</p>
+              </div>
+            </div>
+          ))}
+        </div> */}
+
+      {/* <div className="card p-5 flex gap-4 items-start">
+          <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-zinc-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <FaCode className="text-accent" size={16} />
+          </div>
+          <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed">
+            Coding itself is a passion I never clock out from. There's a particular satisfaction in debugging a
+            tricky edge case at midnight, or seeing a UI animation land perfectly on the first try. That curiosity
+            is what keeps me growing.
+          </p>
+        </div> */}
+      {/* </section> */}
+
+      {/* ── Skills ───────────────────────────────────── */}
+      <section>
+        <p className="section-subtitle">Technologies</p>
+        <h2 className="section-title mb-6">Skills &amp; Proficiency</h2>
+
+        <div className="grid md:grid-cols-2 gap-8">
+          <div>
+            <SkillGroup title="Frontend Development" skills={frontendSkills} barColor="bg-accent" delay={0} />
+            <SkillGroup title="Mobile Development" skills={mobileSkills} barColor="bg-blue-400 dark:bg-red-400" delay={600} />
+          </div>
+          <div>
+            <SkillGroup title="Backend & Full-Stack" skills={backendSkills} barColor="bg-violet-500" delay={0} />
+            <SkillGroup title="Design Tools" skills={designSkills} barColor="bg-blue-400 dark:bg-red-400" delay={400} />
+          </div>
+        </div>
+      </section>
+
+      {/* ── Testimonials ─────────────────────────────── */}
+      <section>
+        <p className="section-subtitle">Social Proof</p>
+        <h2 className="section-title mb-6">What Clients Say</h2>
+
+        <div className="flex overflow-x-auto gap-4 pb-4 snap-x">
+          {testimonials.map((t, i) => (
+            <div key={t.id} className="w-[85%] sm:w-[calc(50%-0.5rem)] xl:w-[calc(33.333%-0.66rem)] flex-shrink-0 snap-start">
+              <TestimonialCard testimonial={t} index={i} onClick={setSelectedTestimonial} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Testimonial Modal */}
+      <AnimatePresence>
+        {selectedTestimonial && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedTestimonial(null)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-lg bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-2xl shadow-2xl p-6 md:p-8 z-10"
+            >
+              <button
+                onClick={() => setSelectedTestimonial(null)}
+                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-500 hover:text-gray-900 dark:hover:text-zinc-100 transition-colors"
+              >
+                <FaTimes size={12} />
+              </button>
+
+              <div className="flex gap-1 mb-4 mt-2">
+                {Array.from({ length: selectedTestimonial.rating }).map((_, i) => (
+                  <FaStar key={i} className="text-accent text-sm" />
+                ))}
+              </div>
+
+              <p className="text-sm md:text-base text-gray-600 dark:text-zinc-300 leading-relaxed italic mb-8">
+                "{selectedTestimonial.text}"
+              </p>
+
+              <div className="flex items-center gap-3 pt-4 border-t border-gray-100 dark:border-zinc-800">
+                <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${selectedTestimonial.color} flex items-center justify-center text-white font-bold text-lg flex-shrink-0`}>
+                  {selectedTestimonial.initials}
+                </div>
+                <div>
+                  <p className="text-base font-bold text-gray-900 dark:text-zinc-100">{selectedTestimonial.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-zinc-400">{selectedTestimonial.role}</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
