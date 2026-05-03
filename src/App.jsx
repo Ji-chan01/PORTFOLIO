@@ -42,8 +42,8 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#f5f5f5] dark:bg-zinc-900 transition-colors duration-300">
 
-      {/* ──────────────── DESKTOP LAYOUT (md+) ──────────────── */}
-      <div className="hidden md:flex h-screen overflow-hidden">
+      {/* ──────────────── DESKTOP LAYOUT (lg+) ──────────────── */}
+      <div className="hidden lg:flex h-screen overflow-hidden">
         {/* Fixed Sidebar */}
         <div className="w-[300px] flex-shrink-0 h-full">
           <Sidebar dark={dark} onToggle={toggleTheme} />
@@ -60,8 +60,8 @@ export default function App() {
         </main>
       </div>
 
-      {/* ──────────────── MOBILE LAYOUT (<md) ──────────────── */}
-      <div className="md:hidden flex flex-col h-[100dvh] overflow-hidden">
+      {/* ──────────────── MOBILE LAYOUT (<lg) ──────────────── */}
+      <div className="lg:hidden flex flex-col h-[100dvh] overflow-hidden">
         {/* Mobile Top Header */}
         <header className="flex items-center justify-between px-4 py-3 bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-700 z-20 flex-shrink-0">
           <div className="flex items-center gap-3">
@@ -72,8 +72,8 @@ export default function App() {
               <img src={briolImage} alt="Christian Jireh" className="w-full h-full object-cover" />
             </div>
             <div>
-              <p className="text-sm font-bold text-gray-900 dark:text-zinc-100 leading-tight">Christian Jireh A. Briol</p>
-              <p className="text-[10px] text-accent font-semibold">UI/UX Designer · Full-Stack Dev</p>
+              <p className="text-sm md:text-base font-bold text-gray-900 dark:text-zinc-100 leading-tight">Christian Jireh A. Briol</p>
+              <p className="text-[10px] md:text-xs text-accent font-semibold">UI/UX Designer · Full-Stack Dev</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -103,7 +103,7 @@ export default function App() {
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="overflow-hidden bg-accent dark:bg-zinc-900 border-b border-white/10 dark:border-zinc-700 flex-shrink-0 z-10"
+              className="overflow-hidden bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-700 flex-shrink-0 z-10"
             >
               <Sidebar dark={dark} onToggle={toggleTheme} isMobileAccordion={true} />
             </motion.div>

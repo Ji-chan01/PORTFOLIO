@@ -74,10 +74,10 @@ export default function ContactTab() {
                 href={href}
                 target="_blank"
                 rel="noreferrer"
-                className="card p-4 flex gap-3 items-center hover:border-accent dark:hover:border-accent transition-colors duration-200 group min-w-0"
+                className="card p-4 flex gap-3 items-center hover:opacity-70 transition-opacity duration-200 min-w-0"
               >
-                <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-zinc-700 flex items-center justify-center flex-shrink-0 group-hover:bg-accent transition-colors duration-200">
-                  <Icon className="text-accent group-hover:text-white transition-colors duration-200" size={14} />
+                <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-zinc-700 flex items-center justify-center flex-shrink-0">
+                  <Icon className="text-accent" size={14} />
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs font-semibold text-gray-900 dark:text-zinc-100">{label}</p>
@@ -182,7 +182,7 @@ export default function ContactTab() {
                 id="submit-contact"
                 type="submit"
                 disabled={isSending}
-                className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="bg-accent-dark text-white font-bold px-6 py-2.5 rounded-xl shadow active:scale-95 w-full flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {isSending ? (
                   <>

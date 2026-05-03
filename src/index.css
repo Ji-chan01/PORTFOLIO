@@ -31,6 +31,12 @@
     scroll-behavior: smooth;
   }
 
+  @media (min-width: 768px) and (max-width: 1023px) {
+    html {
+      font-size: 26px;
+    }
+  }
+
   body {
     font-family: 'Poppins', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;

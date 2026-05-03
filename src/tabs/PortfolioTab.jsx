@@ -1,11 +1,8 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { projects } from '../data/projects';
 import ProjectCard from '../components/portfolio/ProjectCard';
-import ProjectModal from '../components/portfolio/ProjectModal';
 
 export default function PortfolioTab() {
-  const [selected, setSelected] = useState(null);
 
   return (
     <motion.div
@@ -28,14 +25,9 @@ export default function PortfolioTab() {
             key={project.id}
             project={project}
             index={i}
-            onOpen={setSelected}
           />
         ))}
       </div>
-
-      {selected && (
-        <ProjectModal project={selected} onClose={() => setSelected(null)} />
-      )}
     </motion.div>
   );
 }

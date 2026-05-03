@@ -5,6 +5,12 @@ import {
   FaCheckCircle, FaUsers, FaCode, FaExpand, FaTimes
 } from 'react-icons/fa';
 
+import completionImg from '../assets/completion.jpg';
+import networkingImg from '../assets/basic networking.jpg';
+import flutterflowImg from '../assets/flutterflow.jpg';
+import sketchupImg from '../assets/sketch up.jpg';
+import vsatImg from '../assets/vsat.jpg';
+
 function TimelineItem({ icon: Icon, title, subtitle, period, children }) {
   return (
     <div className="flex gap-4">
@@ -25,11 +31,11 @@ function TimelineItem({ icon: Icon, title, subtitle, period, children }) {
 }
 
 const certs = [
-  { id: 1, title: 'DICT OJT Certificate 1', subtitle: 'Department of ICT · 2023', color: 'from-blue-500 to-indigo-600', image: null },
-  { id: 2, title: 'DICT OJT Certificate 2', subtitle: 'Department of ICT · 2023', color: 'from-rose-500 to-red-600', image: null },
-  { id: 3, title: 'DICT OJT Certificate 3', subtitle: 'Department of ICT · 2023', color: 'from-violet-500 to-purple-600', image: null },
-  { id: 4, title: 'DICT OJT Certificate 4', subtitle: 'Department of ICT · 2023', color: 'from-emerald-500 to-teal-600', image: null },
-  { id: 5, title: 'DICT OJT Certificate 5', subtitle: 'Department of ICT · 2023', color: 'from-amber-500 to-orange-600', image: null },
+  { id: 1, title: 'DICT OJT Completion', subtitle: 'Department of ICT · 2023', color: 'from-blue-500 to-indigo-600', image: completionImg },
+  { id: 2, title: 'Basic Networking Using Omada TP Link and Ruijie Reyee', subtitle: 'Department of ICT · 2023', color: 'from-rose-500 to-red-600', image: networkingImg },
+  { id: 3, title: 'Flutterflow Training', subtitle: 'Department of ICT · 2023', color: 'from-violet-500 to-purple-600', image: flutterflowImg },
+  { id: 4, title: 'Sketch Up Training', subtitle: 'Department of ICT · 2023', color: 'from-emerald-500 to-teal-600', image: sketchupImg },
+  { id: 5, title: 'Technical Training on the VSAT Technology', subtitle: 'Department of ICT · 2023', color: 'from-amber-500 to-orange-600', image: vsatImg },
 ];
 
 function CertCard({ cert, onClick }) {
@@ -75,7 +81,7 @@ export default function ResumeTab() {
 
             <TimelineItem
               icon={FaGraduationCap}
-              title="BS Information Technology"
+              title="BS Computer Science"
               subtitle="Osmeña Colleges — Masbate City"
               period="2020 – 2024"
             >
@@ -222,11 +228,11 @@ export default function ResumeTab() {
               onClick={(e) => e.stopPropagation()}
               className="relative bg-white dark:bg-zinc-800 rounded-3xl shadow-2xl overflow-hidden max-w-2xl w-full"
             >
-              {/* Gradient Header */}
-              <div className={`h-48 bg-gradient-to-br ${selectedCert.color} flex items-center justify-center`}>
+              {/* Certificate Image View */}
+              <div className="bg-white dark:bg-zinc-800 flex items-center justify-center p-6 pb-2">
                 {selectedCert.image
-                  ? <img src={selectedCert.image} alt={selectedCert.title} className="h-full w-full object-contain" />
-                  : <FaCertificate className="text-white/70" size={72} />
+                  ? <img src={selectedCert.image} alt={selectedCert.title} className="w-full h-auto max-h-[70vh] object-contain shadow-xl rounded-t-2xl" />
+                  : <FaCertificate className="text-gray-200 dark:text-zinc-700 my-10" size={72} />
                 }
               </div>
               {/* Info */}

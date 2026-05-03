@@ -78,7 +78,7 @@ export default function AboutTab() {
             <div
               className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-3xl pointer-events-none dark:hidden"
               style={{
-                background: 'linear-gradient(to top, rgba(249,250,251,1) 0%, rgba(249,250,251,0.6) 50%, transparent 100%)',
+                background: 'linear-gradient(to top, rgba(245,245,245,1) 0%, rgba(245,245,245,0.6) 50%, transparent 100%)',
               }}
             />
             {/* Bottom fade overlay - Dark Mode */}

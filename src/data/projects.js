@@ -1,7 +1,14 @@
+import hannappImg from '../assets/hannapp.jfif';
+import osmenaaccessImg from '../assets/osmenaaccess.png';
+import alisImg from '../assets/alis.png';
+import oseeImg from '../assets/osee.png';
+import medicareImg from '../assets/medicare.png';
+
 export const projects = [
   {
     id: 1,
     name: 'HannApp',
+    image: hannappImg,
     role: 'Full-Stack Developer',
     type: 'Web Application',
     tech: 'Django · Python',
@@ -14,6 +21,7 @@ export const projects = [
   {
     id: 2,
     name: 'OsmenaAccess',
+    image: osmenaaccessImg,
     role: 'Full-Stack Developer',
     type: 'Desktop Application',
     tech: 'VB.NET',
@@ -26,6 +34,7 @@ export const projects = [
   {
     id: 3,
     name: 'ALIS',
+    image: alisImg,
     role: 'Full-Stack Developer',
     type: 'Web Application',
     tech: 'Django · Python',
@@ -38,6 +47,7 @@ export const projects = [
   {
     id: 4,
     name: 'O See',
+    image: oseeImg,
     role: 'UI/UX Designer & Programmer',
     type: 'Mobile Application',
     tech: 'React Native · Expo',
@@ -50,6 +60,7 @@ export const projects = [
   {
     id: 5,
     name: 'Medicare Hub',
+    image: medicareImg,
     role: 'UI/UX Designer & Programmer',
     type: 'Mobile Application',
     tech: 'React Native · Expo',

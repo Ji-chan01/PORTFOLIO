@@ -8,19 +8,22 @@ export default function ProjectCard({ project, onOpen, index }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.08 }}
-      className="card overflow-hidden group cursor-pointer"
-      onClick={() => onOpen(project)}
+      className="flex flex-col h-full rounded-2xl border border-gray-100 dark:border-zinc-700 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden group"
     >
-      {/* Thumbnail */}
-      <div className={`relative h-44 bg-gradient-to-br ${color} flex items-center justify-center overflow-hidden`}>
-        <span className="text-7xl filter drop-shadow-lg group-hover:scale-110 transition-transform duration-300">
-          {emoji}
-        </span>
-        <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-all duration-300" />
+      {/* Thumbnail - Truly Transparent */}
+      <div className="relative h-44 bg-transparent flex items-center justify-center overflow-hidden flex-shrink-0">
+        {project.image ? (
+          <img src={project.image} alt={name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        ) : (
+          <span className="text-7xl filter drop-shadow-lg group-hover:scale-110 transition-transform duration-300">
+            {emoji}
+          </span>
+        )}
+        <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-all duration-300" />
       </div>
 
-      {/* Body */}
-      <div className="p-5">
+      {/* Body - Expands to fill height */}
+      <div className="p-5 bg-white dark:bg-zinc-800 border-t border-gray-100 dark:border-zinc-700 flex-1 flex flex-col">
         <h3 className="text-base font-bold text-gray-900 dark:text-zinc-100 mb-2">{name}</h3>
 
         {/* Badges */}
@@ -30,15 +33,7 @@ export default function ProjectCard({ project, onOpen, index }) {
           <span className="badge bg-gray-100 dark:bg-zinc-700 text-gray-600 dark:text-zinc-300">{tech}</span>
         </div>
 
-        <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed mb-4">{shortDesc}</p>
-
-        <button
-          className="text-xs font-semibold text-accent hover:text-accent-dark flex items-center gap-1 group/btn transition-colors duration-200"
-          onClick={(e) => { e.stopPropagation(); onOpen(project); }}
-        >
-          View Details
-          <span className="group-hover/btn:translate-x-1 transition-transform duration-200">→</span>
-        </button>
+        <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed">{shortDesc}</p>
       </div>
     </motion.div>
   );

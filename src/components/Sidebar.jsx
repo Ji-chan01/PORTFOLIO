@@ -9,15 +9,24 @@ const contactItems = [
   { icon: FaEnvelope, label: 'briolchristian040@gmail.com', href: 'mailto:cjbriol@gmail.com', id: 'contact-email' },
   { icon: FaFacebookF, label: 'facebook.com/jirehkun.briol.1', href: 'https://www.facebook.com/jirehkun.briol.1', id: 'contact-facebook' },
   { icon: FaGithub, label: 'github.com/Ji-chan01', href: 'https://github.com/Ji-chan01', id: 'contact-github' },
-  { icon: FaPhone, label: '+63 950 657 0618', href: 'tel:+639000000000', id: 'contact-phone' },
   { icon: FaMapMarkerAlt, label: 'Masbate City, PH', href: null, id: 'contact-location' },
 ];
 
 export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
   const [isZoomed, setIsZoomed] = useState(false);
 
+  // Conditional styles based on context
+  const textColor = isMobileAccordion ? 'text-gray-900' : 'text-white';
+  const subTextColor = isMobileAccordion ? 'text-gray-400' : 'text-white';
+  const iconBg = isMobileAccordion ? 'bg-blue-50' : 'bg-white/10';
+  const iconColor = isMobileAccordion ? 'text-accent' : 'text-white';
+  const dividerColor = isMobileAccordion ? 'border-gray-100' : 'border-white/10';
+  const socialBg = isMobileAccordion ? 'bg-gray-100' : 'bg-white/10';
+  const socialText = isMobileAccordion ? 'text-gray-500' : 'text-white';
+  const socialHover = isMobileAccordion ? 'hover:bg-accent hover:text-white' : 'hover:bg-white/20';
+
   return (
-    <aside className={`flex flex-col bg-accent dark:bg-zinc-900 ${isMobileAccordion ? 'w-full pb-4' : 'h-full justify-center border-r border-white/10 dark:border-zinc-700 overflow-y-auto'}`}>
+    <aside className={`flex flex-col ${isMobileAccordion ? 'bg-white dark:bg-zinc-900' : 'bg-accent dark:bg-zinc-900'} ${isMobileAccordion ? 'w-full pb-4' : 'h-full justify-center border-r border-white/10 dark:border-zinc-700 overflow-y-auto'}`}>
       {/* Profile Section */}
       {!isMobileAccordion && (
         <div className="flex flex-col items-center px-6 pt-8 pb-6">
@@ -32,16 +41,16 @@ export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
           </div>
 
           {/* Name */}
-          <h1 className="text-lg font-extrabold text-white dark:text-zinc-100 text-center leading-tight">
+          <h1 className={`text-lg font-extrabold ${textColor} dark:text-zinc-100 text-center leading-tight`}>
             Christian Jireh A. Briol
           </h1>
 
           {/* Title Badges */}
           <div className="flex flex-wrap gap-1.5 justify-center mt-2.5">
-            <span className="badge bg-white/20 dark:bg-red-900/40 text-white dark:text-red-400 text-[10px]">
+            <span className={`badge ${isMobileAccordion ? 'bg-blue-100 text-blue-700' : 'bg-white/20 text-white'} dark:bg-red-900/40 dark:text-red-400 text-[10px] md:text-xs`}>
               UI/UX Designer
             </span>
-            <span className="badge bg-white/10 dark:bg-zinc-700 text-white dark:text-zinc-300 text-[10px]">
+            <span className={`badge ${isMobileAccordion ? 'bg-zinc-100 text-zinc-600' : 'bg-white/10 text-white'} dark:bg-zinc-700 dark:text-zinc-300 text-[10px] md:text-xs`}>
               Full-Stack Dev
             </span>
           </div>
@@ -50,13 +59,13 @@ export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
 
       {/* Divider */}
       {!isMobileAccordion && (
-        <div className="mx-6 border-t border-white/10 dark:border-zinc-700" />
+        <div className={`mx-6 border-t ${dividerColor} dark:border-zinc-700`} />
       )}
 
       {/* Contact Info */}
       <div className="px-6 py-4">
         <div className="mb-3">
-          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/60 dark:text-zinc-500">
+          <span className={`text-[10px] md:text-xs font-bold uppercase tracking-[0.15em] ${subTextColor} dark:text-zinc-500`}>
             Contacts
           </span>
         </div>
@@ -65,18 +74,18 @@ export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
           {contactItems.map(({ icon: Icon, label, href, id }) => (
             <li key={id}>
               {href ? (
-                <a id={id} href={href} target="_blank" rel="noreferrer" className="sidebar-link">
-                  <span className="w-7 h-7 rounded-lg bg-white/10 dark:bg-zinc-800 flex items-center justify-center flex-shrink-0">
-                    <Icon size={12} className="text-white" />
+                <a id={id} href={href} target="_blank" rel="noreferrer" className={`sidebar-link ${isMobileAccordion ? '!text-gray-500 hover:!text-accent' : ''}`}>
+                  <span className={`w-7 h-7 md:w-9 md:h-9 rounded-lg md:rounded-xl ${iconBg} dark:bg-zinc-800 flex items-center justify-center flex-shrink-0`}>
+                    <Icon className={`${iconColor} text-[12px] md:text-[16px]`} />
                   </span>
-                  <span className="text-xs truncate">{label}</span>
+                  <span className="text-xs md:text-sm truncate">{label}</span>
                 </a>
               ) : (
-                <span id={id} className="sidebar-link cursor-default">
-                  <span className="w-7 h-7 rounded-lg bg-white/10 dark:bg-zinc-800 flex items-center justify-center flex-shrink-0">
-                    <Icon size={12} className="text-white" />
+                <span id={id} className={`sidebar-link cursor-default ${isMobileAccordion ? '!text-gray-500' : ''}`}>
+                  <span className={`w-7 h-7 md:w-9 md:h-9 rounded-lg md:rounded-xl ${iconBg} dark:bg-zinc-800 flex items-center justify-center flex-shrink-0`}>
+                    <Icon className={`${iconColor} text-[12px] md:text-[16px]`} />
                   </span>
-                  <span className="text-xs truncate">{label}</span>
+                  <span className="text-xs md:text-sm truncate">{label}</span>
                 </span>
               )}
             </li>
@@ -85,35 +94,35 @@ export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
       </div>
 
       {/* Divider */}
-      <div className="mx-6 border-t border-white/10 dark:border-zinc-700" />
+      <div className={`mx-6 border-t ${dividerColor} dark:border-zinc-700`} />
 
       {/* Social Icons */}
       <div className="px-6 py-4 flex items-center gap-2 justify-center">
         <a
           id="social-email"
           href="mailto:briolchristian040@gmail.com"
-          className="w-9 h-9 rounded-xl bg-white/10 dark:bg-zinc-800 flex items-center justify-center text-white dark:text-zinc-400 hover:bg-white/20 transition-all duration-200"
+          className={`w-9 h-9 md:w-11 md:h-11 rounded-xl ${socialBg} dark:bg-zinc-800 flex items-center justify-center ${socialText} dark:text-zinc-400 ${socialHover} transition-all duration-200`}
           aria-label="Email"
         >
-          <FaEnvelope size={14} />
+          <FaEnvelope className="text-[14px] md:text-[18px]" />
         </a>
         <a
           id="social-facebook"
           href="https://www.facebook.com/jirehkun.briol.1"
           target="_blank" rel="noreferrer"
-          className="w-9 h-9 rounded-xl bg-white/10 dark:bg-zinc-800 flex items-center justify-center text-white dark:text-zinc-400 hover:bg-white/20 transition-all duration-200"
+          className={`w-9 h-9 md:w-11 md:h-11 rounded-xl ${socialBg} dark:bg-zinc-800 flex items-center justify-center ${socialText} dark:text-zinc-400 ${socialHover} transition-all duration-200`}
           aria-label="Facebook"
         >
-          <FaFacebookF size={14} />
+          <FaFacebookF className="text-[14px] md:text-[18px]" />
         </a>
         <a
           id="social-github"
           href="https://github.com/Ji-chan01"
           target="_blank" rel="noreferrer"
-          className="w-9 h-9 rounded-xl bg-white/10 dark:bg-zinc-800 flex items-center justify-center text-white dark:text-zinc-400 hover:bg-white/20 transition-all duration-200"
+          className={`w-9 h-9 md:w-11 md:h-11 rounded-xl ${socialBg} dark:bg-zinc-800 flex items-center justify-center ${socialText} dark:text-zinc-400 ${socialHover} transition-all duration-200`}
           aria-label="GitHub"
         >
-          <FaGithub size={14} />
+          <FaGithub className="text-[14px] md:text-[18px]" />
         </a>
       </div>
 
