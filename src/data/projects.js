@@ -1,14 +1,8 @@
-import hannappImg from '../assets/hannapp.jfif';
-import osmenaaccessImg from '../assets/osmenaaccess.png';
-import alisImg from '../assets/alis.jfif';
-import oseeImg from '../assets/osee.png';
-import medicareImg from '../assets/medicare.png';
-
 export const projects = [
   {
     id: 1,
     name: 'HannApp',
-    image: hannappImg,
+    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1777889430/hannapp_vaer7g.jpg',
     role: 'Full-Stack Developer',
     type: 'Web Application',
     tech: 'Django · Python',
@@ -21,7 +15,7 @@ export const projects = [
   {
     id: 2,
     name: 'OsmenaAccess',
-    image: osmenaaccessImg,
+    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1777889431/osmenaaccess_hclayf.png',
     role: 'Full-Stack Developer',
     type: 'Desktop Application',
     tech: 'VB.NET',
@@ -34,7 +28,7 @@ export const projects = [
   {
     id: 3,
     name: 'ALIS',
-    image: alisImg,
+    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1777889430/alis_uldr1w.jpg',
     role: 'Full-Stack Developer',
     type: 'Web Application',
     tech: 'Django · Python',
@@ -47,7 +41,7 @@ export const projects = [
   {
     id: 4,
     name: 'O See',
-    image: oseeImg,
+    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1777889431/osee_giyw33.png',
     role: 'UI/UX Designer & Programmer',
     type: 'Mobile Application',
     tech: 'React Native · Expo',
@@ -60,7 +54,7 @@ export const projects = [
   {
     id: 5,
     name: 'Medicare Hub',
-    image: medicareImg,
+    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1777889431/medicare_k0avi0.png',
     role: 'UI/UX Designer & Programmer',
     type: 'Mobile Application',
     tech: 'React Native · Expo',
@@ -73,6 +67,7 @@ export const projects = [
   {
     id: 6,
     name: 'Swero Alerto',
+    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1777889488/sweroalerto_zigikw.png',
     role: 'UI/UX Designer & Programmer',
     type: 'Web Application',
     tech: 'HTML · CSS · Vanilla JS',
@@ -81,5 +76,44 @@ export const projects = [
     shortDesc: 'A web-based alert and notification system built with pure HTML, CSS, and Vanilla JS. Lightweight, fast, and designed for immediate usability.',
     longDesc: 'Swero Alerto demonstrates that strong UI/UX doesn\'t require heavy frameworks. Built entirely with HTML, CSS, and Vanilla JavaScript, this alert system was designed to be lean and dependency-free while still delivering a polished, engaging user experience. The project highlights foundational frontend mastery and a design sensibility that works within constraints rather than around them.',
     features: ['Zero-dependency architecture', 'Real-time alert notifications', 'Custom CSS animations', 'Optimized for speed & lightweight delivery'],
+  },
+  {
+    id: 7,
+    name: 'Osmena Student Information System',
+    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1777889489/ocsis_n3gmpb.png',
+    role: 'Full-Stack Developer',
+    type: 'Web Application',
+    tech: 'PHP · MySQL · Tailwind CSS',
+    color: 'from-blue-500 to-blue-600 dark:from-red-500 dark:to-rose-600',
+    emoji: '🎓',
+    shortDesc: 'A comprehensive student information management system for Osmeña Colleges handling enrollment, grades, and academic records.',
+    longDesc: 'Osmena Student Information System is a core institutional web application designed to handle the complex data requirements of Osmeña Colleges. It features modules for student enrollment, grade management, curriculum tracking, and faculty assignments. The system was built with a focus on data security, high availability during peak enrollment periods, and generating accurate academic reports.',
+    features: ['Student enrollment workflow', 'Secure grade management system', 'Curriculum & subject tracking', 'Automated academic reporting'],
+  },
+  {
+    id: 8,
+    name: 'MotoCare',
+    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1777890145/Screenshot_514_stajzd.png',
+    role: 'UI/UX Designer & Programmer',
+    type: 'Mobile Application',
+    tech: 'React Native · Expo',
+    color: 'from-orange-500 to-red-600',
+    emoji: '🏍️',
+    shortDesc: 'A mobile application dedicated to motorcycle maintenance tracking, service scheduling, and rider community networking.',
+    longDesc: 'MotoCare was designed to be the ultimate companion app for motorcycle enthusiasts and daily riders. It helps users keep track of maintenance schedules, log fuel expenses, and find nearby certified service centers. The interface was crafted to be highly legible even in outdoor environments, featuring high contrast and intuitive navigation specifically tailored for riders.',
+    features: ['Maintenance schedule tracking', 'Service center locator', 'Fuel & expense logging', 'High-contrast rider-friendly UI'],
+  },
+  {
+    id: 9,
+    name: 'Osmena Pick & Play',
+    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1777889636/Screenshot_517_uhxtvo.png',
+    role: 'UI/UX Designer & Programmer',
+    type: 'Mobile Application',
+    tech: 'React Native · Expo',
+    color: 'from-blue-500 to-blue-600 dark:from-red-500 dark:to-rose-600',
+    emoji: '🏀',
+    shortDesc: 'A sports facility booking and event organizing platform exclusively for Osmeña Colleges students and staff.',
+    longDesc: 'Osmena Pick & Play streamlines the process of reserving campus sports facilities and organizing intramural events. Built with React Native, the app provides real-time visibility into court availability, allowing students to book slots, organize pickup games, and manage team rosters. The design incorporates Osmeña Colleges\' branding while keeping the user experience energetic and action-oriented.',
+    features: ['Real-time facility booking', 'Pickup game organizer', 'Intramural team management', 'Interactive availability calendar'],
   },
 ];

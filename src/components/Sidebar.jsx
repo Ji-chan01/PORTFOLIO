@@ -26,10 +26,8 @@ export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
 
   return (
     <aside className={`flex flex-col ${isMobileAccordion ? 'bg-white dark:bg-zinc-900' : 'bg-accent dark:bg-zinc-900'} ${isMobileAccordion ? 'w-full pb-4' : 'h-full justify-center border-r border-white/10 dark:border-zinc-700 overflow-y-auto'}`}>
-      {/* Profile Section */}
       {!isMobileAccordion && (
         <div className="flex flex-col items-center px-6 pt-8 pb-6">
-          {/* Avatar */}
           <div className="relative mb-4">
             <div
               onClick={() => setIsZoomed(true)}
@@ -39,12 +37,10 @@ export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
             </div>
           </div>
 
-          {/* Name */}
           <h1 className={`text-lg font-extrabold ${textColor} dark:text-zinc-100 text-center leading-tight`}>
             Christian Jireh A. Briol
           </h1>
 
-          {/* Title Badges */}
           <div className="flex flex-wrap gap-1.5 justify-center mt-2.5">
             <span className={`badge ${isMobileAccordion ? 'bg-blue-100 text-blue-700' : 'bg-white/20 text-white'} dark:bg-red-900/40 dark:text-red-400 text-[10px] md:text-xs`}>
               UI/UX Designer
@@ -56,12 +52,10 @@ export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
         </div>
       )}
 
-      {/* Divider */}
       {!isMobileAccordion && (
         <div className={`mx-6 border-t ${dividerColor} dark:border-zinc-700`} />
       )}
 
-      {/* Contact Info */}
       <div className="px-6 py-4">
         <div className="mb-3">
           <span className={`text-[10px] md:text-xs font-bold uppercase tracking-[0.15em] ${subTextColor} dark:text-zinc-500`}>
@@ -92,14 +86,14 @@ export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
         </ul>
       </div>
 
-      {/* Divider */}
       <div className={`mx-6 border-t ${dividerColor} dark:border-zinc-700`} />
 
-      {/* Social Icons */}
       <div className="px-6 py-4 flex items-center gap-2 justify-center">
         <a
           id="social-email"
-          href="mailto:briolchristian040@gmail.com"
+          href={typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? 'mailto:briolchristian040@gmail.com' : 'https://mail.google.com/mail/?view=cm&fs=1&to=briolchristian040@gmail.com'}
+          target={typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? undefined : "_blank"}
+          rel={typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? undefined : "noreferrer"}
           className={`w-9 h-9 md:w-11 md:h-11 rounded-xl ${socialBg} dark:bg-zinc-800 flex items-center justify-center ${socialText} dark:text-zinc-400 ${socialHover} transition-all duration-200`}
           aria-label="Email"
         >
@@ -125,7 +119,6 @@ export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
         </a>
       </div>
 
-      {/* Zoom Modal */}
       <AnimatePresence>
         {isZoomed && (
           <motion.div
@@ -133,7 +126,7 @@ export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsZoomed(false)}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 cursor-zoom-out"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95"
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}

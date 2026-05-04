@@ -49,14 +49,14 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#f5f5f5] dark:bg-zinc-900 transition-colors duration-300">
 
-      {/* ──────────────── DESKTOP LAYOUT (lg+) ──────────────── */}
+
       <div className="hidden lg:flex h-screen overflow-hidden">
-        {/* Fixed Sidebar */}
+
         <div className="w-[300px] flex-shrink-0 h-full">
           <Sidebar dark={dark} onToggle={toggleTheme} />
         </div>
 
-        {/* Right Panel */}
+
         <main className="flex-1 flex flex-col h-full overflow-hidden">
           <TabNav activeTab={activeTab} onTabChange={setActiveTab} dark={dark} onToggle={toggleTheme} />
           <div id="scroll-container-desktop" className="flex-1 overflow-y-auto">
@@ -67,9 +67,7 @@ export default function App() {
         </main>
       </div>
 
-      {/* ──────────────── MOBILE LAYOUT (<lg) ──────────────── */}
       <div className="lg:hidden flex flex-col h-[100dvh] overflow-hidden">
-        {/* Mobile Top Header */}
         <header className="flex items-center justify-between px-4 py-3 bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-700 z-20 flex-shrink-0">
           <div className="flex items-center gap-3">
             <div
@@ -102,7 +100,6 @@ export default function App() {
           </div>
         </header>
 
-        {/* Mobile Sidebar Accordion */}
         <AnimatePresence>
           {sidebarOpen && (
             <motion.div
@@ -117,20 +114,17 @@ export default function App() {
           )}
         </AnimatePresence>
 
-        {/* Content */}
         <main id="scroll-container-mobile" className="flex-1 overflow-y-auto">
           <AnimatePresence mode="wait">
             {renderTab()}
           </AnimatePresence>
         </main>
 
-        {/* Tab Nav (Bottom) */}
         <div className="flex-shrink-0 relative z-20">
           <TabNav activeTab={activeTab} onTabChange={(t) => { setActiveTab(t); setSidebarOpen(false); }} dark={dark} onToggle={toggleTheme} />
         </div>
       </div>
 
-      {/* Zoom Modal (Mobile) */}
       <AnimatePresence>
         {isZoomed && (
           <motion.div
@@ -138,7 +132,7 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsZoomed(false)}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 cursor-zoom-out"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95"
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}

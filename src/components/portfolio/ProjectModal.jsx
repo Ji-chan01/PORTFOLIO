@@ -33,7 +33,6 @@ export default function ProjectModal({ project, onClose }) {
           className="bg-white dark:bg-zinc-800 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header Banner */}
           <div className={`relative h-40 bg-gradient-to-br ${color} flex items-center justify-center`}>
             <span className="text-7xl filter drop-shadow-lg">{emoji}</span>
             <button
@@ -45,11 +44,9 @@ export default function ProjectModal({ project, onClose }) {
             </button>
           </div>
 
-          {/* Content */}
           <div className="p-6">
             <h2 className="text-xl font-bold text-gray-900 dark:text-zinc-100 mb-2">{name}</h2>
 
-            {/* Badges */}
             <div className="flex flex-wrap gap-1.5 mb-4">
               <span className="badge bg-accent/10 text-accent-dark dark:text-accent">{role}</span>
               <span className="badge bg-gray-100 dark:bg-zinc-700 text-gray-600 dark:text-zinc-300">{type}</span>
@@ -58,7 +55,6 @@ export default function ProjectModal({ project, onClose }) {
 
             <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed mb-5">{longDesc}</p>
 
-            {/* Features */}
             <div>
               <h3 className="text-xs font-bold uppercase tracking-widest text-accent mb-3">Key Features</h3>
               <ul className="space-y-2">

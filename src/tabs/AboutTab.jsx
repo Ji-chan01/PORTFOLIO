@@ -81,7 +81,6 @@ export default function AboutTab({ onTabChange }) {
       transition={{ duration: 0.35 }}
       className="p-6 md:p-8 space-y-14 bg-grid"
     >
-      {/* ── Hero ─────────────────────────────────────── */}
       <section className="flex flex-col-reverse lg:flex-row gap-8 items-center">
         <div className="flex-1">
           <p className="section-subtitle">Introduction</p>
@@ -94,12 +93,20 @@ export default function AboutTab({ onTabChange }) {
             UI/UX Designer &amp; Full-Stack Developer · 2 Years Freelance
           </p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row sm:items-stretch gap-3 mb-6">
+
+          <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed max-w-2xl">
+            Hi! I’m Christian Jireh, a full-stack developer and UI/UX designer with two years of freelance experience.
+            I turn your ideas into clean, beautiful, and highly functional digital products that users love. I handle everything from Figma design to reliable backends (Django & PHP) and polished frontends (React & Tailwind CSS).
+          </p>
+          <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed max-w-2xl mt-3">
+            What sets me apart is my design-first approach, I always keep the end user in mind at every step.
+          </p>
+
+          <div className="flex flex-col sm:flex-row sm:items-stretch gap-3 mt-6">
             <button
               id="about-lets-talk"
               onClick={() => onTabChange?.('Contact')}
-              className="w-full sm:w-auto flex justify-center items-center gap-2 bg-accent text-white text-xs font-bold px-6 py-3 transition-all duration-200 hover:bg-accent-dark active:scale-95 shadow-sm hover:shadow-md"
+              className="w-full sm:w-auto flex justify-center items-center gap-2 bg-accent-dark text-white text-xs font-bold px-6 py-3 transition-all duration-200 hover:brightness-90 active:scale-95 shadow-sm hover:shadow-md"
               style={{ borderRadius: 0, letterSpacing: '1px' }}
             >
               Let's Talk <FaArrowRight size={11} />
@@ -113,29 +120,18 @@ export default function AboutTab({ onTabChange }) {
               <FaDownload size={11} /> Download Resume
             </button>
           </div>
-          <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed max-w-2xl">
-            Hi, I'm Christian Jireh — a full-stack developer and UI/UX designer with two years of freelance
-            experience turning ideas into fully functional, visually refined digital products. I work across
-            the entire stack: from wireframing and prototyping in Figma to building robust backends in Django
-            and PHP, and shipping polished frontends with React and Tailwind CSS.
-          </p>
-          <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed max-w-2xl mt-3">
-            What sets me apart isn't just technical range — it's a design-first mindset applied to every layer
-            of development. Whether I'm architecting a database or crafting a component, I'm always thinking
-            about the person on the other side of the screen.
-          </p>
         </div>
         <div className="w-full lg:w-1/3 flex justify-center lg:justify-end">
           <div className="relative inline-flex">
             <img src="https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_800/v1777873480/me_aobggp.png" loading="lazy" alt="Christian Jireh A. Briol" className="max-w-full h-auto rounded-3xl" />
-            {/* Bottom fade overlay - Light Mode */}
+
             <div
               className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-3xl pointer-events-none dark:hidden"
               style={{
                 background: 'linear-gradient(to top, rgba(245,245,245,1) 0%, rgba(245,245,245,0.6) 50%, transparent 100%)',
               }}
             />
-            {/* Bottom fade overlay - Dark Mode */}
+
             <div
               className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-3xl pointer-events-none hidden dark:block"
               style={{
@@ -146,55 +142,22 @@ export default function AboutTab({ onTabChange }) {
         </div>
       </section>
 
-      {/* ── What Drives Me ───────────────────────────── */}
-      {/* <section> */}
-      {/* Stats strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 bg-[#f5f5f5] dark:bg-zinc-900">
         {[
-          { value: '6+', label: 'Projects Delivered' },
+          { value: '9+', label: 'Projects Delivered' },
           { value: '100%', label: 'Client Satisfaction' },
           { value: '2 Yrs', label: 'Freelance Experience' },
-        ].map(({ value, label }) => (
-          <div key={label} className="p-4 text-center">
+        ].map(({ value, label }, i) => (
+          <div key={label} className={`p-6 text-center ${i === 0 ? 'sm:shadow-[inset_-40px_0_30px_-20px_rgb(var(--color-accent)/0.15)]' :
+            i === 1 ? 'border-y sm:border-y-0 shadow-[inset_40px_0_30px_-20px_rgb(var(--color-accent)/0.15),inset_-40px_0_30px_-20px_rgb(var(--color-accent)/0.15)]' :
+              i === 2 ? 'sm:shadow-[inset_40px_0_30px_-20px_rgb(var(--color-accent)/0.15)]' : ''
+            }`}>
             <p className="text-4xl font-extrabold text-accent">{value}</p>
             <p className="text-sm text-gray-500 dark:text-zinc-400 mt-1">{label}</p>
           </div>
         ))}
       </div>
-      {/* <p className="section-subtitle">Passion</p>
-      <h2 className="section-title mb-5">What Drives Me</h2> */}
 
-      {/* <div className="grid sm:grid-cols-3 gap-4 mb-6">
-          {[
-            { icon: FaChess, label: 'Chess', desc: 'Strategize three moves ahead — how I approach architecture & system design.' },
-            { icon: FaBasketballBall, label: 'Basketball', desc: 'A great team with clear roles wins every time — applied to every collab.' },
-            { icon: FaMusic, label: 'Music', desc: 'Structure and creativity aren\'t opposites. They\'re partners.' },
-          ].map(({ icon: Icon, label, desc }) => (
-            <div key={label} className="card p-4 flex gap-3 items-start">
-              <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-zinc-700 flex items-center justify-center flex-shrink-0">
-                <Icon className="text-accent" size={16} />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-900 dark:text-zinc-100 mb-0.5">{label}</p>
-                <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed">{desc}</p>
-              </div>
-            </div>
-          ))}
-        </div> */}
-
-      {/* <div className="card p-5 flex gap-4 items-start">
-          <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-zinc-700 flex items-center justify-center flex-shrink-0 mt-0.5">
-            <FaCode className="text-accent" size={16} />
-          </div>
-          <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed">
-            Coding itself is a passion I never clock out from. There's a particular satisfaction in debugging a
-            tricky edge case at midnight, or seeing a UI animation land perfectly on the first try. That curiosity
-            is what keeps me growing.
-          </p>
-        </div> */}
-      {/* </section> */}
-
-      {/* ── Skills ───────────────────────────────────── */}
       <section>
         <p className="section-subtitle">Technologies</p>
         <h2 className="section-title mb-6">Skills &amp; Proficiency</h2>
@@ -211,7 +174,6 @@ export default function AboutTab({ onTabChange }) {
         </div>
       </section>
 
-      {/* ── Testimonials ─────────────────────────────── */}
       <section>
         <p className="section-subtitle">Social Proof</p>
         <h2 className="section-title mb-6">What Clients Say</h2>
@@ -225,7 +187,6 @@ export default function AboutTab({ onTabChange }) {
         </div>
       </section>
 
-      {/* Testimonial Modal */}
       <AnimatePresence>
         {selectedTestimonial && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -273,7 +234,6 @@ export default function AboutTab({ onTabChange }) {
         )}
       </AnimatePresence>
 
-      {/* ── Password Modal ─────────────────────────── */}
       <AnimatePresence>
         {showPasswordModal && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">

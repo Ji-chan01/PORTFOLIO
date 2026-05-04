@@ -27,25 +27,30 @@ function TimelineItem({ icon: Icon, title, subtitle, period, children }) {
 }
 
 const certs = [
-  { id: 1, title: 'DICT OJT Completion', subtitle: 'Department of ICT · 2023', color: 'from-blue-500 to-indigo-600', 
+  {
+    id: 1, title: 'DICT OJT Completion', subtitle: 'Department of ICT · 2023', color: 'from-blue-500 to-indigo-600',
     image: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_1200/v1777874131/completion_i5tmmp.jpg",
-    thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874131/completion_i5tmmp.jpg" 
+    thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874131/completion_i5tmmp.jpg"
   },
-  { id: 2, title: 'Basic Networking Using Omada TP Link and Ruijie Reyee', subtitle: 'Department of ICT · 2023', color: 'from-rose-500 to-red-600', 
+  {
+    id: 2, title: 'Basic Networking Using Omada TP Link and Ruijie Reyee', subtitle: 'Department of ICT · 2023', color: 'from-rose-500 to-red-600',
     image: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_1200/v1777874128/basic_networking_hesu6k.jpg",
-    thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874128/basic_networking_hesu6k.jpg" 
+    thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874128/basic_networking_hesu6k.jpg"
   },
-  { id: 3, title: 'Flutterflow Training', subtitle: 'Department of ICT · 2023', color: 'from-violet-500 to-purple-600', 
+  {
+    id: 3, title: 'Flutterflow Training', subtitle: 'Department of ICT · 2023', color: 'from-violet-500 to-purple-600',
     image: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_1200/v1777874130/flutterflow_ogddof.jpg",
-    thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874130/flutterflow_ogddof.jpg" 
+    thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874130/flutterflow_ogddof.jpg"
   },
-  { id: 4, title: 'Sketch Up Training', subtitle: 'Department of ICT · 2023', color: 'from-emerald-500 to-teal-600', 
+  {
+    id: 4, title: 'Sketch Up Training', subtitle: 'Department of ICT · 2023', color: 'from-emerald-500 to-teal-600',
     image: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_1200/v1777874131/sketch_up_rg9gn5.jpg",
-    thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874131/sketch_up_rg9gn5.jpg" 
+    thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874131/sketch_up_rg9gn5.jpg"
   },
-  { id: 5, title: 'Technical Training on the VSAT Technology', subtitle: 'Department of ICT · 2023', color: 'from-amber-500 to-orange-600', 
+  {
+    id: 5, title: 'Technical Training on the VSAT Technology', subtitle: 'Department of ICT · 2023', color: 'from-amber-500 to-orange-600',
     image: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_1200/v1777874130/vsat_yhlkiy.jpg",
-    thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874130/vsat_yhlkiy.jpg" 
+    thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874130/vsat_yhlkiy.jpg"
   },
 ];
 
@@ -84,9 +89,7 @@ export default function ResumeTab() {
       className="p-6 md:p-8 bg-grid"
     >
       <div className="grid md:grid-cols-2 gap-10">
-        {/* ── LEFT COLUMN ──────────────────────────────── */}
         <div>
-          {/* Education */}
           <section className="mb-10">
             <p className="section-subtitle">Academic Background</p>
             <h2 className="section-title mb-6">Education</h2>
@@ -120,7 +123,6 @@ export default function ResumeTab() {
             </TimelineItem>
           </section>
 
-          {/* Leadership */}
           <section>
             <p className="section-subtitle">Leadership</p>
             <h2 className="section-title mb-6">Extracurricular</h2>
@@ -155,9 +157,7 @@ export default function ResumeTab() {
           </section>
         </div>
 
-        {/* ── RIGHT COLUMN ─────────────────────────────── */}
         <div>
-          {/* Experience */}
           <section className="mb-10">
             <p className="section-subtitle">Work History</p>
             <h2 className="section-title mb-6">Experience</h2>
@@ -193,7 +193,6 @@ export default function ResumeTab() {
             </div>
           </section>
 
-          {/* Certifications */}
           <section className="mb-10">
             <p className="section-subtitle">Credentials</p>
             <h2 className="section-title mb-4">DICT OJT Certifications</h2>
@@ -203,14 +202,12 @@ export default function ResumeTab() {
               (DICT) through On-the-Job Training. Click any certificate to view it.
             </p>
 
-            {/* Row 1 — 2 certs */}
             <div className="grid grid-cols-2 gap-[3px] mb-[3px]">
               {certs.slice(0, 2).map((cert) => (
                 <CertCard key={cert.id} cert={cert} onClick={() => setSelectedCert(cert)} />
               ))}
             </div>
 
-            {/* Row 2 — 3 certs */}
             <div className="grid grid-cols-3 gap-[3px]">
               {certs.slice(2).map((cert) => (
                 <CertCard key={cert.id} cert={cert} onClick={() => setSelectedCert(cert)} />
@@ -222,7 +219,6 @@ export default function ResumeTab() {
         </div>
       </div>
 
-      {/* Certificate Modal */}
       <AnimatePresence>
         {selectedCert && (
           <motion.div
@@ -230,7 +226,7 @@ export default function ResumeTab() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelectedCert(null)}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 cursor-zoom-out"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90"
           >
             <motion.div
               initial={{ scale: 0.85, opacity: 0 }}
@@ -240,19 +236,16 @@ export default function ResumeTab() {
               onClick={(e) => e.stopPropagation()}
               className="relative bg-white dark:bg-zinc-800 rounded-3xl shadow-2xl overflow-hidden max-w-2xl w-full"
             >
-              {/* Certificate Image View */}
               <div className="bg-white dark:bg-zinc-800 flex items-center justify-center p-6 pb-2">
                 {selectedCert.image
                   ? <img src={selectedCert.image} alt={selectedCert.title} className="w-full h-auto max-h-[70vh] object-contain shadow-xl rounded-t-2xl" />
                   : <FaCertificate className="text-gray-200 dark:text-zinc-700 my-10" size={72} />
                 }
               </div>
-              {/* Info */}
               <div className="p-6">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-zinc-100 mb-1">{selectedCert.title}</h3>
                 <p className="text-sm text-gray-500 dark:text-zinc-400">{selectedCert.subtitle}</p>
               </div>
-              {/* Close */}
               <button
                 onClick={() => setSelectedCert(null)}
                 className="absolute top-4 right-4 w-9 h-9 bg-black/30 hover:bg-black/50 backdrop-blur rounded-full flex items-center justify-center text-white transition-all hover:scale-110"
