@@ -89,11 +89,11 @@
   }
 
   .section-title {
-    @apply text-3xl font-bold text-gray-900 dark:text-zinc-100 mb-1;
+    @apply text-[28px] font-bold text-gray-900 dark:text-zinc-100 mb-1;
   }
 
   .section-subtitle {
-    @apply text-xl text-accent font-semibold uppercase tracking-widest mb-6;
+    @apply text-lg md:text-xl text-accent font-semibold uppercase tracking-widest mb-2;
   }
 
   .card {

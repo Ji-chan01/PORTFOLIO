@@ -7,7 +7,6 @@ import PortfolioTab from './tabs/PortfolioTab';
 import ContactTab from './tabs/ContactTab';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FaChevronDown, FaChevronUp, FaSun, FaMoon } from 'react-icons/fa';
-import briolImage from './assets/briol.JPG';
 
 function getInitialTheme() {
   const saved = localStorage.getItem('portfolio-theme');
@@ -27,15 +26,23 @@ export default function App() {
     localStorage.setItem('portfolio-theme', dark ? 'dark' : 'light');
   }, [dark]);
 
+  // Scroll to top when tab changes
+  useEffect(() => {
+    const desktopScroll = document.getElementById('scroll-container-desktop');
+    const mobileScroll = document.getElementById('scroll-container-mobile');
+    if (desktopScroll) desktopScroll.scrollTop = 0;
+    if (mobileScroll) mobileScroll.scrollTop = 0;
+  }, [activeTab]);
+
   const toggleTheme = () => setDark((v) => !v);
 
   const renderTab = () => {
     switch (activeTab) {
-      case 'About': return <AboutTab />;
-      case 'Resume': return <ResumeTab />;
-      case 'Portfolio': return <PortfolioTab />;
-      case 'Contact': return <ContactTab />;
-      default: return <AboutTab />;
+      case 'About': return <AboutTab key="About" onTabChange={setActiveTab} />;
+      case 'Resume': return <ResumeTab key="Resume" />;
+      case 'Portfolio': return <PortfolioTab key="Portfolio" />;
+      case 'Contact': return <ContactTab key="Contact" />;
+      default: return <AboutTab key="About" onTabChange={setActiveTab} />;
     }
   };
 
@@ -52,7 +59,7 @@ export default function App() {
         {/* Right Panel */}
         <main className="flex-1 flex flex-col h-full overflow-hidden">
           <TabNav activeTab={activeTab} onTabChange={setActiveTab} dark={dark} onToggle={toggleTheme} />
-          <div className="flex-1 overflow-y-auto">
+          <div id="scroll-container-desktop" className="flex-1 overflow-y-auto">
             <AnimatePresence mode="wait">
               {renderTab()}
             </AnimatePresence>
@@ -69,7 +76,7 @@ export default function App() {
               onClick={() => setIsZoomed(true)}
               className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden cursor-pointer active:scale-95 transition-transform"
             >
-              <img src={briolImage} alt="Christian Jireh" className="w-full h-full object-cover" />
+              <img src="https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto/briol_yj9lus" loading="lazy" alt="Christian Jireh" className="w-full h-full object-cover" />
             </div>
             <div>
               <p className="text-sm md:text-base font-bold text-gray-900 dark:text-zinc-100 leading-tight">Christian Jireh A. Briol</p>
@@ -111,7 +118,7 @@ export default function App() {
         </AnimatePresence>
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto">
+        <main id="scroll-container-mobile" className="flex-1 overflow-y-auto">
           <AnimatePresence mode="wait">
             {renderTab()}
           </AnimatePresence>
@@ -131,7 +138,7 @@ export default function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsZoomed(false)}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md cursor-zoom-out"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 cursor-zoom-out"
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
@@ -142,7 +149,7 @@ export default function App() {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src={briolImage}
+                src="https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto/briol_yj9lus"
                 alt="Christian Jireh Zoomed"
                 className="max-w-full max-h-[80vh] rounded-3xl shadow-2xl object-contain border-2 border-white/20"
               />

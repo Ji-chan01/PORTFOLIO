@@ -3,7 +3,6 @@ import {
 } from 'react-icons/fa';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import briolImage from '../assets/briol.JPG';
 
 const contactItems = [
   { icon: FaEnvelope, label: 'briolchristian040@gmail.com', href: 'mailto:cjbriol@gmail.com', id: 'contact-email' },
@@ -36,7 +35,7 @@ export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
               onClick={() => setIsZoomed(true)}
               className="w-28 h-28 rounded-full bg-zinc-100 dark:bg-zinc-800 glow-accent overflow-hidden ring-4 ring-white/20 dark:ring-accent dark:ring-opacity-30 cursor-pointer transition-transform hover:scale-105 active:scale-95"
             >
-              <img src={briolImage} alt="Christian Jireh" className="w-full h-full object-cover" />
+              <img src="https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto/briol_yj9lus" loading="lazy" alt="Christian Jireh" className="w-full h-full object-cover" />
             </div>
           </div>
 
@@ -134,7 +133,7 @@ export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsZoomed(false)}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md cursor-zoom-out"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 cursor-zoom-out"
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
@@ -145,7 +144,7 @@ export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src={briolImage}
+                src="https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto/briol_yj9lus"
                 alt="Christian Jireh Zoomed"
                 className="max-w-full max-h-[85vh] rounded-3xl shadow-2xl object-contain border-4 border-white/20"
               />

@@ -1,6 +1,6 @@
 import hannappImg from '../assets/hannapp.jfif';
 import osmenaaccessImg from '../assets/osmenaaccess.png';
-import alisImg from '../assets/alis.png';
+import alisImg from '../assets/alis.jfif';
 import oseeImg from '../assets/osee.png';
 import medicareImg from '../assets/medicare.png';
 

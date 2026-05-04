@@ -5,11 +5,7 @@ import {
   FaCheckCircle, FaUsers, FaCode, FaExpand, FaTimes
 } from 'react-icons/fa';
 
-import completionImg from '../assets/completion.jpg';
-import networkingImg from '../assets/basic networking.jpg';
-import flutterflowImg from '../assets/flutterflow.jpg';
-import sketchupImg from '../assets/sketch up.jpg';
-import vsatImg from '../assets/vsat.jpg';
+// Local images replaced with Cloudinary URLs
 
 function TimelineItem({ icon: Icon, title, subtitle, period, children }) {
   return (
@@ -31,11 +27,26 @@ function TimelineItem({ icon: Icon, title, subtitle, period, children }) {
 }
 
 const certs = [
-  { id: 1, title: 'DICT OJT Completion', subtitle: 'Department of ICT · 2023', color: 'from-blue-500 to-indigo-600', image: completionImg },
-  { id: 2, title: 'Basic Networking Using Omada TP Link and Ruijie Reyee', subtitle: 'Department of ICT · 2023', color: 'from-rose-500 to-red-600', image: networkingImg },
-  { id: 3, title: 'Flutterflow Training', subtitle: 'Department of ICT · 2023', color: 'from-violet-500 to-purple-600', image: flutterflowImg },
-  { id: 4, title: 'Sketch Up Training', subtitle: 'Department of ICT · 2023', color: 'from-emerald-500 to-teal-600', image: sketchupImg },
-  { id: 5, title: 'Technical Training on the VSAT Technology', subtitle: 'Department of ICT · 2023', color: 'from-amber-500 to-orange-600', image: vsatImg },
+  { id: 1, title: 'DICT OJT Completion', subtitle: 'Department of ICT · 2023', color: 'from-blue-500 to-indigo-600', 
+    image: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_1200/v1777874131/completion_i5tmmp.jpg",
+    thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874131/completion_i5tmmp.jpg" 
+  },
+  { id: 2, title: 'Basic Networking Using Omada TP Link and Ruijie Reyee', subtitle: 'Department of ICT · 2023', color: 'from-rose-500 to-red-600', 
+    image: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_1200/v1777874128/basic_networking_hesu6k.jpg",
+    thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874128/basic_networking_hesu6k.jpg" 
+  },
+  { id: 3, title: 'Flutterflow Training', subtitle: 'Department of ICT · 2023', color: 'from-violet-500 to-purple-600', 
+    image: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_1200/v1777874130/flutterflow_ogddof.jpg",
+    thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874130/flutterflow_ogddof.jpg" 
+  },
+  { id: 4, title: 'Sketch Up Training', subtitle: 'Department of ICT · 2023', color: 'from-emerald-500 to-teal-600', 
+    image: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_1200/v1777874131/sketch_up_rg9gn5.jpg",
+    thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874131/sketch_up_rg9gn5.jpg" 
+  },
+  { id: 5, title: 'Technical Training on the VSAT Technology', subtitle: 'Department of ICT · 2023', color: 'from-amber-500 to-orange-600', 
+    image: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_1200/v1777874130/vsat_yhlkiy.jpg",
+    thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874130/vsat_yhlkiy.jpg" 
+  },
 ];
 
 function CertCard({ cert, onClick }) {
@@ -45,8 +56,8 @@ function CertCard({ cert, onClick }) {
       className="card rounded-none overflow-hidden cursor-pointer group hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
     >
       <div className={`h-20 bg-gradient-to-br ${cert.color} flex items-center justify-center relative`}>
-        {cert.image
-          ? <img src={cert.image} alt={cert.title} className="h-full w-full object-cover" />
+        {cert.thumb || cert.image
+          ? <img src={cert.thumb || cert.image} loading="lazy" alt={cert.title} className="h-full w-full object-cover" />
           : <FaCertificate className="text-white/80" size={28} />
         }
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-200 flex items-center justify-center">
@@ -68,6 +79,7 @@ export default function ResumeTab() {
       key="resume"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -16 }}
       transition={{ duration: 0.35 }}
       className="p-6 md:p-8 bg-grid"
     >
@@ -218,7 +230,7 @@ export default function ResumeTab() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelectedCert(null)}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md cursor-zoom-out"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 cursor-zoom-out"
           >
             <motion.div
               initial={{ scale: 0.85, opacity: 0 }}

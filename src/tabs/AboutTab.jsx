@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SkillBar from '../components/about/SkillBar';
 import TestimonialCard from '../components/about/TestimonialCard';
@@ -7,9 +7,9 @@ import {
 } from '../data/skills';
 import { testimonials } from '../data/testimonials';
 import {
-  FaCode, FaHeart, FaChess, FaBasketballBall, FaMusic, FaTimes, FaStar
+  FaCode, FaHeart, FaChess, FaBasketballBall, FaMusic, FaTimes, FaStar,
+  FaDownload, FaArrowRight, FaLock, FaEye, FaEyeSlash
 } from 'react-icons/fa';
-import meImage from '../assets/me.jpg';
 
 const fadeIn = {
   initial: { opacity: 0, y: 24 },
@@ -36,14 +36,48 @@ function SkillGroup({ title, skills, barColor, delay = 0 }) {
   );
 }
 
-export default function AboutTab() {
+const RESUME_PASSWORD = '909-251';
+const RESUME_URL = 'https://res.cloudinary.com/dlqxpz9pu/image/upload/fl_attachment/v1777878097/resume_aodtzc.pdf';
+
+export default function AboutTab({ onTabChange }) {
   const [selectedTestimonial, setSelectedTestimonial] = useState(null);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [passwordError, setPasswordError] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const passwordInputRef = useRef(null);
+
+  const openPasswordModal = () => {
+    setPasswordInput('');
+    setPasswordError(false);
+    setShowPassword(false);
+    setShowPasswordModal(true);
+    setTimeout(() => passwordInputRef.current?.focus(), 100);
+  };
+
+  const handleDownload = () => {
+    if (passwordInput === RESUME_PASSWORD) {
+      const a = document.createElement('a');
+      a.href = RESUME_URL;
+      a.download = 'Christian_Jireh_Briol_Resume.pdf';
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setShowPasswordModal(false);
+    } else {
+      setPasswordError(true);
+      setPasswordInput('');
+      passwordInputRef.current?.focus();
+    }
+  };
 
   return (
     <motion.div
       key="about"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -16 }}
       transition={{ duration: 0.35 }}
       className="p-6 md:p-8 space-y-14 bg-grid"
     >
@@ -56,9 +90,29 @@ export default function AboutTab() {
             Solving Problems.<br />
             <span className="text-accent">One Pixel at a Time.</span>
           </h2>
-          <p className="text-sm font-semibold text-accent mb-6">
+          <p className="text-sm font-semibold text-accent mb-5">
             UI/UX Designer &amp; Full-Stack Developer · 2 Years Freelance
           </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row sm:items-stretch gap-3 mb-6">
+            <button
+              id="about-lets-talk"
+              onClick={() => onTabChange?.('Contact')}
+              className="w-full sm:w-auto flex justify-center items-center gap-2 bg-accent text-white text-xs font-bold px-6 py-3 transition-all duration-200 hover:bg-accent-dark active:scale-95 shadow-sm hover:shadow-md"
+              style={{ borderRadius: 0, letterSpacing: '1px' }}
+            >
+              Let's Talk <FaArrowRight size={11} />
+            </button>
+            <button
+              id="about-download-resume"
+              onClick={openPasswordModal}
+              className="w-full sm:w-auto flex justify-center items-center gap-2 border border-accent bg-[#f5f5f5] dark:bg-zinc-900 text-accent text-xs font-bold px-6 py-3 transition-all duration-200 hover:bg-accent hover:text-white active:scale-95"
+              style={{ borderRadius: 0, letterSpacing: '1px' }}
+            >
+              <FaDownload size={11} /> Download Resume
+            </button>
+          </div>
           <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed max-w-2xl">
             Hi, I'm Christian Jireh — a full-stack developer and UI/UX designer with two years of freelance
             experience turning ideas into fully functional, visually refined digital products. I work across
@@ -73,7 +127,7 @@ export default function AboutTab() {
         </div>
         <div className="w-full lg:w-1/3 flex justify-center lg:justify-end">
           <div className="relative inline-flex">
-            <img src={meImage} alt="Christian Jireh A. Briol" className="max-w-full h-auto rounded-3xl" />
+            <img src="https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_800/v1777873480/me_aobggp.png" loading="lazy" alt="Christian Jireh A. Briol" className="max-w-full h-auto rounded-3xl" />
             {/* Bottom fade overlay - Light Mode */}
             <div
               className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-3xl pointer-events-none dark:hidden"
@@ -214,6 +268,93 @@ export default function AboutTab() {
                   <p className="text-xs text-gray-500 dark:text-zinc-400">{selectedTestimonial.role}</p>
                 </div>
               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Password Modal ─────────────────────────── */}
+      <AnimatePresence>
+        {showPasswordModal && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowPasswordModal(false)}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 16 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="relative w-full max-w-sm bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 shadow-2xl p-6 z-10"
+              style={{ borderRadius: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowPasswordModal(false)}
+                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-zinc-800 text-gray-500 hover:text-gray-900 dark:hover:text-zinc-100 transition-colors"
+                style={{ borderRadius: 0 }}
+              >
+                <FaTimes size={12} />
+              </button>
+
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-10 bg-accent/10 flex items-center justify-center flex-shrink-0">
+                  <FaLock className="text-accent" size={16} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-extrabold text-gray-900 dark:text-zinc-100 uppercase" style={{ letterSpacing: '1px' }}>Security Check</h3>
+                  <p className="text-xs text-gray-500 dark:text-zinc-400">Required to download resume</p>
+                </div>
+              </div>
+
+              <div className="relative mb-1">
+                <input
+                  ref={passwordInputRef}
+                  id="resume-password-input"
+                  type={showPassword ? 'text' : 'password'}
+                  value={passwordInput}
+                  onChange={(e) => { setPasswordInput(e.target.value); setPasswordError(false); }}
+                  onKeyDown={(e) => e.key === 'Enter' && handleDownload()}
+                  placeholder="Password"
+                  className={`w-full px-4 py-3 pr-10 text-sm bg-gray-50 dark:bg-zinc-800 border ${passwordError
+                    ? 'border-red-400 dark:border-red-500 focus:ring-red-400'
+                    : 'border-gray-200 dark:border-zinc-700 focus:ring-accent'
+                    } text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200`}
+                  style={{ borderRadius: 0 }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-zinc-200 transition-colors"
+                >
+                  {showPassword ? <FaEyeSlash size={13} /> : <FaEye size={13} />}
+                </button>
+              </div>
+
+              <p className="text-[11px] text-red-500 dark:text-red-400 italic mb-4 font-medium">Password: 909-251*</p>
+
+              {passwordError && (
+                <motion.p
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-xs text-red-500 dark:text-red-400 mb-3"
+                >
+                  Incorrect password. Please try again.
+                </motion.p>
+              )}
+
+              <button
+                id="resume-download-confirm"
+                onClick={handleDownload}
+                className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark text-white text-xs font-bold py-3 transition-all duration-200 active:scale-95 shadow"
+                style={{ borderRadius: 0, letterSpacing: '1px' }}
+              >
+                <FaDownload size={12} /> Download Resume
+              </button>
             </motion.div>
           </div>
         )}

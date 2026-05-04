@@ -44,6 +44,7 @@ export default function ContactTab() {
       key="contact"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -16 }}
       transition={{ duration: 0.35 }}
       className="p-6 md:p-8 bg-grid"
     >
@@ -51,7 +52,7 @@ export default function ContactTab() {
         {/* Left Side - Text */}
         <div className="flex flex-col justify-center">
           <p className="section-subtitle">Get In Touch</p>
-          <h2 className="section-title mb-4">Let's Build Something Together</h2>
+          <h2 className="section-title mb-4">Let's Build Something Together!</h2>
           <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed">
             Have a project in mind? Need a full-stack solution or a UI/UX overhaul? I'm open to freelance
             projects, collaborations, and conversations. Fill out the form and I'll get back to you
