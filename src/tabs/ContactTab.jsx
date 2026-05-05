@@ -17,7 +17,7 @@ export default function ContactTab() {
   const [status, setStatus] = useState(null); // 'success' | 'error' | null
 
   const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
 
   const handleSubmit = (e) => {
