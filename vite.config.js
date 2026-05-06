@@ -5,6 +5,9 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    allowedHosts: ['narcisa-mailless-superstrictly.ngrok-free.dev']
+    allowedHosts: ['narcisa-mailless-superstrictly.ngrok-free.dev'],
+    proxy: {
+      '/api': 'http://localhost:5000'
+    }
   }
 })

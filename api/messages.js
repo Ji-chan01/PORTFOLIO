@@ -16,7 +16,7 @@ export default async function handler(req, res) {
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
-      database: 'portfolio',
+      database: process.env.DB_NAME || 'portfolio',
       port: process.env.DB_PORT || 3306,
     });
 

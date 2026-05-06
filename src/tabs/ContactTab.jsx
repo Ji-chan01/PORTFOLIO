@@ -1,20 +1,14 @@
 import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import emailjs from '@emailjs/browser';
 import {
   FaPaperPlane, FaEnvelope, FaFacebookF, FaGithub, FaCheckCircle, FaExclamationCircle, FaTimes
 } from 'react-icons/fa';
-
-// 🔑 Replace these with your actual EmailJS credentials
-const SERVICE_ID = 'service_xxxxxxx';
-const TEMPLATE_ID = 'template_xxxxxxx';
-const PUBLIC_KEY = 'YOUR_PUBLIC_KEY';
 
 export default function ContactTab() {
   const formRef = useRef(null);
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [isSending, setIsSending] = useState(false);
-  const [status, setStatus] = useState(null); // 'success' | 'error' | null
+  const [status, setStatus] = useState(null);
 
   useEffect(() => {
     if (status) {
@@ -35,10 +29,9 @@ export default function ContactTab() {
     setStatus(null);
 
     try {
-      // Artificial delay for testing the spinner
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      const response = await fetch('http://localhost:5000/api/send-message', {
+      const response = await fetch('/api/messages', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -226,19 +219,19 @@ export default function ContactTab() {
             <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${status === 'success' ? 'bg-green-50 dark:bg-green-900/20 text-green-600' : 'bg-red-50 dark:bg-red-900/20 text-red-600'}`}>
               {status === 'success' ? <FaCheckCircle size={20} /> : <FaExclamationCircle size={20} />}
             </div>
-            
+
             <div className="flex-1">
               <p className="text-sm font-bold text-gray-900 dark:text-zinc-100">
                 {status === 'success' ? 'Success!' : 'Error!'}
               </p>
               <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed mt-0.5">
-                {status === 'success' 
+                {status === 'success'
                   ? "Your message has been sent successfully. I'll get back to you soon!"
                   : "Failed to send message. Please check your connection or try again later."}
               </p>
             </div>
 
-            <button 
+            <button
               onClick={() => setStatus(null)}
               className="p-1 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition-colors text-gray-400 hover:text-gray-600"
             >
@@ -246,7 +239,7 @@ export default function ContactTab() {
             </button>
 
             {/* Progress bar for 5s timer */}
-            <motion.div 
+            <motion.div
               initial={{ scaleX: 1 }}
               animate={{ scaleX: 0 }}
               transition={{ duration: 5, ease: "linear" }}
