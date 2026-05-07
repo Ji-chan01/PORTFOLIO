@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import emailjs from '@emailjs/browser';
 import {
   FaPaperPlane, FaEnvelope, FaFacebookF, FaGithub, FaCheckCircle, FaExclamationCircle, FaTimes
 } from 'react-icons/fa';
@@ -29,29 +30,23 @@ export default function ContactTab() {
     setStatus(null);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // We use sendForm to automatically capture all input fields from formRef.current
+      // This will send to briolchristian040@gmail.com via your EmailJS account
+      const result = await emailjs.sendForm(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        formRef.current,
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      );
 
-      const response = await fetch('/api/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from_name: formData.name,
-          from_email: formData.email,
-          subject: formData.subject,
-          message: formData.message,
-        }),
-      });
-
-      if (response.ok) {
+      if (result.text === 'OK') {
         setStatus('success');
         setFormData({ name: '', email: '', subject: '', message: '' });
       } else {
         setStatus('error');
       }
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('EmailJS Error:', error);
       setStatus('error');
     } finally {
       setIsSending(false);
