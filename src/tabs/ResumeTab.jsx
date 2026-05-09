@@ -234,24 +234,24 @@ export default function ResumeTab() {
               exit={{ scale: 0.85, opacity: 0 }}
               transition={{ type: 'spring', damping: 25, stiffness: 280 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative bg-white dark:bg-zinc-800 rounded-3xl shadow-2xl overflow-hidden max-w-2xl w-full"
+              className="relative max-w-5xl w-full flex items-center justify-center"
             >
-              <div className="bg-white dark:bg-zinc-800 flex items-center justify-center p-6 pb-2">
-                {selectedCert.image
-                  ? <img src={selectedCert.image} alt={selectedCert.title} className="w-full h-auto max-h-[70vh] object-contain shadow-xl rounded-t-2xl" />
-                  : <FaCertificate className="text-gray-200 dark:text-zinc-700 my-10" size={72} />
-                }
+              <div className="relative group">
+                {selectedCert.image && (
+                  <img 
+                    src={selectedCert.image} 
+                    alt={selectedCert.title} 
+                    className="w-full h-auto max-h-[90vh] object-contain rounded-xl shadow-2xl" 
+                  />
+                )}
+                
+                <button
+                  onClick={() => setSelectedCert(null)}
+                  className="absolute top-4 right-4 w-10 h-10 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all hover:scale-110 z-10"
+                >
+                  <FaTimes size={18} />
+                </button>
               </div>
-              <div className="p-6">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-zinc-100 mb-1">{selectedCert.title}</h3>
-                <p className="text-sm text-gray-500 dark:text-zinc-400">{selectedCert.subtitle}</p>
-              </div>
-              <button
-                onClick={() => setSelectedCert(null)}
-                className="absolute top-4 right-4 w-9 h-9 bg-black/30 hover:bg-black/50 backdrop-blur rounded-full flex items-center justify-center text-white transition-all hover:scale-110"
-              >
-                <FaTimes size={14} />
-              </button>
             </motion.div>
           </motion.div>
         )}

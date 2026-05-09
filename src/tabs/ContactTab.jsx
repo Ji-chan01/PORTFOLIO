@@ -340,10 +340,10 @@ export default function ContactTab() {
       <AnimatePresence>
         {status && (
           <motion.div
-            initial={{ opacity: 0, x: 20, y: 0 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            className="fixed bottom-6 right-6 z-[120] flex items-center gap-3 p-4 rounded-2xl shadow-2xl border bg-white dark:bg-zinc-900 border-gray-100 dark:border-zinc-800 min-w-[320px] max-w-[400px]"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed top-6 left-0 right-0 mx-auto w-[calc(100%-2rem)] max-w-[400px] md:top-auto md:bottom-6 md:right-6 md:left-auto md:mx-0 md:w-auto z-[120] flex items-center gap-3 p-4 rounded-2xl shadow-2xl border bg-white dark:bg-zinc-900 border-gray-100 dark:border-zinc-800"
           >
             <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${status === 'success' ? 'bg-green-50 dark:bg-green-900/20 text-green-600' : 'bg-red-50 dark:bg-red-900/20 text-red-600'}`}>
               {status === 'success' ? <FaCheckCircle size={20} /> : <FaExclamationCircle size={20} />}
