@@ -2,7 +2,7 @@ export const projects = [
   {
     id: 1,
     name: 'HannApp',
-    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1777889430/hannapp_vaer7g.jpg',
+    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1778333186/hannapp_vaer7g.jpg',
     role: 'Full-Stack Developer',
     type: 'Web Application',
     tech: 'Django · Python',
@@ -28,7 +28,7 @@ export const projects = [
   {
     id: 3,
     name: 'ALIS',
-    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1777889430/alis_uldr1w.jpg',
+    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1778333199/alis_uldr1w.jpg',
     role: 'Full-Stack Developer',
     type: 'Web Application',
     tech: 'Django · Python',
@@ -67,7 +67,7 @@ export const projects = [
   {
     id: 6,
     name: 'Swero Alerto',
-    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1777889488/sweroalerto_zigikw.png',
+    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1778333174/sweroalerto_zigikw.png',
     role: 'UI/UX Designer & Programmer',
     type: 'Web Application',
     tech: 'HTML · CSS · Vanilla JS',
@@ -80,7 +80,7 @@ export const projects = [
   {
     id: 7,
     name: 'Osmena Student Information System',
-    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1777889489/ocsis_n3gmpb.png',
+    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1778333164/ocsis_n3gmpb.png',
     role: 'Full-Stack Developer',
     type: 'Web Application',
     tech: 'PHP · MySQL · Tailwind CSS',
@@ -93,7 +93,7 @@ export const projects = [
   {
     id: 8,
     name: 'MotoCare',
-    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1777890145/Screenshot_514_stajzd.png',
+    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1778333142/Screenshot_514_stajzd.png',
     role: 'UI/UX Designer & Programmer',
     type: 'Mobile Application',
     tech: 'React Native · Expo',
@@ -106,7 +106,7 @@ export const projects = [
   {
     id: 9,
     name: 'Osmena Pick & Play',
-    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1777889636/Screenshot_517_uhxtvo.png',
+    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1778333164/ocsis_n3gmpb.png',
     role: 'UI/UX Designer & Programmer',
     type: 'Mobile Application',
     tech: 'React Native · Expo',

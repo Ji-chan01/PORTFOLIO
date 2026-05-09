@@ -221,9 +221,6 @@ export default function AboutTab({ onTabChange }) {
               </p>
 
               <div className="flex items-center gap-3 pt-4 border-t border-gray-100 dark:border-zinc-800">
-                <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${selectedTestimonial.color} flex items-center justify-center text-white font-bold text-lg flex-shrink-0`}>
-                  {selectedTestimonial.initials}
-                </div>
                 <div>
                   <p className="text-base font-bold text-gray-900 dark:text-zinc-100">{selectedTestimonial.name}</p>
                   <p className="text-xs text-gray-500 dark:text-zinc-400">{selectedTestimonial.role}</p>
