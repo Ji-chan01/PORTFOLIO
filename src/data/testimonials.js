@@ -22,10 +22,10 @@ export const testimonials = [
   },
   {
     id: 4,
-    name: 'Franzyl',
+    name: 'Cheelzy',
     role: 'Full-Stack Project Client',
     rating: 5,
-    text: 'From our first conversation to the final delivery, Christian was precise, communicative, and technically sharp. The full-stack solution he built for me handles everything I needed and then some.',
+    text: "During our journey with SweroAlerto (our research project in MNCHS), we truly believe that without kuya and his team, we would not have won the divisional and regional competitions. Our project had a unique objective, pero without the system na they developed for us, it would not have reached its full potential. Even our research teachers were amazed by their skills and professionalism in developing systems, especially knowing na they were still college students at that time. We are genuinely grateful for their dedication and hard work, they have a very big contribution to the success of SweroAlerto. If we were to rate their service and performance on a scale of 1–5, we would definitely give them a 5 or even more than 5 if possible. Their commitment, talent, and support talagang exceeded our expectations.",
   },
   {
     id: 5,
