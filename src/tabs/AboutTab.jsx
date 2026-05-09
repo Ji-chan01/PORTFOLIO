@@ -201,7 +201,7 @@ export default function AboutTab({ onTabChange }) {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-lg bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-2xl shadow-2xl p-6 md:p-8 z-10"
+              className="relative w-full max-w-lg bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-2xl shadow-2xl p-6 md:p-8 z-10 max-h-[90vh] flex flex-col"
             >
               <button
                 onClick={() => setSelectedTestimonial(null)}
@@ -216,9 +216,11 @@ export default function AboutTab({ onTabChange }) {
                 ))}
               </div>
 
-              <p className="text-sm md:text-base text-gray-600 dark:text-zinc-300 leading-relaxed italic mb-8">
-                "{selectedTestimonial.text}"
-              </p>
+              <div className="max-h-[50vh] overflow-y-auto pr-4 mb-8 custom-scrollbar">
+                <p className="text-sm md:text-base text-gray-600 dark:text-zinc-300 leading-relaxed italic">
+                  "{selectedTestimonial.text}"
+                </p>
+              </div>
 
               <div className="flex items-center gap-3 pt-4 border-t border-gray-100 dark:border-zinc-800">
                 <div>
