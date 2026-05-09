@@ -14,7 +14,7 @@ export default function ProjectModal({ project, onClose }) {
   }, [onClose]);
 
   if (!project) return null;
-  const { name, role, type, tech, color, emoji, longDesc, features } = project;
+  const { name, role, type, tech, color, emoji, shortDesc, features } = project;
 
   return (
     <AnimatePresence>
@@ -53,7 +53,7 @@ export default function ProjectModal({ project, onClose }) {
               <span className="badge bg-gray-100 dark:bg-zinc-700 text-gray-600 dark:text-zinc-300">{tech}</span>
             </div>
 
-            <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed mb-5">{longDesc}</p>
+            <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed mb-5">{shortDesc}</p>
 
             <div>
               <h3 className="text-xs font-bold uppercase tracking-widest text-accent mb-3">Key Features</h3>

@@ -22,10 +22,10 @@ export const testimonials = [
   },
   {
     id: 4,
-    name: 'Divine',
+    name: 'Isabelle',
     role: 'System Development Client',
     rating: 5,
-    text: 'I needed a system built fast and built right — Christian delivered both. What stood out was how clean and intuitive the interface was. My team picked it up without any training at all.',
+    text: "As someone who benefited from the team's assistance, we would rate them a 5/5 for their hard work and dedication in helping create our research website. They were cooperative, responsible, and offered creative ideas that improved the overall quality of the work. Their teamwork and effort made the website functional and successful.",
   },
   {
     id: 5,

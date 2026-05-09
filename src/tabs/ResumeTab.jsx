@@ -98,7 +98,7 @@ export default function ResumeTab() {
               icon={FaGraduationCap}
               title="BS Computer Science"
               subtitle="Osmeña Colleges — Masbate City"
-              period="2020 – 2024"
+              period="2022 – 2026"
             >
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-100 dark:bg-red-900/40 rounded-lg text-xs font-bold text-blue-700 dark:text-red-400 mb-3">
                 <FaTrophy size={10} /> Graduated Cum Laude
@@ -113,7 +113,7 @@ export default function ResumeTab() {
               icon={FaTrophy}
               title="Dean's List — Four-Year Streak"
               subtitle="Osmeña Colleges"
-              period="2020 – 2024 · All Semesters"
+              period="2022 – 2026 · All Semesters"
             >
               <p>
                 Achieved Dean's Lister recognition consistently from 1st Year through 4th Year.
@@ -131,7 +131,7 @@ export default function ResumeTab() {
               icon={FaUsers}
               title="2nd Year Class President"
               subtitle="Osmeña Colleges"
-              period="2021 – 2022"
+              period="2023 – 2024"
             >
               <p>
                 Served as Class President during my second year, acting as the primary liaison
@@ -145,7 +145,7 @@ export default function ResumeTab() {
               icon={FaTrophy}
               title="CCS 2nd Year Representative"
               subtitle="College of Computer Studies"
-              period="2021 – 2022"
+              period="2023 – 2024"
             >
               <p>
                 Represented the College of Computer Studies as the 2nd Year departmental
@@ -171,7 +171,7 @@ export default function ResumeTab() {
                   <h3 className="text-sm font-bold text-gray-900 dark:text-zinc-100">
                     Freelance Full-Stack Developer &amp; UI/UX Designer
                   </h3>
-                  <p className="text-xs text-accent font-semibold">2023 – Present · Remote / Project-Based</p>
+                  <p className="text-xs text-accent font-semibold">2024 – Present · Remote / Project-Based</p>
                 </div>
               </div>
               <ul className="space-y-2">
@@ -182,7 +182,7 @@ export default function ResumeTab() {
                   'Architected backend systems using Django (Python) and PHP',
                   'Produced high-fidelity UI/UX prototypes in Figma prior to every development phase',
                   'Managed client communication, revision cycles, and delivery timelines independently',
-                  'Delivered 6+ completed projects with a 100% client satisfaction rate',
+                  'Delivered 10+ completed projects with a 100% client satisfaction rate',
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-2 text-xs text-gray-600 dark:text-zinc-400 leading-relaxed">
                     <FaCheckCircle className="text-accent mt-0.5 flex-shrink-0" size={11} />
@@ -238,13 +238,13 @@ export default function ResumeTab() {
             >
               <div className="relative group">
                 {selectedCert.image && (
-                  <img 
-                    src={selectedCert.image} 
-                    alt={selectedCert.title} 
-                    className="w-full h-auto max-h-[90vh] object-contain rounded-xl shadow-2xl" 
+                  <img
+                    src={selectedCert.image}
+                    alt={selectedCert.title}
+                    className="w-full h-auto max-h-[90vh] object-contain rounded-xl shadow-2xl"
                   />
                 )}
-                
+
                 <button
                   onClick={() => setSelectedCert(null)}
                   className="absolute top-4 right-4 w-10 h-10 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center text-white transition-all hover:scale-110 z-10"

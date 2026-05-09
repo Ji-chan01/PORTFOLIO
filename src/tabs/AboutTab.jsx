@@ -144,9 +144,9 @@ export default function AboutTab({ onTabChange }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-3 bg-[#f5f5f5] dark:bg-zinc-900">
         {[
-          { value: '9+', label: 'Projects Delivered' },
+          { value: '10+', label: 'Projects Delivered' },
           { value: '100%', label: 'Client Satisfaction' },
-          { value: '2 Yrs', label: 'Freelance Experience' },
+          { value: '2 YRS', label: 'Freelance Experience' },
         ].map(({ value, label }, i) => (
           <div key={label} className={`p-6 text-center ${i === 0 ? 'sm:shadow-[inset_-40px_0_30px_-20px_rgb(var(--color-accent)/0.15)]' :
             i === 1 ? 'border-y sm:border-y-0 shadow-[inset_40px_0_30px_-20px_rgb(var(--color-accent)/0.15),inset_-40px_0_30px_-20px_rgb(var(--color-accent)/0.15)]' :
