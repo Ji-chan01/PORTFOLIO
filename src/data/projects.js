@@ -104,7 +104,7 @@ export const projects = [
     tech: 'React Native · Expo',
     color: 'from-blue-500 to-blue-600 dark:from-red-500 dark:to-rose-600',
     emoji: '🏀',
-    shortDesc: 'A sports facility booking and event organizing platform exclusively for Osmeña Colleges students and staff.',
+    shortDesc: 'Osmena Pick & Play is a simple random people picker that finds all the people in the Computer Science department, matches them with you, and randomizes the dares to play.',
     features: ['Real-time facility booking', 'Pickup game organizer', 'Intramural team management', 'Interactive availability calendar'],
   },
 ];

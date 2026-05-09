@@ -87,7 +87,7 @@ export default function AboutTab({ onTabChange }) {
           <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-zinc-100 leading-tight mb-4">
             Building Experiences.<br />
             Solving Problems.<br />
-            <span className="text-accent">One Pixel at a Time.</span>
+            <span className="text-accent">One at a Time.</span>
           </h2>
           <p className="text-sm font-semibold text-accent mb-5">
             UI/UX Designer &amp; Full-Stack Developer · 2 Years Freelance
@@ -266,7 +266,7 @@ export default function AboutTab({ onTabChange }) {
                 </div>
                 <div>
                   <h3 className="text-sm font-extrabold text-gray-900 dark:text-zinc-100 uppercase" style={{ letterSpacing: '1px' }}>Security Check</h3>
-                  <p className="text-xs text-gray-500 dark:text-zinc-400">Required to download resume</p>
+                  <p className="text-xs text-gray-500 dark:text-zinc-400">To avoid bots & scrapers :&lt;</p>
                 </div>
               </div>
 
