@@ -37,7 +37,7 @@ function SkillGroup({ title, skills, barColor, delay = 0 }) {
 }
 
 const RESUME_PASSWORD = '909-251';
-const RESUME_URL = 'https://res.cloudinary.com/dlqxpz9pu/image/upload/fl_attachment/v1777878097/resume_aodtzc.pdf';
+const RESUME_URL = 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1778386604/resume_aodtzc.pdf';
 
 export default function AboutTab({ onTabChange }) {
   const [selectedTestimonial, setSelectedTestimonial] = useState(null);
