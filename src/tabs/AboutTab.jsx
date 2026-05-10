@@ -59,7 +59,7 @@ export default function AboutTab({ onTabChange }) {
     if (passwordInput === RESUME_PASSWORD) {
       const a = document.createElement('a');
       a.href = RESUME_URL;
-      a.download = 'Christian_Jireh_Briol_Resume.pdf';
+      a.download = 'Christian Jireh A. Briol_RESUME.pdf';
       a.target = '_blank';
       document.body.appendChild(a);
       a.click();
