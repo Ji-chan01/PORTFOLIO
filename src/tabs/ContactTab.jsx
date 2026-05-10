@@ -2,8 +2,28 @@ import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 import {
-  FaPaperPlane, FaEnvelope, FaFacebookF, FaGithub, FaCheckCircle, FaExclamationCircle, FaTimes
+  FaPaperPlane, FaEnvelope, FaFacebookF, FaGithub, FaCheckCircle, FaExclamationCircle, FaTimes, FaShieldAlt
 } from 'react-icons/fa';
+
+const RATE_LIMIT_KEY = 'portfolio_contact_limit';
+const MAX_REQUESTS = 3;
+
+const getRateLimit = () => {
+  const today = new Date().toDateString();
+  const stored = localStorage.getItem(RATE_LIMIT_KEY);
+  if (!stored) return { count: 0, date: today };
+  
+  const data = JSON.parse(stored);
+  if (data.date !== today) return { count: 0, date: today };
+  
+  return data;
+};
+
+const incrementRateLimit = () => {
+  const data = getRateLimit();
+  data.count += 1;
+  localStorage.setItem(RATE_LIMIT_KEY, JSON.stringify(data));
+};
 
 export default function ContactTab() {
   const formRef = useRef(null);
@@ -38,6 +58,13 @@ export default function ContactTab() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    const limitData = getRateLimit();
+    if (limitData.count >= MAX_REQUESTS) {
+      setStatus('limit');
+      return;
+    }
+
     setIsSending(true);
     setStatus(null);
     setVerificationError(null);
@@ -97,6 +124,7 @@ export default function ContactTab() {
       );
 
       if (result.text === 'OK') {
+        incrementRateLimit();
         setStatus('success');
         setIsVerifying(false);
         setUserOtp('');
@@ -356,18 +384,28 @@ export default function ContactTab() {
             exit={{ opacity: 0, y: -20 }}
             className="fixed top-6 left-0 right-0 mx-auto w-[calc(100%-2rem)] max-w-[400px] md:top-auto md:bottom-6 md:right-6 md:left-auto md:mx-0 md:w-auto z-[120] flex items-center gap-3 p-4 rounded-2xl shadow-2xl border bg-white dark:bg-zinc-900 border-gray-100 dark:border-zinc-800"
           >
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${status === 'success' ? 'bg-green-50 dark:bg-green-900/20 text-green-600' : 'bg-red-50 dark:bg-red-900/20 text-red-600'}`}>
-              {status === 'success' ? <FaCheckCircle size={20} /> : <FaExclamationCircle size={20} />}
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+              status === 'success' ? 'bg-green-50 dark:bg-green-900/20 text-green-600' : 
+              status === 'limit' ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-600' :
+              'bg-red-50 dark:bg-red-900/20 text-red-600'
+            }`}>
+              {status === 'success' ? <FaCheckCircle size={20} /> : 
+               status === 'limit' ? <FaShieldAlt size={20} /> :
+               <FaExclamationCircle size={20} />}
             </div>
-
+  
             <div className="flex-1">
               <p className="text-sm font-bold text-gray-900 dark:text-zinc-100">
-                {status === 'success' ? 'Success!' : 'Error!'}
+                {status === 'success' ? 'Success!' : 
+                 status === 'limit' ? 'Rate Limit Reached' : 
+                 'Error!'}
               </p>
               <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed mt-0.5">
                 {status === 'success'
                   ? "Your message has been sent successfully. I'll get back to you soon!"
-                  : "Failed to send message. Please check your connection or try again later."}
+                  : status === 'limit'
+                    ? "You have reached the daily limit of 3 messages. Please try again tomorrow."
+                    : "Failed to send message. Please check your connection or try again later."}
               </p>
             </div>
 
@@ -383,7 +421,11 @@ export default function ContactTab() {
               initial={{ scaleX: 1 }}
               animate={{ scaleX: 0 }}
               transition={{ duration: 5, ease: "linear" }}
-              className={`absolute bottom-0 left-0 right-0 h-1 rounded-b-2xl origin-left ${status === 'success' ? 'bg-green-500' : 'bg-red-500'}`}
+              className={`absolute bottom-0 left-0 right-0 h-1 rounded-b-2xl origin-left ${
+                status === 'success' ? 'bg-green-500' : 
+                status === 'limit' ? 'bg-amber-500' :
+                'bg-red-500'
+              }`}
             />
           </motion.div>
         )}
