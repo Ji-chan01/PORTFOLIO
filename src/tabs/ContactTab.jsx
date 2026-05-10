@@ -18,6 +18,12 @@ export default function ContactTab() {
   const [verificationError, setVerificationError] = useState(null);
 
   useEffect(() => {
+    // Initialize EmailJS
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+    if (publicKey) {
+      emailjs.init(publicKey);
+    }
+    
     if (status) {
       const timer = setTimeout(() => {
         setStatus(null);
@@ -37,23 +43,31 @@ export default function ContactTab() {
     setVerificationError(null);
 
     try {
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+      const verifyTemplateId = import.meta.env.VITE_EMAILJS_VERIFY_TEMPLATE_ID;
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+      if (!serviceId || !verifyTemplateId || !publicKey) {
+        throw new Error('EmailJS configuration is missing. Please check your .env file.');
+      }
+
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
       setGeneratedOtp(otp);
 
       const result = await emailjs.send(
-        import.meta.env.VITE_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_EMAILJS_VERIFY_TEMPLATE_ID,
+        serviceId,
+        verifyTemplateId,
         {
           from_name: formData.name,
           to_email: formData.email,
           verification_code: otp,
-        },
-        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+        }
       );
 
       if (result.text === 'OK') {
         setIsVerifying(true); // Show the OTP input modal
       } else {
+        console.error('OTP Send Failed:', result);
         setStatus('error');
       }
     } catch (error) {
@@ -79,8 +93,7 @@ export default function ContactTab() {
       const result = await emailjs.sendForm(
         import.meta.env.VITE_EMAILJS_SERVICE_ID,
         import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-        formRef.current,
-        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+        formRef.current
       );
 
       if (result.text === 'OK') {
@@ -334,6 +347,7 @@ export default function ContactTab() {
           </motion.div>
         )}
       </AnimatePresence>
+
       <AnimatePresence>
         {status && (
           <motion.div
