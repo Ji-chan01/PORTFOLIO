@@ -10,12 +10,37 @@ export default function ContactTab() {
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [isSending, setIsSending] = useState(false);
   const [status, setStatus] = useState(null);
+  const [dailyLimitReached, setDailyLimitReached] = useState(false);
 
   // OTP States
   const [generatedOtp, setGeneratedOtp] = useState(null);
   const [userOtp, setUserOtp] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationError, setVerificationError] = useState(null);
+
+  useEffect(() => {
+    // 1. Initialize EmailJS with Rate Limit (10s throttle)
+    emailjs.init({
+      publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+      limitRate: {
+        throttle: 10000, // 10 seconds
+      },
+    });
+
+    // 2. Check Daily Limit on Mount
+    const checkLimit = () => {
+      const today = new Date().toDateString();
+      const stored = JSON.parse(localStorage.getItem('contact_submissions') || '{}');
+
+      if (stored.date !== today) {
+        localStorage.setItem('contact_submissions', JSON.stringify({ count: 0, date: today }));
+        setDailyLimitReached(false);
+      } else if (stored.count >= 3) {
+        setDailyLimitReached(true);
+      }
+    };
+    checkLimit();
+  }, []);
 
   useEffect(() => {
     if (status) {
@@ -30,8 +55,17 @@ export default function ContactTab() {
     setFormData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
 
+  const incrementSubmissionCount = () => {
+    const today = new Date().toDateString();
+    const stored = JSON.parse(localStorage.getItem('contact_submissions') || '{}');
+    const newCount = (stored.count || 0) + 1;
+    localStorage.setItem('contact_submissions', JSON.stringify({ count: newCount, date: today }));
+    if (newCount >= 3) setDailyLimitReached(true);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (dailyLimitReached) return;
     setIsSending(true);
     setStatus(null);
     setVerificationError(null);
@@ -87,6 +121,7 @@ export default function ContactTab() {
 
       if (result.text === 'OK') {
         setStatus('success');
+        incrementSubmissionCount();
         setIsVerifying(false);
         setUserOtp('');
         setFormData({ name: '', email: '', subject: '', message: '' });
@@ -227,10 +262,12 @@ export default function ContactTab() {
                 <button
                   id="submit-contact"
                   type="submit"
-                  disabled={isSending}
+                  disabled={isSending || dailyLimitReached}
                   className="bg-accent-dark text-white font-bold px-6 py-2.5 rounded-xl shadow active:scale-95 w-full flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {isSending ? (
+                  {dailyLimitReached ? (
+                    'Daily Limit Reached'
+                  ) : isSending ? (
                     <>
                       <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -245,6 +282,13 @@ export default function ContactTab() {
                     </>
                   )}
                 </button>
+
+                {dailyLimitReached && (
+                  <p className="text-[10px] text-red-500 font-medium italic mt-3 text-center flex items-center justify-center gap-1">
+                    <FaExclamationCircle size={10} />
+                    You've reached the limit of 3 messages per day. Please try again tomorrow!
+                  </p>
+                )}
               </form>
             </div>
           </div>
