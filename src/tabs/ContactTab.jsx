@@ -5,6 +5,15 @@ import {
   FaPaperPlane, FaEnvelope, FaFacebookF, FaGithub, FaCheckCircle, FaExclamationCircle, FaTimes
 } from 'react-icons/fa';
 
+// Initialize EmailJS with Rate Limit (10s throttle)
+emailjs.init({
+  publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+  limitRate: {
+    id: 'contact-form',
+    throttle: 10000, // 10 seconds
+  },
+});
+
 export default function ContactTab() {
   const formRef = useRef(null);
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
@@ -19,14 +28,6 @@ export default function ContactTab() {
   const [verificationError, setVerificationError] = useState(null);
 
   useEffect(() => {
-    // 1. Initialize EmailJS with Rate Limit (10s throttle)
-    emailjs.init({
-      publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
-      limitRate: {
-        throttle: 10000, // 10 seconds
-      },
-    });
-
     // 2. Check Daily Limit on Mount
     const checkLimit = () => {
       const today = new Date().toDateString();
@@ -83,8 +84,7 @@ export default function ContactTab() {
           from_name: formData.name,
           to_email: formData.email,
           verification_code: otp,
-        },
-        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+        }
       );
 
       if (result.text === 'OK') {
@@ -94,6 +94,7 @@ export default function ContactTab() {
       }
     } catch (error) {
       console.error('OTP Send Error:', error);
+      if (error?.text) console.error('Error Details:', error.text);
       setStatus('error');
     } finally {
       setIsSending(false);
@@ -115,8 +116,7 @@ export default function ContactTab() {
       const result = await emailjs.sendForm(
         import.meta.env.VITE_EMAILJS_SERVICE_ID,
         import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-        formRef.current,
-        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+        formRef.current
       );
 
       if (result.text === 'OK') {
