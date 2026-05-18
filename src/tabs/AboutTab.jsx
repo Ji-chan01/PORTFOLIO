@@ -96,7 +96,7 @@ export default function AboutTab({ onTabChange }) {
 
           <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed max-w-2xl">
             Hi! I’m Christian Jireh, a full-stack developer and UI/UX designer with two years of freelance experience.
-            I turn your ideas into clean, beautiful, and highly functional digital products that users love. I handle everything from Figma design to reliable backends (Django & PHP) and polished frontends (React & Tailwind CSS).
+            I turn your ideas into clean, beautiful, and highly functional digital products that users love. I handle everything from Figma design to reliable backends (Django, Express JS & PHP) and polished frontends (React & Tailwind CSS).
           </p>
           <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed max-w-2xl mt-3">
             What sets me apart is my design-first approach, I always keep the end user in mind at every step.
@@ -114,7 +114,7 @@ export default function AboutTab({ onTabChange }) {
             <button
               id="about-download-resume"
               onClick={openPasswordModal}
-              className="w-full sm:w-auto flex justify-center items-center gap-2 border border-accent bg-[#f5f5f5] dark:bg-zinc-900 text-accent text-xs font-bold px-6 py-3 transition-all duration-200 hover:bg-accent hover:text-white active:scale-95"
+              className="w-full sm:w-auto flex justify-center items-center gap-2 border border-accent bg-[#f5f5f5] dark:bg-zinc-900 text-accent text-xs font-bold px-6 py-3 transition-all duration-200 hover:brightness-90 active:scale-95"
               style={{ borderRadius: 0, letterSpacing: '1px' }}
             >
               <FaDownload size={11} /> Download Resume
@@ -145,7 +145,7 @@ export default function AboutTab({ onTabChange }) {
       <div className="grid grid-cols-1 sm:grid-cols-3 bg-[#f5f5f5] dark:bg-zinc-900">
         {[
           { value: '10+', label: 'Projects Delivered' },
-          { value: '100%', label: 'Client Satisfaction' },
+          { value: '97.5%', label: 'Client Satisfaction' },
           { value: '2 YRS', label: 'Freelance Experience' },
         ].map(({ value, label }, i) => (
           <div key={label} className={`p-6 text-center ${i === 0 ? 'sm:shadow-[inset_-40px_0_30px_-20px_rgb(var(--color-accent)/0.15)]' :

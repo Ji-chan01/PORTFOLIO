@@ -5,7 +5,12 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const contactItems = [
-  { icon: FaEnvelope, label: 'briolchristian040@gmail.com', href: 'mailto:cjbriol@gmail.com', id: 'contact-email' },
+  { 
+    icon: FaEnvelope, 
+    label: 'briolchristian040@gmail.com', 
+    href: typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? 'mailto:briolchristian040@gmail.com' : 'https://mail.google.com/mail/?view=cm&fs=1&to=briolchristian040@gmail.com', 
+    id: 'contact-email' 
+  },
   { icon: FaFacebookF, label: 'facebook.com/jirehkun.briol.1', href: 'https://www.facebook.com/jirehkun.briol.1', id: 'contact-facebook' },
   { icon: FaGithub, label: 'github.com/Ji-chan01', href: 'https://github.com/Ji-chan01', id: 'contact-github' },
   { icon: FaMapMarkerAlt, label: 'Masbate City, PH', href: null, id: 'contact-location' },
@@ -67,7 +72,7 @@ export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
           {contactItems.map(({ icon: Icon, label, href, id }) => (
             <li key={id}>
               {href ? (
-                <a id={id} href={href} target="_blank" rel="noreferrer" className={`sidebar-link ${isMobileAccordion ? '!text-gray-500 hover:!text-accent' : ''}`}>
+                <a id={id} href={href} target={href.startsWith('mailto:') ? undefined : "_blank"} rel="noreferrer" className={`sidebar-link ${isMobileAccordion ? '!text-gray-500 hover:!text-accent' : ''}`}>
                   <span className={`w-7 h-7 md:w-9 md:h-9 rounded-lg md:rounded-xl ${iconBg} dark:bg-zinc-800 flex items-center justify-center flex-shrink-0`}>
                     <Icon className={`${iconColor} text-[12px] md:text-[16px]`} />
                   </span>

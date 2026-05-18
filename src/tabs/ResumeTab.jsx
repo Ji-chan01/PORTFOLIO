@@ -28,27 +28,27 @@ function TimelineItem({ icon: Icon, title, subtitle, period, children }) {
 
 const certs = [
   {
-    id: 1, title: 'DICT OJT Completion', subtitle: 'Department of ICT · 2023', color: 'from-blue-500 to-indigo-600',
+    id: 1, title: 'DICT OJT Completion', subtitle: 'DICT · 2025', color: 'from-blue-500 to-indigo-600',
     image: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_1200/v1777874131/completion_i5tmmp.jpg",
     thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874131/completion_i5tmmp.jpg"
   },
   {
-    id: 2, title: 'Basic Networking Using Omada TP Link and Ruijie Reyee', subtitle: 'Department of ICT · 2023', color: 'from-rose-500 to-red-600',
+    id: 2, title: 'Basic Networking Using Omada TP Link and Ruijie Reyee', subtitle: 'DICT · 2025', color: 'from-rose-500 to-red-600',
     image: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_1200/v1777874128/basic_networking_hesu6k.jpg",
     thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874128/basic_networking_hesu6k.jpg"
   },
   {
-    id: 3, title: 'Flutterflow Training', subtitle: 'Department of ICT · 2023', color: 'from-violet-500 to-purple-600',
+    id: 3, title: 'Flutterflow Training', subtitle: 'DICT · 2025', color: 'from-violet-500 to-purple-600',
     image: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_1200/v1777874130/flutterflow_ogddof.jpg",
     thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874130/flutterflow_ogddof.jpg"
   },
   {
-    id: 4, title: 'Sketch Up Training', subtitle: 'Department of ICT · 2023', color: 'from-emerald-500 to-teal-600',
+    id: 4, title: 'Sketch Up Training', subtitle: 'DICT · 2025', color: 'from-emerald-500 to-teal-600',
     image: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_1200/v1777874131/sketch_up_rg9gn5.jpg",
     thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874131/sketch_up_rg9gn5.jpg"
   },
   {
-    id: 5, title: 'Technical Training on the VSAT Technology', subtitle: 'Department of ICT · 2023', color: 'from-amber-500 to-orange-600',
+    id: 5, title: 'Technical Training on the VSAT Technology', subtitle: 'DICT · 2025', color: 'from-amber-500 to-orange-600',
     image: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_1200/v1777874130/vsat_yhlkiy.jpg",
     thumb: "https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_400/v1777874130/vsat_yhlkiy.jpg"
   },
@@ -179,10 +179,10 @@ export default function ResumeTab() {
                   'Designed and developed full-stack web and mobile applications for multiple clients across various industries',
                   'Led end-to-end project delivery: requirement gathering, wireframing, development, deployment, and post-launch support',
                   'Built responsive frontends using React, Tailwind CSS, and Vanilla JS',
-                  'Architected backend systems using Django (Python) and PHP',
+                  'Architected backend systems using Django (Python), Express JS and PHP',
                   'Produced high-fidelity UI/UX prototypes in Figma prior to every development phase',
                   'Managed client communication, revision cycles, and delivery timelines independently',
-                  'Delivered 10+ completed projects with a 100% client satisfaction rate',
+                  'Delivered 10+ completed projects with a 97.5% client satisfaction rate',
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-2 text-xs text-gray-600 dark:text-zinc-400 leading-relaxed">
                     <FaCheckCircle className="text-accent mt-0.5 flex-shrink-0" size={11} />

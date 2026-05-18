@@ -2,7 +2,7 @@ export const testimonials = [
   {
     id: 1,
     name: 'Cheelzy',
-    role: 'Full-Stack Project Client',
+    role: 'Web and Mobile App Client',
     rating: 5,
     text: "During our journey with SweroAlerto (our research project in MNCHS), we truly believe that without kuya and his team, we would not have won the divisional and regional competitions. Our project had a unique objective, pero without the system na they developed for us, it would not have reached its full potential. Even our research teachers were amazed by their skills and professionalism in developing systems, especially knowing na they were still college students at that time. We are genuinely grateful for their dedication and hard work, they have a very big contribution to the success of SweroAlerto. If we were to rate their service and performance on a scale of 1–5, we would definitely give them a 5 or even more than 5 if possible. Their commitment, talent, and support talagang exceeded our expectations.",
   },
@@ -15,30 +15,16 @@ export const testimonials = [
   },
   {
     id: 3,
-    name: 'Andrea',
-    role: 'Web Application Client',
-    rating: 5,
-    text: 'Christian delivered a web application that exceeded every expectation. His eye for design and his ability to translate my rough idea into a polished, working product was genuinely impressive. I\'ll be coming back for every future project.',
-  },
-  {
-    id: 4,
     name: 'Isabelle',
-    role: 'System Development Client',
+    role: 'Web App Client',
     rating: 5,
     text: "As someone who benefited from the team's assistance, we would rate them a 5/5 for their hard work and dedication in helping create our research website. They were cooperative, responsible, and offered creative ideas that improved the overall quality of the work. Their teamwork and effort made the website functional and successful.",
   },
   {
-    id: 5,
-    name: 'Nadine',
-    role: 'UI/UX Design Client',
-    rating: 5,
-    text: 'I was amazed by how quickly Christian grasped the concept and turned it into a beautiful, functional design. His turnaround time is unmatched, and the quality never suffers for it.',
-  },
-  {
-    id: 6,
-    name: 'Analyn',
-    role: 'Portal Development Client',
-    rating: 5,
-    text: 'Christian built our portal from scratch, and the result was a seamless, professional-grade application. His full-stack expertise made the whole process smooth, and the final product speaks for itself.',
-  },
+    id: 4,
+    name: 'Divine',
+    role: 'Web App Client',
+    rating: 4.5,
+    text: 'Maayos at functional yung system na ginawa niya, and na-meet naman niya halos lahat ng requirements na kailangan namin. Responsive din siya sa concerns at willing mag-adjust sa mga revisions. May mga minor improvements lang na pwede pang i-enhance for a better user experience overall',
+  }
 ];
