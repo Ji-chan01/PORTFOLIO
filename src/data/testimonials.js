@@ -25,6 +25,6 @@ export const testimonials = [
     name: 'Divine',
     role: 'Web App Client',
     rating: 4.5,
-    text: 'Maayos at functional yung system na ginawa niya, and na-meet naman niya halos lahat ng requirements na kailangan namin. Responsive din siya sa concerns at willing mag-adjust sa mga revisions. May mga minor improvements lang na pwede pang i-enhance for a better user experience overall',
+    text: 'Maayos at functional yung system na ginawa niya, and na-meet naman niya halos lahat ng requirements na kailangan namin. Responsive din siya sa concerns at willing mag-adjust sa mga revisions',
   }
 ];
