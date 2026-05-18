@@ -101,10 +101,10 @@ export default function ResumeTab() {
               period="2022 – 2026"
             >
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-100 dark:bg-red-900/40 rounded-lg text-xs font-bold text-blue-700 dark:text-red-400 mb-3">
-                <FaTrophy size={10} /> Graduated Cum Laude
+                <FaTrophy size={10} /> Graduated Magna Cum Laude
               </span>
               <p>
-                Graduated with Cum Laude distinction, reflecting sustained academic excellence
+                Graduated with Magna Cum Laude distinction, reflecting sustained academic excellence
                 across four years of rigorous coursework in the information technology program.
               </p>
             </TimelineItem>
@@ -180,7 +180,7 @@ export default function ResumeTab() {
                   'Led end-to-end project delivery: requirement gathering, wireframing, development, deployment, and post-launch support',
                   'Built responsive frontends using React, Tailwind CSS, and Vanilla JS',
                   'Architected backend systems using Django (Python), Express JS and PHP',
-                  'Produced high-fidelity UI/UX prototypes in Figma prior to every development phase',
+                  'Produced high-fidelity UI/UX prototypes in Canva and Figma prior to every development phase',
                   'Managed client communication, revision cycles, and delivery timelines independently',
                   'Delivered 10+ completed projects with a 97.5% client satisfaction rate',
                 ].map((item, i) => (
