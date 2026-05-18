@@ -67,7 +67,7 @@ export default function App() {
         </main>
       </div>
 
-      <div className="lg:hidden flex flex-col h-[100dvh] overflow-hidden">
+      <div className="lg:hidden fixed inset-0 flex flex-col overflow-hidden overscroll-none">
         <header className="flex items-center justify-between px-4 py-3 bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-700 z-20 flex-shrink-0">
           <div className="flex items-center gap-3">
             <div

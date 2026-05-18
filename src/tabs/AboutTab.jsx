@@ -7,7 +7,7 @@ import {
 } from '../data/skills';
 import { testimonials } from '../data/testimonials';
 import {
-  FaCode, FaHeart, FaChess, FaBasketballBall, FaMusic, FaTimes, FaStar,
+  FaCode, FaHeart, FaChess, FaBasketballBall, FaMusic, FaTimes, FaStar, FaStarHalfAlt,
   FaDownload, FaArrowRight, FaLock, FaEye, FaEyeSlash
 } from 'react-icons/fa';
 
@@ -211,9 +211,12 @@ export default function AboutTab({ onTabChange }) {
               </button>
 
               <div className="flex gap-1 mb-4 mt-2">
-                {Array.from({ length: selectedTestimonial.rating }).map((_, i) => (
+                {Array.from({ length: Math.floor(selectedTestimonial.rating) }).map((_, i) => (
                   <FaStar key={i} className="text-accent text-sm" />
                 ))}
+                {selectedTestimonial.rating % 1 !== 0 && (
+                  <FaStarHalfAlt className="text-accent text-sm" />
+                )}
               </div>
 
               <div className="max-h-[50vh] overflow-y-auto pr-4 mb-8 custom-scrollbar">
