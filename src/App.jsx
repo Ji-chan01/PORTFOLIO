@@ -134,6 +134,13 @@ export default function App() {
             onClick={() => setIsZoomed(false)}
             className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95"
           >
+            <button
+              onClick={() => setIsZoomed(false)}
+              className="absolute top-6 right-6 w-12 h-12 bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full flex items-center justify-center text-white shadow-xl hover:scale-110 transition-transform cursor-pointer border border-white/20 z-50"
+              aria-label="Close modal"
+            >
+              <span className="text-3xl font-light">&times;</span>
+            </button>
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -147,12 +154,6 @@ export default function App() {
                 alt="Christian Jireh Zoomed"
                 className="max-w-full max-h-[80vh] rounded-3xl shadow-2xl object-contain border-2 border-white/20"
               />
-              <button
-                onClick={() => setIsZoomed(false)}
-                className="absolute top-4 right-4 w-10 h-10 bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full flex items-center justify-center text-white shadow-xl active:scale-110 transition-transform cursor-pointer border border-white/20"
-              >
-                <span className="text-2xl font-light">&times;</span>
-              </button>
             </motion.div>
           </motion.div>
         )}
