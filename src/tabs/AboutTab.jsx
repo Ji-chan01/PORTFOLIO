@@ -37,7 +37,7 @@ function SkillGroup({ title, skills, barColor, delay = 0 }) {
 }
 
 const RESUME_PASSWORD = '909-251';
-const RESUME_URL = 'https://res.cloudinary.com/dlqxpz9pu/image/upload/fl_attachment/v1778387287/RESUME_Christian_Jireh_Briol_epjogq.pdf';
+const RESUME_URL = 'https://res.cloudinary.com/dlqxpz9pu/image/upload/fl_attachment/v1784533003/Briol_Christian_Jireh_RESUME_2026_ulj5ze.pdf';
 
 export default function AboutTab({ onTabChange }) {
   const [selectedTestimonial, setSelectedTestimonial] = useState(null);

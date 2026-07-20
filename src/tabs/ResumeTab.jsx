@@ -101,7 +101,7 @@ export default function ResumeTab() {
               period="2022 – 2026"
             >
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-100 dark:bg-red-900/40 rounded-lg text-xs font-bold text-blue-700 dark:text-red-400 mb-3">
-                <FaTrophy size={10} /> Graduated Magna Cum Laude
+                <FaTrophy size={10} /> Graduated Cum Laude
               </span>
               <p>
                 Graduated with Magna Cum Laude distinction, reflecting sustained academic excellence

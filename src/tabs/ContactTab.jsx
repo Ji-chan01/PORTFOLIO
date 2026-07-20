@@ -12,10 +12,10 @@ const getRateLimit = () => {
   const today = new Date().toDateString();
   const stored = localStorage.getItem(RATE_LIMIT_KEY);
   if (!stored) return { count: 0, date: today };
-  
+
   const data = JSON.parse(stored);
   if (data.date !== today) return { count: 0, date: today };
-  
+
   return data;
 };
 
@@ -43,7 +43,7 @@ export default function ContactTab() {
     if (publicKey) {
       emailjs.init(publicKey);
     }
-    
+
     if (status) {
       const timer = setTimeout(() => {
         setStatus(null);
@@ -58,7 +58,7 @@ export default function ContactTab() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const limitData = getRateLimit();
     if (limitData.count >= MAX_REQUESTS) {
       setStatus('limit');
@@ -148,56 +148,38 @@ export default function ContactTab() {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -16 }}
         transition={{ duration: 0.35 }}
-        className="p-6 md:p-8 bg-grid"
+        className="bg-grid h-full"
       >
-        <div className="max-w-5xl mx-auto grid min-[1264px]:grid-cols-2 gap-10 min-[1264px]:gap-16">
-          <div className="flex flex-col justify-center">
-            <p className="section-subtitle">Get In Touch</p>
-            <h2 className="section-title mb-4">Let's Build Something Together!</h2>
-            <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed">
-              Have a project in mind? Need a full-stack solution or a UI/UX overhaul? I'm open to freelance
-              projects, collaborations, and conversations. Fill out the form and I'll get back to you
-              within 24 hours.
-            </p>
+        <div className="w-full h-full grid min-[1264px]:grid-cols-2">
+          <div className="flex flex-col h-full">
+
+
+            {/* Map */}
+            <div className="flex-1 overflow-hidden min-h-[30vh] min-[1264px]:min-h-0">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d123654.19548293324!2d120.88645862130612!3d14.415999962462854!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397d2407b04433f%3A0x779154cd6b3d2d4c!2sBacoor%2C%20Cavite!5e0!3m2!1sen!2sph!4v1724651308187!5m2!1sen!2sph"
+                width="100%"
+                height="100%"
+                style={{ border: 0, display: 'block' }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Location Map"
+                className="dark:[filter:grayscale(1)_invert(1)]"
+              />
+            </div>
           </div>
 
-          <div className="space-y-8">
-
-            <div className="grid sm:grid-cols-3 gap-3">
-              {[
-                {
-                  icon: FaEnvelope,
-                  label: 'Email',
-                  value: 'briolchristian040@gmail.com',
-                  href: typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-                    ? 'mailto:briolchristian040@gmail.com'
-                    : 'https://mail.google.com/mail/?view=cm&fs=1&to=briolchristian040@gmail.com',
-                  id: 'quick-email'
-                },
-                { icon: FaFacebookF, label: 'Facebook', value: 'facebook.com/jirehkun.briol.1', href: 'https://facebook.com/jirehkun.briol.1', id: 'quick-facebook' },
-                { icon: FaGithub, label: 'GitHub', value: 'github.com/Ji-chan01', href: 'https://github.com/Ji-chan01', id: 'quick-github' },
-              ].map(({ icon: Icon, label, value, href, id }) => (
-                <a
-                  key={id}
-                  id={id}
-                  href={href}
-                  target={href.startsWith('mailto:') ? undefined : "_blank"}
-                  rel={href.startsWith('mailto:') ? undefined : "noreferrer"}
-                  className="card p-4 flex gap-3 items-center hover:opacity-70 transition-opacity duration-200 min-w-0"
-                >
-                  <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-zinc-700 flex items-center justify-center flex-shrink-0">
-                    <Icon className="text-accent" size={14} />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold text-gray-900 dark:text-zinc-100">{label}</p>
-                    <p className="text-[10px] text-gray-500 dark:text-zinc-400 truncate">{value}</p>
-                  </div>
-                </a>
-              ))}
-            </div>
-
-            <div className="card p-6 md:p-8">
+          <div className="h-full flex flex-col">
+            <div className="card rounded-none p-6 md:p-8 h-full flex flex-col">
               <form ref={formRef} onSubmit={handleSubmit} id="contact-form" className="space-y-4">
+                <p className="section-subtitle">Get In Touch</p>
+                <h2 className="section-title">Let's Build Something Together!</h2>
+                {/* <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed">
+                  Have a project in mind? Need a full-stack solution or a UI/UX overhaul? I'm open to freelance
+                  projects, collaborations, and conversations. Fill out the form and I'll get back to you
+                  within 24 hours.
+                </p> */}
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="name" className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 mb-1.5">
@@ -384,21 +366,20 @@ export default function ContactTab() {
             exit={{ opacity: 0, y: -20 }}
             className="fixed top-6 left-0 right-0 mx-auto w-[calc(100%-2rem)] max-w-[400px] md:top-auto md:bottom-6 md:right-6 md:left-auto md:mx-0 md:w-auto z-[120] flex items-center gap-3 p-4 rounded-2xl shadow-2xl border bg-white dark:bg-zinc-900 border-gray-100 dark:border-zinc-800"
           >
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-              status === 'success' ? 'bg-green-50 dark:bg-green-900/20 text-green-600' : 
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${status === 'success' ? 'bg-green-50 dark:bg-green-900/20 text-green-600' :
               status === 'limit' ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-600' :
-              'bg-red-50 dark:bg-red-900/20 text-red-600'
-            }`}>
-              {status === 'success' ? <FaCheckCircle size={20} /> : 
-               status === 'limit' ? <FaShieldAlt size={20} /> :
-               <FaExclamationCircle size={20} />}
+                'bg-red-50 dark:bg-red-900/20 text-red-600'
+              }`}>
+              {status === 'success' ? <FaCheckCircle size={20} /> :
+                status === 'limit' ? <FaShieldAlt size={20} /> :
+                  <FaExclamationCircle size={20} />}
             </div>
-  
+
             <div className="flex-1">
               <p className="text-sm font-bold text-gray-900 dark:text-zinc-100">
-                {status === 'success' ? 'Success!' : 
-                 status === 'limit' ? 'Rate Limit Reached' : 
-                 'Error!'}
+                {status === 'success' ? 'Success!' :
+                  status === 'limit' ? 'Rate Limit Reached' :
+                    'Error!'}
               </p>
               <p className="text-xs text-gray-500 dark:text-zinc-400 leading-relaxed mt-0.5">
                 {status === 'success'
@@ -421,11 +402,10 @@ export default function ContactTab() {
               initial={{ scaleX: 1 }}
               animate={{ scaleX: 0 }}
               transition={{ duration: 5, ease: "linear" }}
-              className={`absolute bottom-0 left-0 right-0 h-1 rounded-b-2xl origin-left ${
-                status === 'success' ? 'bg-green-500' : 
+              className={`absolute bottom-0 left-0 right-0 h-1 rounded-b-2xl origin-left ${status === 'success' ? 'bg-green-500' :
                 status === 'limit' ? 'bg-amber-500' :
-                'bg-red-500'
-              }`}
+                  'bg-red-500'
+                }`}
             />
           </motion.div>
         )}
