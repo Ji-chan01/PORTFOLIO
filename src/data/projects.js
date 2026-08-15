@@ -25,7 +25,7 @@ export const projects = [
       "https://res.cloudinary.com/dlqxpz9pu/image/upload/v1786770924/Screenshot_882_afja53.png",
     role: "Full-Stack Developer",
     type: "Web Application | IoT & AI",
-    tech: "HTML5 · Tailwind CSS · Vanilla JS · Raspberry Pi · Python",
+    tech: "HTML5 · Tailwind CSS · Vanilla JS · Python",
     color: "from-teal-500 to-cyan-600",
     emoji: "🔬",
     shortDesc:
