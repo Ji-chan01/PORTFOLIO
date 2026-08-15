@@ -96,6 +96,18 @@ export const projects = [
     features: ['Maintenance schedule tracking', 'Service center locator', 'Fuel & expense logging', 'High-contrast rider-friendly UI'],
   },
   {
+    id: 10,
+    name: 'CamScope',
+    image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1786770924/Screenshot_882_afja53.png',
+    role: 'Full-Stack Developer',
+    type: 'Web Application',
+    tech: 'HTML5 · CSS Tailwind v4 · Vanilla JS',
+    color: 'from-teal-500 to-cyan-600',
+    emoji: '📷',
+    shortDesc: 'CamScope is a full-stack web application built with HTML5, Tailwind CSS v4, and Vanilla JS, delivering a sleek and responsive camera-focused experience.',
+    features: ['Responsive modern UI with Tailwind CSS v4', 'Vanilla JS interactivity with zero frameworks', 'HTML5 media & camera API integration', 'Clean full-stack architecture'],
+  },
+  {
     id: 9,
     name: 'Osmena Pick & Play',
     image: 'https://res.cloudinary.com/dlqxpz9pu/image/upload/v1778333152/Screenshot_517_uhxtvo.png',
