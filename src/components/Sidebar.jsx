@@ -11,7 +11,7 @@ const contactItems = [
     href: typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? 'mailto:briolchristian040@gmail.com' : 'https://mail.google.com/mail/?view=cm&fs=1&to=briolchristian040@gmail.com',
     id: 'contact-email'
   },
-  { icon: FaFacebookF, label: 'facebook.com/jirehkun.briol.1', href: 'https://www.facebook.com/jirehkun.briol.1', id: 'contact-facebook' },
+  { icon: FaFacebookF, label: 'facebook.com/jichannn', href: 'https://www.facebook.com/jichannn', id: 'contact-facebook' },
   { icon: FaGithub, label: 'github.com/Ji-chan01', href: 'https://github.com/Ji-chan01', id: 'contact-github' },
   { icon: FaMapMarkerAlt, label: 'Bacoor City, Cavite', href: null, id: 'contact-location' },
 ];
@@ -106,7 +106,7 @@ export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
         </a>
         <a
           id="social-facebook"
-          href="https://www.facebook.com/jirehkun.briol.1"
+          href="https://www.facebook.com/jichannn"
           target="_blank" rel="noreferrer"
           className={`w-9 h-9 md:w-11 md:h-11 rounded-xl ${socialBg} dark:bg-zinc-800 flex items-center justify-center ${socialText} dark:text-zinc-400 ${socialHover} transition-all duration-200`}
           aria-label="Facebook"
