@@ -27,7 +27,7 @@ export const projects = [
     id: 3,
     name: "KeTox",
     image:
-      "https://res.cloudinary.com/dlqxpz9pu/image/upload/v1789446991/collage_c984kt.png",
+      "https://res.cloudinary.com/dlqxpz9pu/image/upload/v1789447137/ketox_res_ym7scb.png",
     role: "UI/UX Designer",
     type: "Web Application",
     tech: "Tailwind CSS · Vanilla JS",
