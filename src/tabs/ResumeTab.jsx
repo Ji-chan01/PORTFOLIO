@@ -104,7 +104,7 @@ export default function ResumeTab() {
                 <FaTrophy size={10} /> Graduated Cum Laude
               </span>
               <p>
-                Graduated with Magna Cum Laude distinction, reflecting sustained academic excellence
+                Graduated with Cum Laude distinction, reflecting sustained academic excellence
                 across four years of rigorous coursework in the information technology program.
               </p>
             </TimelineItem>
