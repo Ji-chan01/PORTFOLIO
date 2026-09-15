@@ -105,7 +105,7 @@ export const projects = [
     name: "Osmena Student Information System",
     image:
       "https://res.cloudinary.com/dlqxpz9pu/image/upload/v1778333164/ocsis_n3gmpb.png",
-    role: "Full-Stack Developer",
+    role: "UI/UX Designer & Programmer",
     type: "Web Application",
     tech: "PHP · MySQL · Tailwind CSS",
     color: "from-blue-500 to-blue-600 dark:from-red-500 dark:to-rose-600",
