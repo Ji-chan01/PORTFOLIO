@@ -1,9 +1,13 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 import {
   FaPaperPlane, FaEnvelope, FaFacebookF, FaGithub, FaCheckCircle, FaExclamationCircle, FaTimes, FaShieldAlt
 } from 'react-icons/fa';
+import DeskPlaceholder from '../components/desk/DeskPlaceholder';
+
+// Lazy-load the 3D desk scene – only fetched when Contact tab is rendered
+const ContactDesk = lazy(() => import('../components/desk/ContactDesk'));
 
 const RATE_LIMIT_KEY = 'portfolio_contact_limit';
 const MAX_REQUESTS = 3;
@@ -31,6 +35,33 @@ export default function ContactTab() {
   const [isSending, setIsSending] = useState(false);
   const [status, setStatus] = useState(null);
 
+  // Screen active state – shared with ContactDesk
+  const [deskActive, setDeskActive] = useState(false);
+
+  // Detect dark mode from the document class
+  const [isDark, setIsDark] = useState(
+    typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : true
+  );
+
+  // Watch for theme changes
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
+
+  // Preload the GLB model after a short delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      import('../components/desk/DeskModel').then((mod) => {
+        mod.preloadDeskModel?.();
+      });
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
   // OTP States
   const [generatedOtp, setGeneratedOtp] = useState(null);
   const [userOtp, setUserOtp] = useState('');
@@ -48,6 +79,15 @@ export default function ContactTab() {
       const timer = setTimeout(() => {
         setStatus(null);
       }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [status]);
+
+  // Pulse desk active on successful send
+  useEffect(() => {
+    if (status === 'success') {
+      setDeskActive(true);
+      const timer = setTimeout(() => setDeskActive(false), 2000);
       return () => clearTimeout(timer);
     }
   }, [status]);
@@ -140,6 +180,17 @@ export default function ContactTab() {
     }
   };
 
+  // Form interaction handlers – drive the desk screen state
+  const handleFormEnter = () => setDeskActive(true);
+  const handleFormLeave = () => setDeskActive(false);
+  const handleFormFocus = () => setDeskActive(true);
+  const handleFormBlur = (e) => {
+    // Only deactivate if focus has left the form entirely
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setDeskActive(false);
+    }
+  };
+
   return (
     <>
       <motion.div
@@ -153,24 +204,30 @@ export default function ContactTab() {
         <div className="w-full h-full grid min-[1264px]:grid-cols-2">
           <div className="flex flex-col h-full">
 
+            {/* 3D Desk Scene (replaces the Google Map) */}
+            <div className="flex-1 overflow-hidden min-h-[30vh] min-[1264px]:min-h-0 relative">
+              <Suspense fallback={<DeskPlaceholder isDark={isDark} />}>
+                <ContactDesk isActive={deskActive} isDark={isDark} />
+              </Suspense>
 
-            {/* Map */}
-            <div className="flex-1 overflow-hidden min-h-[30vh] min-[1264px]:min-h-0">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d123654.19548293324!2d120.88645862130612!3d14.415999962462854!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397d2407b04433f%3A0x779154cd6b3d2d4c!2sBacoor%2C%20Cavite!5e0!3m2!1sen!2sph!4v1724651308187!5m2!1sen!2sph"
-                width="100%"
-                height="100%"
-                style={{ border: 0, display: 'block' }}
-                allowFullScreen=""
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Location Map"
-                className="dark:[filter:grayscale(1)_invert(1)]"
-              />
+              {/* Credit line */}
+              <p className="absolute bottom-5 left-1/2 -translate-x-1/2 text-[9px] text-gray-400 dark:text-zinc-600 select-none whitespace-nowrap z-20">
+                <a href="https://skfb.ly/oVKwM" target="_blank" rel="noopener noreferrer" className='hover:text-primary-500 transition-colors duration-300'>
+                  Computer Desk
+                </a> by CR!STALLL is licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className='hover:text-primary-500 transition-colors duration-300'>
+                  Creative Commons Attribution
+                </a>
+              </p>
             </div>
           </div>
 
-          <div className="h-full flex flex-col">
+          <div
+            className="h-full flex flex-col"
+            onPointerEnter={handleFormEnter}
+            onPointerLeave={handleFormLeave}
+            onFocus={handleFormFocus}
+            onBlur={handleFormBlur}
+          >
             <div className="card rounded-none p-6 md:p-8 h-full flex flex-col">
               <form ref={formRef} onSubmit={handleSubmit} id="contact-form" className="space-y-4">
                 <p className="section-subtitle">Get In Touch</p>
