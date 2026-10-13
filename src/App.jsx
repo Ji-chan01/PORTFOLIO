@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import Sidebar from './components/Sidebar';
 import TabNav from './components/TabNav';
 import AboutTab from './tabs/AboutTab';
 import ResumeTab from './tabs/ResumeTab';
 import PortfolioTab from './tabs/PortfolioTab';
 import ContactTab from './tabs/ContactTab';
 import { AnimatePresence, motion } from 'framer-motion';
-import { FaChevronDown, FaChevronUp, FaSun, FaMoon } from 'react-icons/fa';
+import { FaSun, FaMoon } from 'react-icons/fa';
 
 function getInitialTheme() {
   const saved = localStorage.getItem('portfolio-theme');
@@ -17,7 +16,6 @@ function getInitialTheme() {
 export default function App() {
   const [dark, setDark] = useState(getInitialTheme);
   const [activeTab, setActiveTab] = useState('About');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
 
   // Apply dark class + persist preference
@@ -38,27 +36,22 @@ export default function App() {
 
   const renderTab = () => {
     switch (activeTab) {
-      case 'About': return <AboutTab key="About" onTabChange={setActiveTab} />;
+      case 'About': return <AboutTab key="About" onTabChange={setActiveTab} dark={dark} onToggle={toggleTheme} />;
       case 'Resume': return <ResumeTab key="Resume" />;
       case 'Portfolio': return <PortfolioTab key="Portfolio" />;
-      case 'Contact': return <ContactTab key="Contact" />;
-      default: return <AboutTab key="About" onTabChange={setActiveTab} />;
+      case 'Contact': return <AboutTab key="About" onTabChange={setActiveTab} dark={dark} onToggle={toggleTheme} />;
+      default: return <AboutTab key="About" onTabChange={setActiveTab} dark={dark} onToggle={toggleTheme} />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] dark:bg-zinc-900 transition-colors duration-300">
+    <div className="min-h-screen bg-[#f5f5f5] dark:bg-black transition-colors duration-300">
 
 
+      {/* Desktop view */}
       <div className="hidden lg:flex h-screen overflow-hidden">
-
-        <div className="w-[300px] flex-shrink-0 h-full">
-          <Sidebar dark={dark} onToggle={toggleTheme} />
-        </div>
-
-
         <main className="flex-1 flex flex-col h-full overflow-hidden">
-          <TabNav activeTab={activeTab} onTabChange={setActiveTab} dark={dark} onToggle={toggleTheme} />
+          <TabNav activeTab={activeTab} onTabChange={setActiveTab} />
           <div id="scroll-container-desktop" className="flex-1 overflow-y-auto">
             <AnimatePresence mode="wait">
               {renderTab()}
@@ -67,17 +60,18 @@ export default function App() {
         </main>
       </div>
 
+      {/* Mobile view */}
       <div className="lg:hidden fixed inset-0 flex flex-col overflow-hidden overscroll-none">
-        <header className="flex items-center justify-between px-4 py-3 bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-700 z-20 flex-shrink-0">
+        <header className="flex items-center justify-between px-4 py-3 bg-white dark:bg-black border-b border-gray-200 dark:border-zinc-800 z-20 flex-shrink-0">
           <div className="flex items-center gap-3">
             <div
               onClick={() => setIsZoomed(true)}
-              className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden cursor-pointer active:scale-95 transition-transform"
+              className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden cursor-pointer active:scale-95 transition-transform ring-2 ring-accent/30"
             >
-              <img src="https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto/briol_yj9lus" loading="lazy" alt="Christian Jireh" className="w-full h-full object-cover" />
+              <img src="https://res.cloudinary.com/dlqxpz9pu/image/upload/v1791361795/8a7d83c8-6bdf-4065-a50e-9dd5bb86786d_jfmfog.jpg" loading="lazy" alt="Christian Jireh Briol" className="w-full h-full object-cover" />
             </div>
             <div>
-              <p className="text-sm md:text-base font-bold text-gray-900 dark:text-zinc-100 leading-tight">Christian Jireh A. Briol</p>
+              <p className="text-sm md:text-base font-bold text-gray-900 dark:text-zinc-100 leading-tight">Christian Jireh Briol</p>
               <p className="text-[10px] md:text-xs text-accent font-semibold">UI/UX Designer · Full-Stack Dev</p>
             </div>
           </div>
@@ -89,30 +83,8 @@ export default function App() {
             >
               {dark ? <FaSun size={14} className="text-accent" /> : <FaMoon size={14} />}
             </button>
-            <button
-              id="mobile-menu-btn"
-              onClick={() => setSidebarOpen((v) => !v)}
-              className="w-9 h-9 rounded-xl bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-gray-600 dark:text-zinc-300"
-              aria-label="Toggle contact info"
-            >
-              {sidebarOpen ? <FaChevronUp size={14} /> : <FaChevronDown size={14} />}
-            </button>
           </div>
         </header>
-
-        <AnimatePresence>
-          {sidebarOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="overflow-hidden bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-700 flex-shrink-0 z-10"
-            >
-              <Sidebar dark={dark} onToggle={toggleTheme} isMobileAccordion={true} />
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         <main id="scroll-container-mobile" className="flex-1 overflow-y-auto">
           <AnimatePresence mode="wait">
@@ -121,7 +93,7 @@ export default function App() {
         </main>
 
         <div className="flex-shrink-0 relative z-20">
-          <TabNav activeTab={activeTab} onTabChange={(t) => { setActiveTab(t); setSidebarOpen(false); }} dark={dark} onToggle={toggleTheme} />
+          <TabNav activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
       </div>
 

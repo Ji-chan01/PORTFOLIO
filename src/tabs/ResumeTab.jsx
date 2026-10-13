@@ -86,7 +86,7 @@ export default function ResumeTab() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
       transition={{ duration: 0.35 }}
-      className="p-6 md:p-8 bg-grid"
+      className="p-6 md:p-8"
     >
       <div className="grid md:grid-cols-2 gap-10">
         <div>
@@ -100,7 +100,7 @@ export default function ResumeTab() {
               subtitle="Osmeña Colleges — Masbate City"
               period="2022 – 2026"
             >
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-100 dark:bg-red-900/40 rounded-lg text-xs font-bold text-blue-700 dark:text-red-400 mb-3">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-100 dark:bg-emerald-950/60 rounded-lg text-xs font-bold text-blue-700 dark:text-emerald-400 mb-3">
                 <FaTrophy size={10} /> Graduated Cum Laude
               </span>
               <p>

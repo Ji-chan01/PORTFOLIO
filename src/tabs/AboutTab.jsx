@@ -1,11 +1,17 @@
-import { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useRef, useLayoutEffect, useEffect } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import ThemeToggle from '../components/ThemeToggle';
+import CursorLamp from '../components/desk/CursorLamp';
 import SkillBar from '../components/about/SkillBar';
+import TechMarquee from '../components/about/TechMarquee';
 import TestimonialCard from '../components/about/TestimonialCard';
+import StarsBackground from '../components/about/StarsBackground';
+import ContactSection from '../components/about/ContactSection';
 import {
   frontendSkills, mobileSkills, backendSkills, designSkills
 } from '../data/skills';
 import { testimonials } from '../data/testimonials';
+import { projects } from '../data/projects';
 import {
   FaCode, FaHeart, FaChess, FaBasketballBall, FaMusic, FaTimes, FaStar, FaStarHalfAlt,
   FaDownload, FaArrowRight, FaLock, FaEye, FaEyeSlash
@@ -16,6 +22,36 @@ const fadeIn = {
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.45 },
 };
+
+// Two-layer animated wave. flip = black fills BELOW the curve (for the top edge of a black section).
+function WaveEdge({ flip = false, className = '', style }) {
+  const reduceMotion = useReducedMotion();
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 1440 200"
+      preserveAspectRatio="none"
+      className={`block ${className}`}
+      style={{ ...style, transform: flip ? 'scaleY(-1)' : undefined }}
+    >
+      {/* Back layer: lighter, slower */}
+      <motion.path
+        fill={DESK_COLOR}
+        fillOpacity={0.35}
+        initial={{ d: BACK_A }}
+        animate={reduceMotion ? { d: BACK_A } : { d: [BACK_A, BACK_B] }}
+        transition={{ duration: 6, ease: 'easeInOut', repeat: Infinity, repeatType: 'mirror' }}
+      />
+      {/* Front layer: solid black, continues the section */}
+      <motion.path
+        fill={DESK_COLOR}
+        initial={{ d: FRONT_A }}
+        animate={reduceMotion ? { d: FRONT_A } : { d: [FRONT_A, FRONT_B] }}
+        transition={{ duration: 4.5, ease: 'easeInOut', repeat: Infinity, repeatType: 'mirror' }}
+      />
+    </svg>
+  );
+}
 
 function SkillGroup({ title, skills, barColor, delay = 0 }) {
   return (
@@ -39,13 +75,49 @@ function SkillGroup({ title, skills, barColor, delay = 0 }) {
 const RESUME_PASSWORD = '909-251';
 const RESUME_URL = 'https://res.cloudinary.com/dlqxpz9pu/image/upload/fl_attachment/v1784533003/Briol_Christian_Jireh_RESUME_2026_ulj5ze.pdf';
 
-export default function AboutTab({ onTabChange }) {
+// Same as the dark-mode page background (pure black). Keep in sync with DESK_COLOR in CursorLamp.jsx
+const DESK_COLOR = '#000000';
+
+// Big animated wave: shapes share one structure so they can morph into each other.
+// makeWave(base line, control 1, control 2) -> swap the controls to flip crest/trough.
+const makeWave = (base, c1, c2) =>
+  `M0,0 H1440 V${base} C1200,${c1} 960,${c2} 720,${base} C480,${c1} 240,${c2} 0,${base} Z`;
+const FRONT_A = makeWave(100, 240, -40);
+const FRONT_B = makeWave(100, -40, 240);
+const BACK_A = makeWave(120, -40, 240);
+const BACK_B = makeWave(120, 240, -40);
+
+export default function AboutTab({ onTabChange, dark, onToggle }) {
   const [selectedTestimonial, setSelectedTestimonial] = useState(null);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
   const [passwordError, setPasswordError] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [hoveredBtn, setHoveredBtn] = useState('talk');
   const passwordInputRef = useRef(null);
+  const talkBtnRef = useRef(null);
+  const resumeBtnRef = useRef(null);
+  const [slider, setSlider] = useState({ left: 0, width: 0 });
+  const [lampOff, setLampOff] = useState(false); // true while the stats cards are on screen
+
+  const scrollToContact = () => {
+    const el = document.getElementById('contact-section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  useLayoutEffect(() => {
+    const updateSlider = () => {
+      const target = hoveredBtn === 'resume' ? resumeBtnRef.current : talkBtnRef.current;
+      if (target) {
+        setSlider({ left: target.offsetLeft, width: target.offsetWidth });
+      }
+    };
+    updateSlider();
+    window.addEventListener('resize', updateSlider);
+    return () => window.removeEventListener('resize', updateSlider);
+  }, [hoveredBtn]);
 
   const openPasswordModal = () => {
     setPasswordInput('');
@@ -72,119 +144,299 @@ export default function AboutTab({ onTabChange }) {
     }
   };
 
+  // ---- Black "desk" slab: from the lamp's ground line to the bottom of Technologies ----
+  const rootRef = useRef(null);
+  const slabRef = useRef(null);
+  const statsRef = useRef(null);
+  const techRef = useRef(null);
+  const topRef = useRef(null);    // slab top, in root-relative px (desktop: driven by the lamp)
+  const bottomRef = useRef(0);    // slab bottom, in root-relative px
+
+  // Switch the lamp off (no cursor following, no light) as soon as the stats cards come into view.
+  // rootMargin: the cards count as "in view" once their top enters the upper 65% of the screen.
+  useEffect(() => {
+    const el = statsRef.current;
+    if (!el || !('IntersectionObserver' in window)) return undefined;
+    const io = new IntersectionObserver(([entry]) => setLampOff(entry.isIntersecting), {
+      rootMargin: '0px 0px -35% 0px',
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const applySlab = () => {
+    const el = slabRef.current;
+    if (!el || topRef.current == null) return;
+    el.style.top = topRef.current + 'px';
+    el.style.height = Math.max(0, bottomRef.current - topRef.current) + 'px';
+    el.style.display = 'block';
+  };
+
+  // Called every frame by the lamp with the screen-y of its ground line
+  const handleGround = (viewportY) => {
+    if (window.innerWidth < 1024 || !rootRef.current) return;
+    const top = viewportY - rootRef.current.getBoundingClientRect().top - 1; // 1px overlap hides any hairline seam
+    if (topRef.current == null || Math.abs(top - topRef.current) > 0.4) {
+      topRef.current = top;
+      applySlab();
+    }
+  };
+
+  useLayoutEffect(() => {
+    const PAD_BOTTOM = 32; // breathing room under the last skill bar
+    const measure = () => {
+      const root = rootRef.current, stats = statsRef.current, tech = techRef.current;
+      if (!root || !stats || !tech) return;
+      const r = root.getBoundingClientRect();
+      bottomRef.current = tech.getBoundingClientRect().bottom - r.top + PAD_BOTTOM;
+      // Mobile (lamp stacked above the text): start at the stats row instead of the lamp
+      if (window.innerWidth < 1024) topRef.current = stats.getBoundingClientRect().top - r.top - 24;
+      applySlab();
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    [rootRef, statsRef, techRef].forEach((x) => x.current && ro.observe(x.current));
+    window.addEventListener('resize', measure);
+    return () => { ro.disconnect(); window.removeEventListener('resize', measure); };
+  }, []);
+
+  // Inside the black slab we force the dark theme; keep the light-mode blue accent there.
+  const slabVars = dark ? undefined : {
+    '--color-accent': '8 102 255',
+    '--color-accent-dark': '0 85 255',
+    '--color-gradient-start': '#0866FF',
+    '--color-gradient-end': '#00d4ff',
+    '--color-glow': 'rgba(8, 102, 255, 0.2)',
+  };
+
   return (
     <motion.div
+      ref={rootRef}
       key="about"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
       transition={{ duration: 0.35 }}
-      className="p-6 md:p-8 space-y-14 bg-grid"
+      className="relative isolate px-6 md:px-8 pt-3 md:pt-4 space-y-24 md:space-y-32"
     >
-      <section className="flex flex-col-reverse lg:flex-row gap-8 items-center">
-        <div className="flex-1">
-          <p className="section-subtitle">Introduction</p>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-zinc-100 leading-tight mb-4">
-            Building Experiences.<br />
-            Solving Problems.<br />
-            <span className="text-accent">One at a Time.</span>
-          </h2>
-          <p className="text-sm font-semibold text-accent mb-5">
-            UI/UX Designer &amp; Full-Stack Developer · 2 Years Freelance
-          </p>
-
-
-          <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed max-w-2xl">
-            Hi! I’m Christian Jireh, a full-stack developer and UI/UX designer with two years of freelance experience.
-            I turn your ideas into clean, beautiful, and highly functional digital products that users love. I handle everything from Figma design to reliable backends (Django, Express JS & PHP) and polished frontends (React & Tailwind CSS).
-          </p>
-          <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed max-w-2xl mt-3">
-            What sets me apart is my design-first approach, I always keep the end user in mind at every step.
-          </p>
-
-          <div className="flex flex-col sm:flex-row sm:items-stretch gap-3 mt-6">
-            <button
-              id="about-lets-talk"
-              onClick={() => onTabChange?.('Contact')}
-              className="w-full sm:w-auto flex justify-center items-center gap-2 bg-accent-dark text-white text-xs font-bold px-6 py-3 transition-all duration-200 hover:brightness-90 active:scale-95 shadow-sm hover:shadow-md"
-              style={{ borderRadius: 0, letterSpacing: '1px' }}
-            >
-              Let's Talk <FaArrowRight size={11} />
-            </button>
-            <button
-              id="about-download-resume"
-              onClick={openPasswordModal}
-              className="w-full sm:w-auto flex justify-center items-center gap-2 border border-accent bg-[#f5f5f5] dark:bg-zinc-900 text-accent text-xs font-bold px-6 py-3 transition-all duration-200 hover:brightness-90 active:scale-95"
-              style={{ borderRadius: 0, letterSpacing: '1px' }}
-            >
-              <FaDownload size={11} /> Download Resume
-            </button>
-          </div>
-        </div>
-        <div className="w-full lg:w-1/3 flex justify-center lg:justify-end">
-          <div className="relative inline-flex">
-            <img src="https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto,w_800/v1777873480/me_aobggp.png" loading="lazy" alt="Christian Jireh A. Briol" className="max-w-full h-auto rounded-3xl" />
-
-            <div
-              className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-3xl pointer-events-none dark:hidden"
-              style={{
-                background: 'linear-gradient(to top, rgba(245,245,245,1) 0%, rgba(245,245,245,0.6) 50%, transparent 100%)',
-              }}
-            />
-
-            <div
-              className="absolute bottom-0 left-0 right-0 h-2/5 rounded-b-3xl pointer-events-none hidden dark:block"
-              style={{
-                background: 'linear-gradient(to top, rgba(24,24,27,1) 0%, rgba(24,24,27,0.6) 50%, transparent 100%)',
-              }}
-            />
-          </div>
-        </div>
-      </section>
-
-      <div className="grid grid-cols-1 sm:grid-cols-3 bg-[#f5f5f5] dark:bg-zinc-900">
-        {[
-          { value: '10+', label: 'Projects Delivered' },
-          { value: '97.5%', label: 'Client Satisfaction' },
-          { value: '2 YRS', label: 'Freelance Experience' },
-        ].map(({ value, label }, i) => (
-          <div key={label} className={`p-6 text-center ${i === 0 ? 'sm:shadow-[inset_-40px_0_30px_-20px_rgb(var(--color-accent)/0.15)]' :
-            i === 1 ? 'border-y sm:border-y-0 shadow-[inset_40px_0_30px_-20px_rgb(var(--color-accent)/0.15),inset_-40px_0_30px_-20px_rgb(var(--color-accent)/0.15)]' :
-              i === 2 ? 'sm:shadow-[inset_40px_0_30px_-20px_rgb(var(--color-accent)/0.15)]' : ''
-            }`}>
-            <p className="text-4xl font-extrabold text-accent">{value}</p>
-            <p className="text-sm text-gray-500 dark:text-zinc-400 mt-1">{label}</p>
-          </div>
-        ))}
+      {/* Solid, fully opaque desk surface (top edge set from the lamp's ground line) */}
+      <div
+        ref={slabRef}
+        aria-hidden="true"
+        className="absolute left-0 right-0 -z-10 pointer-events-none"
+        style={{ display: 'none', top: 0, height: 0, background: DESK_COLOR }}
+      >
+        {/* Big wavy bottom edge: hangs below the slab and ripples into "What Clients Say" */}
+        <WaveEdge className="absolute left-0 w-full h-28 md:h-44" style={{ top: 'calc(100% - 1px)' }} />
       </div>
 
-      <section>
-        <p className="section-subtitle">Technologies</p>
-        <h2 className="section-title mb-6">Skills &amp; Proficiency</h2>
+      <section className="flex flex-col justify-start pt-1 pb-6">
+        <div className="flex flex-col-reverse lg:flex-row items-start justify-between gap-8 lg:gap-8 w-full">
+          {/* Left Column: Heading & Action Buttons */}
+          <div className="flex-1 max-w-2xl text-left flex flex-col items-start">
+            {onToggle && (
+              <div className="mb-4">
+                <ThemeToggle dark={dark} onToggle={onToggle} />
+              </div>
+            )}
 
-        <div className="grid md:grid-cols-2 gap-8">
-          <div>
-            <SkillGroup title="Frontend Development" skills={frontendSkills} barColor="bg-accent" delay={0} />
-            <SkillGroup title="Mobile Development" skills={mobileSkills} barColor="bg-blue-400 dark:bg-red-400" delay={600} />
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 dark:text-zinc-100 leading-tight mb-4 text-left">
+              <span className="text-5xl sm:text-6xl md:text-7xl block">Hi, I'm Christian.</span>
+              <span className="block mt-2">I'm a Full Stack Developer</span>
+              <span className="text-accent block mt-1">&amp; UI/UX Designer</span>
+            </h2>
+
+            <div
+              onMouseLeave={() => setHoveredBtn('talk')}
+              className="relative inline-flex flex-row items-center justify-start mt-8 border border-accent bg-transparent p-0 overflow-hidden w-fit"
+              style={{ borderRadius: 0 }}
+            >
+              {/* Solid Accent Background Slider without opacity fade */}
+              <motion.div
+                className="absolute top-0 bottom-0 left-0 bg-accent-dark z-0 pointer-events-none"
+                style={{
+                  borderRadius: 0,
+                  opacity: 1,
+                }}
+                animate={{
+                  left: slider.left,
+                  width: slider.width,
+                }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 450,
+                  damping: 38,
+                }}
+              />
+
+              {/* LET'S TALK Button */}
+              <button
+                ref={talkBtnRef}
+                id="about-lets-talk"
+                onClick={scrollToContact}
+                onMouseEnter={() => setHoveredBtn('talk')}
+                className={`relative z-10 flex justify-center items-center gap-2 text-xs font-bold px-5 sm:px-6 py-3.5 transition-colors duration-150 active:scale-95 whitespace-nowrap ${hoveredBtn === 'talk'
+                  ? 'text-white'
+                  : 'text-gray-700 dark:text-zinc-300 hover:text-accent'
+                  }`}
+                style={{ borderRadius: 0, letterSpacing: '1px' }}
+              >
+                LET'S TALK <FaArrowRight size={11} />
+              </button>
+
+              {/* DOWNLOAD RESUME Button */}
+              <button
+                ref={resumeBtnRef}
+                id="about-download-resume"
+                onClick={openPasswordModal}
+                onMouseEnter={() => setHoveredBtn('resume')}
+                className={`relative z-10 flex justify-center items-center gap-2 text-xs font-bold px-5 sm:px-6 py-3.5 transition-colors duration-150 active:scale-95 whitespace-nowrap ${hoveredBtn === 'resume'
+                  ? 'text-white'
+                  : 'text-gray-700 dark:text-zinc-300 hover:text-accent'
+                  }`}
+                style={{ borderRadius: 0, letterSpacing: '1px' }}
+              >
+                <FaDownload size={11} /> DOWNLOAD RESUME
+              </button>
+            </div>
           </div>
-          <div>
-            <SkillGroup title="Backend & Full-Stack" skills={backendSkills} barColor="bg-violet-500" delay={0} />
-            <SkillGroup title="Design Tools" skills={designSkills} barColor="bg-blue-400 dark:bg-red-400" delay={400} />
+
+          {/* Right Column: 3D Interactive Desk Lamp */}
+          <div className="w-full lg:w-1/2 flex items-start justify-center lg:justify-end h-[360px] sm:h-[440px] lg:h-[500px]">
+            <div className="w-full h-full max-w-xl">
+              <CursorLamp className="w-full h-full" onGround={handleGround} dark={dark} enabled={!lampOff} />
+            </div>
           </div>
         </div>
       </section>
 
-      <section>
-        <p className="section-subtitle">Social Proof</p>
-        <h2 className="section-title mb-6">What Clients Say</h2>
+      <div className="dark space-y-24 md:space-y-32" style={slabVars}>
+        <div ref={statsRef} className="grid grid-cols-1 sm:grid-cols-3">
+          {[
+            { value: '10+', label: 'Projects Delivered' },
+            { value: '97.5%', label: 'Client Satisfaction' },
+            { value: '2 YRS', label: 'Freelance Experience' },
+          ].map(({ value, label }) => (
+            <div
+              key={label}
+              className="group relative flex flex-col items-center justify-center text-center py-10 sm:py-14 md:py-16 px-6 bg-transparent rounded-none border-0 overflow-hidden cursor-default"
+            >
+              {/* Subtle base top line */}
+              <div className="absolute top-0 left-0 right-0 h-[1px] bg-white/10" />
 
-        <div className="flex overflow-x-auto gap-4 pb-4 snap-x">
-          {testimonials.map((t, i) => (
-            <div key={t.id} className="w-[85%] sm:w-[calc(50%-0.5rem)] xl:w-[calc(33.333%-0.66rem)] flex-shrink-0 snap-start">
-              <TestimonialCard testimonial={t} index={i} onClick={setSelectedTestimonial} />
+              {/* Light beam sweeping across top border on hover (plays once) */}
+              <div className="pointer-events-none absolute top-0 left-0 right-0 h-[2px] overflow-hidden">
+                <span className="absolute top-0 left-0 h-full w-2/5 -translate-x-full bg-gradient-to-r from-transparent via-accent to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-hover:animate-[borderLight_1s_ease-out_forwards]" />
+              </div>
+
+              <p className="text-3xl md:text-4xl font-extrabold text-accent tracking-tight">{value}</p>
+              <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-zinc-400 mt-2 uppercase tracking-wider">{label}</p>
             </div>
           ))}
         </div>
+
+        {/* ── Top Projects Bento Grid ── */}
+        <section>
+          <div className="mb-10 md:mb-14 text-left">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight leading-[1.1] sm:leading-[1.1]">
+              <span className="block">Where innovation,</span>
+              <span className="block">meets the podium.</span>
+            </h2>
+          </div>
+
+          {(() => {
+            const TOP_IDS = ['O See', 'KeTox', 'CamScope', 'OsmenaAccess'];
+            const topProjects = TOP_IDS.map(n => projects.find(p => p.name === n)).filter(Boolean);
+            const [hero, ...rest] = topProjects;
+            const getOptUrl = (url) => url ? url.replace('/upload/', '/upload/w_800,f_auto,q_auto/') : '';
+
+            return (
+              <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
+                {/* Hero card — large, spans 3 cols */}
+                {hero && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="lg:col-span-3 relative group rounded-2xl overflow-hidden flex flex-col min-h-[460px] sm:min-h-[520px]"
+                  >
+                    <div className="relative w-full h-full flex-1 overflow-hidden min-h-[380px]">
+                      <img
+                        src={hero.image}
+                        alt={hero.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+                      <h3 className="text-lg font-bold text-white mb-1">{hero.name}</h3>
+                      <p className="text-xs sm:text-sm text-zinc-300 line-clamp-2 max-w-lg mb-3">{hero.shortDesc}</p>
+                      <div className="flex flex-wrap gap-2">
+                        <span className="badge bg-white/15 text-white/90 backdrop-blur-sm">{hero.type}</span>
+                        <span className="badge bg-white/15 text-white/90 backdrop-blur-sm">{hero.tech}</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Stacked right cards — spans 2 cols */}
+                <div className="lg:col-span-2 flex flex-col justify-start gap-5">
+                  {rest.map((project, i) => (
+                    <motion.div
+                      key={project.id}
+                      initial={{ opacity: 0, y: 24 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.15 * (i + 1) }}
+                      className="flex flex-col group"
+                    >
+                      <div className="relative h-48 sm:h-52 rounded-2xl overflow-hidden border border-zinc-700/60 bg-zinc-800/80">
+                        <img
+                          src={project.image}
+                          alt={project.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        />
+                      </div>
+                      <div className="mt-2.5">
+                        <h3 className="text-lg font-bold text-white mb-1">{project.name}</h3>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+        </section>
+
+        {/* ── Tech Stack Marquee ── */}
+        <div ref={techRef} className="-mx-6 md:-mx-8 py-6 sm:py-10">
+          <TechMarquee />
+        </div>
+
+
+      </div>
+
+      {/* ── Testimonials ── */}
+      <section className="relative -mx-6 md:-mx-8 px-6 md:px-8 pt-20 md:pt-28 pb-6 sm:pb-10">
+        {/* 3D stars behind the cards */}
+        <StarsBackground dark={dark} />
+        <div className="relative z-10 max-w-2xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-center text-gray-900 dark:text-zinc-100 mb-8 sm:mb-12 tracking-tight">
+            What Clients Say
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {testimonials.map((t, i) => (
+              <TestimonialCard key={t.id} testimonial={t} index={i} onClick={setSelectedTestimonial} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Contact Section ── */}
+      <section id="contact-section" className="relative -mx-6 md:-mx-8 px-6 md:px-8 py-16 md:py-24" style={{ background: DESK_COLOR }}>
+        {/* Matching wave: black rises into the light testimonials area */}
+        <WaveEdge flip className="absolute left-0 w-full h-28 md:h-44" style={{ bottom: 'calc(100% - 1px)' }} />
+        <ContactSection dark={dark} />
       </section>
 
       <AnimatePresence>

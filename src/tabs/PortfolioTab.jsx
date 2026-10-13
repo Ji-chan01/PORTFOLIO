@@ -11,7 +11,7 @@ export default function PortfolioTab() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
       transition={{ duration: 0.35 }}
-      className="p-6 md:p-8 bg-grid"
+      className="p-6 md:p-8"
     >
       <p className="section-subtitle">My Work</p>
       <h2 className="section-title mb-2">Portfolio</h2>

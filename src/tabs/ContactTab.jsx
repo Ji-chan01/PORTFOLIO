@@ -199,19 +199,19 @@ export default function ContactTab() {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -16 }}
         transition={{ duration: 0.35 }}
-        className="bg-grid h-full"
+        className="h-full"
       >
-        <div className="w-full h-full grid min-[1264px]:grid-cols-2">
-          <div className="flex flex-col h-full">
+        <div className="w-full h-full grid min-[1264px]:grid-cols-2 bg-black text-white">
+          <div className="flex flex-col h-full bg-black">
 
             {/* 3D Desk Scene (replaces the Google Map) */}
-            <div className="flex-1 overflow-hidden min-h-[30vh] min-[1264px]:min-h-0 relative">
-              <Suspense fallback={<DeskPlaceholder isDark={isDark} />}>
-                <ContactDesk isActive={deskActive} isDark={isDark} />
+            <div className="flex-1 overflow-hidden min-h-[30vh] min-[1264px]:min-h-0 relative bg-black">
+              <Suspense fallback={<DeskPlaceholder isDark={true} />}>
+                <ContactDesk isActive={deskActive} isDark={true} />
               </Suspense>
 
               {/* Credit line */}
-              <p className="absolute bottom-5 left-1/2 -translate-x-1/2 text-[9px] text-gray-400 dark:text-zinc-600 select-none whitespace-nowrap z-20">
+              <p className="absolute bottom-5 left-1/2 -translate-x-1/2 text-[9px] text-zinc-500 select-none whitespace-nowrap z-20">
                 <a href="https://skfb.ly/oVKwM" target="_blank" rel="noopener noreferrer" className='hover:text-primary-500 transition-colors duration-300'>
                   Computer Desk
                 </a> by CR!STALLL is licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className='hover:text-primary-500 transition-colors duration-300'>
@@ -222,21 +222,17 @@ export default function ContactTab() {
           </div>
 
           <div
-            className="h-full flex flex-col"
+            className="h-full flex flex-col bg-black"
             onPointerEnter={handleFormEnter}
             onPointerLeave={handleFormLeave}
             onFocus={handleFormFocus}
             onBlur={handleFormBlur}
           >
-            <div className="card rounded-none p-6 md:p-8 h-full flex flex-col">
+            <div className="p-6 md:p-8 h-full flex flex-col bg-black">
+              <div className="mb-4">
+                <h2 className="section-title text-white">Your next idea starts here</h2>
+              </div>
               <form ref={formRef} onSubmit={handleSubmit} id="contact-form" className="space-y-4">
-                <p className="section-subtitle">Get In Touch</p>
-                <h2 className="section-title">Let's Build Something Together!</h2>
-                {/* <p className="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed">
-                  Have a project in mind? Need a full-stack solution or a UI/UX overhaul? I'm open to freelance
-                  projects, collaborations, and conversations. Fill out the form and I'll get back to you
-                  within 24 hours.
-                </p> */}
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="name" className="block text-xs font-semibold text-gray-700 dark:text-zinc-300 mb-1.5">

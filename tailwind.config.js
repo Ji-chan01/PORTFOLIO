@@ -18,7 +18,7 @@ export default {
         'border-dark': '#3F3F46',
       },
       fontFamily: {
-        sans: ['Poppins', 'system-ui', 'sans-serif'],
+        sans: ['"Google Sans"', '"Google Sans Flex"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
       },
       animation: {
         'fill-bar': 'fillBar 1.2s ease-out forwards',

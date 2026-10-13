@@ -37,7 +37,7 @@ const LIGHT_KEY_COLOR_LIGHT = '#ffe4b5';
 // Rim light – follows theme accent
 const LIGHT_RIM_POS = [2.0, 1.5, -2.0];
 const LIGHT_RIM_INTENSITY = 0.8;
-const LIGHT_RIM_COLOR_DARK = '#fb7185';   // pink accent in dark mode
+const LIGHT_RIM_COLOR_DARK = '#00f5a0';   // electric mint green accent in dark mode
 const LIGHT_RIM_COLOR_LIGHT = '#4488cc';  // blue accent in light mode
 
 // Ambient
