@@ -76,7 +76,7 @@ function SkillGroup({ title, skills, barColor, delay = 0 }) {
 }
 
 const RESUME_PASSWORD = '909-251';
-const RESUME_URL = 'https://res.cloudinary.com/dlqxpz9pu/image/upload/fl_attachment/v1784533003/Briol_Christian_Jireh_RESUME_2026_ulj5ze.pdf';
+const RESUME_URL = 'https://res.cloudinary.com/dlqxpz9pu/image/upload/fl_attachment/v1791895690/Christian_Jireh_Briol_Resume_yyx05x.pdf';
 
 // Same as the dark-mode page background (pure black). Keep in sync with DESK_COLOR in CursorLamp.jsx
 const DESK_COLOR = '#000000';
