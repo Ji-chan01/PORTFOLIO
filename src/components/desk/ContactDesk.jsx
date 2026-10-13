@@ -4,7 +4,6 @@ import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import DeskControls from './DeskControls';
 import DeskModel from './DeskModel';
-import DeskPlaceholder from './DeskPlaceholder';
 
 /*
   ContactDesk – 3D desk scene for the Contact tab.
@@ -149,7 +148,7 @@ function SceneContent({ isActive, isDark, onLoaded, enableShadows }) {
    ═══════════════════════════════════════ */
 export default function ContactDesk({ isActive = false, isDark = true }) {
   const containerRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [modelLoaded, setModelLoaded] = useState(false);
   const [webglFailed, setWebglFailed] = useState(false);
 
@@ -206,16 +205,6 @@ export default function ContactDesk({ isActive = false, isDark = true }) {
       role="img"
       aria-label="3D computer desk scene that reacts when you interact with the contact form"
     >
-      {/* Placeholder – shown while loading or on WebGL failure */}
-      {(!modelLoaded || webglFailed) && (
-        <div
-          className="absolute inset-0 z-10 transition-opacity duration-700"
-          style={{ opacity: modelLoaded && !webglFailed ? 0 : 1 }}
-        >
-          <DeskPlaceholder isDark={isDark} />
-        </div>
-      )}
-
       {/* 3D Canvas – only mount when visible and WebGL is available */}
       {isVisible && !webglFailed && (
         <div

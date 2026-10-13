@@ -1,13 +1,11 @@
-import { useRef, useState, useEffect, lazy, Suspense } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 import {
   FaPaperPlane, FaEnvelope, FaFacebookF, FaGithub, FaCheckCircle, FaExclamationCircle, FaTimes, FaShieldAlt
 } from 'react-icons/fa';
-import DeskPlaceholder from '../components/desk/DeskPlaceholder';
-
-// Lazy-load the 3D desk scene – only fetched when Contact tab is rendered
-const ContactDesk = lazy(() => import('../components/desk/ContactDesk'));
+import ContactDesk from '../components/desk/ContactDesk';
+import { preloadDeskModel } from '../components/desk/DeskModel';
 
 const RATE_LIMIT_KEY = 'portfolio_contact_limit';
 const MAX_REQUESTS = 3;
@@ -52,14 +50,9 @@ export default function ContactTab() {
     return () => observer.disconnect();
   }, []);
 
-  // Preload the GLB model after a short delay
+  // Preload the GLB model
   useEffect(() => {
-    const timer = setTimeout(() => {
-      import('../components/desk/DeskModel').then((mod) => {
-        mod.preloadDeskModel?.();
-      });
-    }, 500);
-    return () => clearTimeout(timer);
+    preloadDeskModel?.();
   }, []);
 
   // OTP States
@@ -206,9 +199,7 @@ export default function ContactTab() {
 
             {/* 3D Desk Scene (replaces the Google Map) */}
             <div className="flex-1 overflow-hidden min-h-[30vh] min-[1264px]:min-h-0 relative bg-black">
-              <Suspense fallback={<DeskPlaceholder isDark={true} />}>
-                <ContactDesk isActive={deskActive} isDark={true} />
-              </Suspense>
+              <ContactDesk isActive={deskActive} isDark={true} />
 
               {/* Credit line */}
               <p className="absolute bottom-5 left-1/2 -translate-x-1/2 text-[9px] text-zinc-500 select-none whitespace-nowrap z-20">

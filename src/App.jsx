@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import TabNav from './components/TabNav';
+import Sidebar from './components/Sidebar';
 import AboutTab from './tabs/AboutTab';
 import ResumeTab from './tabs/ResumeTab';
 import PortfolioTab from './tabs/PortfolioTab';
 import ContactTab from './tabs/ContactTab';
 import { AnimatePresence, motion } from 'framer-motion';
-import { FaSun, FaMoon } from 'react-icons/fa';
+import { FaSun, FaMoon, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 function getInitialTheme() {
   const saved = localStorage.getItem('portfolio-theme');
@@ -16,6 +17,7 @@ function getInitialTheme() {
 export default function App() {
   const [dark, setDark] = useState(getInitialTheme);
   const [activeTab, setActiveTab] = useState('About');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
 
   // Apply dark class + persist preference
@@ -78,22 +80,49 @@ export default function App() {
           <div className="flex items-center gap-2">
             <button
               onClick={toggleTheme}
-              className="w-9 h-9 rounded-xl bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-gray-600 dark:text-zinc-300"
+              className="w-9 h-9 rounded-xl bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-gray-600 dark:text-zinc-300 active:scale-95 transition-transform"
               aria-label="Toggle theme"
             >
               {dark ? <FaSun size={14} className="text-accent" /> : <FaMoon size={14} />}
             </button>
+            <button
+              id="mobile-contacts-accordion-btn"
+              onClick={() => setSidebarOpen((v) => !v)}
+              className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-95 ${
+                sidebarOpen
+                  ? 'bg-accent text-white shadow-sm ring-2 ring-accent/30'
+                  : 'bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-300 hover:text-accent'
+              }`}
+              aria-label="Toggle contacts"
+              title="Contacts"
+            >
+              {sidebarOpen ? <FaChevronUp size={13} /> : <FaChevronDown size={13} />}
+            </button>
           </div>
         </header>
 
-        <main id="scroll-container-mobile" className="flex-1 overflow-y-auto">
+        <AnimatePresence>
+          {sidebarOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.28, ease: 'easeInOut' }}
+              className="overflow-hidden bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800 flex-shrink-0 z-20 shadow-lg"
+            >
+              <Sidebar dark={dark} onToggle={toggleTheme} isMobileAccordion={true} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <main id="scroll-container-mobile" className="flex-1 overflow-y-auto relative">
           <AnimatePresence mode="wait">
             {renderTab()}
           </AnimatePresence>
         </main>
 
         <div className="flex-shrink-0 relative z-20">
-          <TabNav activeTab={activeTab} onTabChange={setActiveTab} />
+          <TabNav activeTab={activeTab} onTabChange={(t) => { setActiveTab(t); setSidebarOpen(false); }} />
         </div>
       </div>
 

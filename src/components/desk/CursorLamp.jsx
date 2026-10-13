@@ -67,6 +67,14 @@ const BASE_GLOW_RZ = 0.8;
 const BASE_GLOW_COLOR = "150,190,255";
 const BASE_GLOW_STRENGTH = 0.4;
 
+// --- Spotlight glare: when the head tilts far enough, the light "hits the screen" (blur + bloom where the shade points) ---
+const GLARE_TILT_START = 0.35; // head tilt (radians from straight down) where the glare starts to fade in (~20 deg)
+const GLARE_TILT_FULL = 0.75; // tilt where it reaches full strength (~43 deg)
+const GLARE_REACH = 1.6; // how far from the bulb (world units) the glare lands, along the direction the shade points
+const GLARE_RADIUS = 1.9; // glare radius in lamp-heights-ish units (multiplied by pixels per unit)
+const GLARE_BLUR = 7; // max blur in px at the centre of the glare
+const GLARE_DEBUG = false; // true = small label at the top-left showing the live head tilt, so you can tune the two TILT values
+
 const DOME_FLOOR = 0.03; // minimum dome thickness at its far ends; hides the thin hairline where the slab edge peeks out
 const DOME_FRONT = 0.04; // dome also extends a few pixels IN FRONT of the ground line, so it overlaps the HTML slab and no gap can show
 
@@ -131,7 +139,7 @@ function getScrollParent(el) {
   return null;
 }
 
-function Lamp({ phRef, host, mouse, lastMove, onGround, darkRef, enabledRef }) {
+function Lamp({ phRef, host, mouse, lastMove, onGround, darkRef, enabledRef, glareEls, isMobile = false }) {
   const { scene: original } = useGLTF(MODEL_URL);
   // Clone per mount: useGLTF caches one shared scene and we re-parent the head nodes.
   const scene = useMemo(() => original.clone(true), [original]);
@@ -161,6 +169,7 @@ function Lamp({ phRef, host, mouse, lastMove, onGround, darkRef, enabledRef }) {
   const poolTex = useMemo(() => makeGlowTexture(POOL_COLOR, POOL_STRENGTH), []);
   const baseTex = useMemo(() => makeGlowTexture(BASE_GLOW_COLOR, BASE_GLOW_STRENGTH), []);
   const pool = useRef();
+  const baseGlow = useRef();
   const dome = useRef();
   const ppuRef = useRef(150);
   // Unit dome profile: x in [-1,1], height (1 - x^2)^DOME_TAIL in [0,1]; scaled to size every frame
@@ -176,6 +185,8 @@ function Lamp({ phRef, host, mouse, lastMove, onGround, darkRef, enabledRef }) {
     return new THREE.ShapeGeometry(sh);
   }, []);
   const wv = useMemo(() => new THREE.Vector3(), []);
+  const gl = useRef(0); // glare level 0..1 (smoothed)
+  const gv = useMemo(() => ({ q: new THREE.Quaternion(), dir: new THREE.Vector3(), p: new THREE.Vector3() }), []);
 
   useLayoutEffect(() => {
     scene.rotation.y = FLIP_Y; // before re-parenting
@@ -320,17 +331,67 @@ function Lamp({ phRef, host, mouse, lastMove, onGround, darkRef, enabledRef }) {
       target.getWorldPosition(wv);
       const px = THREE.MathUtils.clamp(wv.x * 0.7, -2.2, 2.2);
       pool.current.position.x = THREE.MathUtils.damp(pool.current.position.x, px, 6, dt);
-      pool.current.material.opacity = glowK * (dk ? 1 : 0.85);
+      // When the beam is hitting the screen (glare), the desk pool fades out: the light is already "on screen"
+      pool.current.material.opacity = glowK * (dk ? 1 : 0.85) * (1 - gl.current);
+    }
+
+    // Blue light under the base: turns OFF when the yellow light is visible, turns ON when yellow light is off
+    if (baseGlow.current) {
+      baseGlow.current.material.opacity = Math.max(0, 1 - glowK);
+    }
+
+    // 7. Spotlight glare: the more the shade tilts, the more the light "hits the screen" where it points
+    const G = glareEls.current;
+    if (G.blur && G.bloom) {
+      head.updateWorldMatrix(true, true);
+      head.getWorldQuaternion(gv.q);
+      gv.dir.copy(REST_DIR).applyQuaternion(gv.q); // world direction the shade opening points
+      const tilt = Math.acos(THREE.MathUtils.clamp(-gv.dir.y, -1, 1)); // 0 = straight down (rest)
+      const want = THREE.MathUtils.smoothstep(tilt, GLARE_TILT_START, GLARE_TILT_FULL) * k;
+      gl.current = THREE.MathUtils.damp(gl.current, want, 6, dt);
+      const g = gl.current;
+      if (GLARE_DEBUG && G.dbg) G.dbg.textContent = `tilt ${((tilt * 180) / Math.PI).toFixed(0)} deg | glare ${g.toFixed(2)}`;
+
+      if (g < 0.003) {
+        if (G.shown) {
+          G.blur.style.opacity = "0";
+          G.bloom.style.opacity = "0";
+          G.shown = false;
+        }
+      } else if (lights.current.spot) {
+        lights.current.spot.getWorldPosition(gv.p);
+        gv.p.addScaledVector(gv.dir, GLARE_REACH).project(camera);
+        const gx = ((gv.p.x + 1) / 2) * h.width;
+        const gy = ((1 - gv.p.y) / 2) * h.height;
+        const R = GLARE_RADIUS * ppuRef.current;
+
+        const f = `blur(${(GLARE_BLUR * g).toFixed(2)}px) brightness(${(1 + 0.25 * g).toFixed(3)})`;
+        const mask = `radial-gradient(circle ${R.toFixed(0)}px at ${gx.toFixed(0)}px ${gy.toFixed(0)}px, #000 0%, rgba(0,0,0,0.7) 40%, transparent 100%)`;
+        G.blur.style.opacity = "1";
+        G.blur.style.backdropFilter = f;
+        G.blur.style.webkitBackdropFilter = f;
+        G.blur.style.maskImage = mask;
+        G.blur.style.webkitMaskImage = mask;
+
+        G.bloom.style.opacity = "1";
+        G.bloom.style.mixBlendMode = dk ? "screen" : "normal";
+        G.bloom.style.background =
+          `radial-gradient(circle ${R.toFixed(0)}px at ${gx.toFixed(0)}px ${gy.toFixed(0)}px, ` +
+          `rgba(255,242,220,${(0.85 * g).toFixed(3)}) 0%, rgba(255,196,120,${(0.4 * g).toFixed(3)}) 30%, rgba(255,160,70,0) 70%)`;
+        G.shown = true;
+      }
     }
   });
 
   return (
     <>
       <primitive object={scene} />
-      {/* Black dome behind the lamp (back half only). The black band in AboutTab continues from its flat edge. */}
-      <mesh ref={dome} geometry={domeGeo} position={[0, -0.001, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <meshBasicMaterial color={DESK_COLOR} toneMapped={false} side={THREE.DoubleSide} />
-      </mesh>
+      {/* Black dome behind the lamp (back half only). Omitted on mobile so only the transparent lamp shows */}
+      {!isMobile && (
+        <mesh ref={dome} geometry={domeGeo} position={[0, -0.001, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <meshBasicMaterial color={DESK_COLOR} toneMapped={false} side={THREE.DoubleSide} />
+        </mesh>
+      )}
 
       {/* Warm light pool on the black desk (additive glow, fades in with the lamp) */}
       <mesh ref={pool} position={[0, 0.002, 0.7]} rotation={[-Math.PI / 2, 0, 0]} scale={[POOL_RX * 2, POOL_RZ * 2, 1]}>
@@ -338,10 +399,10 @@ function Lamp({ phRef, host, mouse, lastMove, onGround, darkRef, enabledRef }) {
         <meshBasicMaterial map={poolTex} transparent opacity={0} blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
       </mesh>
 
-      {/* Cool contact light under the base: always on, so the lamp's foot never sits on flat dark */}
-      <mesh position={[BASE_X, 0.003, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[BASE_GLOW_RX * 2, BASE_GLOW_RZ * 2, 1]}>
+      {/* Cool contact light under the base: on when idle, fades off when yellow light is on */}
+      <mesh ref={baseGlow} position={[BASE_X, 0.003, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[BASE_GLOW_RX * 2, BASE_GLOW_RZ * 2, 1]}>
         <planeGeometry args={[1, 1]} />
-        <meshBasicMaterial map={baseTex} transparent blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
+        <meshBasicMaterial map={baseTex} transparent opacity={1} blending={THREE.AdditiveBlending} depthWrite={false} toneMapped={false} />
       </mesh>
     </>
   );
@@ -358,6 +419,17 @@ export default function CursorLamp({ className = "", style, onGround, dark = fal
   const enabledRef = useRef(enabled);
   enabledRef.current = enabled;
   const [host, setHost] = useState(null);
+  const [scrollerEl, setScrollerEl] = useState(null);
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth < 1024 : false
+  );
+  const glareEls = useRef({ blur: null, bloom: null, dbg: null, shown: false }); // DOM layers for the spotlight glare, updated every frame
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 1024);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   // Cursor position anywhere on the page
   useEffect(() => {
@@ -380,6 +452,7 @@ export default function CursorLamp({ className = "", style, onGround, dark = fal
     const ph = phRef.current;
     if (!ph) return;
     const scroller = getScrollParent(ph);
+    setScrollerEl(scroller);
 
     const measure = () => {
       const pr = ph.getBoundingClientRect();
@@ -420,38 +493,52 @@ export default function CursorLamp({ className = "", style, onGround, dark = fal
     overflow: "hidden",
   };
 
+  if (isMobile) return null;
+
   return (
     <>
       <div ref={phRef} className={className} style={{ width: "100%", height: "100%", minHeight: 360, ...style }} />
 
       {host?.visible &&
         createPortal(
-          <LampBoundary>
-            <div style={{ ...box, zIndex: 30 }}>
-              <Canvas
-                shadows
-                dpr={[1, 1.5]}
-                gl={{ alpha: true, antialias: true }}
-                style={{ background: "transparent", pointerEvents: "none" }}
-                camera={{ position: [0.1, 1.5, 6], fov: 35 }}
-              >
-                <ambientLight intensity={0.5} />
-                <directionalLight position={[4, 6, 5]} intensity={1.5} />
-                {/* Cool rim lights from behind: outline the arms and shade so the lamp never melts into a dark background */}
-                <directionalLight position={[-4, 3, -4]} intensity={dark ? 3 : 2} color="#7DD3FC" />
-                <directionalLight position={[4, 2, -3]} intensity={dark ? 2 : 1.2} color="#93C5FD" />
-                <Suspense fallback={null}>
-                  {/* Built-in studio reflections (no download) so the metal actually looks metallic */}
-                  <Environment resolution={128} frames={1}>
-                    <Lightformer form="rect" intensity={2.2} color="#BAE6FD" position={[-4, 2.5, -3]} scale={[6, 2, 1]} target={[0, 0, 0]} />
-                    <Lightformer form="rect" intensity={1.6} color="#FFFFFF" position={[3, 3, 4]} scale={[5, 2, 1]} target={[0, 0, 0]} />
-                    <Lightformer form="ring" intensity={1} color="#FFD9A0" position={[0, 0.5, 5]} scale={3} target={[0, 0, 0]} />
-                  </Environment>
-                  <Lamp phRef={phRef} host={host} mouse={mouse} lastMove={lastMove} onGround={onGroundRef} darkRef={darkRef} enabledRef={enabledRef} />
-                </Suspense>
-              </Canvas>
-            </div>
-          </LampBoundary>,
+          <>
+            {/* Glare, part 1: blurs the page behind the lamp (below the 3D canvas, so the lamp itself stays sharp) */}
+            <div ref={(el) => (glareEls.current.blur = el)} aria-hidden="true" style={{ ...box, zIndex: 29, opacity: 0 }} />
+            <LampBoundary>
+              <div style={{ ...box, zIndex: 30 }}>
+                <Canvas
+                  shadows
+                  dpr={[1, 1.5]}
+                  gl={{ alpha: true, antialias: true }}
+                  style={{ background: "transparent", pointerEvents: "none" }}
+                  camera={{ position: [0.1, 1.5, 6], fov: 35 }}
+                >
+                  <ambientLight intensity={0.5} />
+                  <directionalLight position={[4, 6, 5]} intensity={1.5} />
+                  {/* Cool rim lights from behind: outline the arms and shade so the lamp never melts into a dark background */}
+                  <directionalLight position={[-4, 3, -4]} intensity={dark ? 3 : 2} color="#7DD3FC" />
+                  <directionalLight position={[4, 2, -3]} intensity={dark ? 2 : 1.2} color="#93C5FD" />
+                  <Suspense fallback={null}>
+                    {/* Built-in studio reflections (no download) so the metal actually looks metallic */}
+                    <Environment resolution={128} frames={1}>
+                      <Lightformer form="rect" intensity={2.2} color="#BAE6FD" position={[-4, 2.5, -3]} scale={[6, 2, 1]} target={[0, 0, 0]} />
+                      <Lightformer form="rect" intensity={1.6} color="#FFFFFF" position={[3, 3, 4]} scale={[5, 2, 1]} target={[0, 0, 0]} />
+                      <Lightformer form="ring" intensity={1} color="#FFD9A0" position={[0, 0.5, 5]} scale={3} target={[0, 0, 0]} />
+                    </Environment>
+                    <Lamp phRef={phRef} host={host} mouse={mouse} lastMove={lastMove} onGround={onGroundRef} darkRef={darkRef} enabledRef={enabledRef} glareEls={glareEls} isMobile={false} />
+                  </Suspense>
+                </Canvas>
+              </div>
+            </LampBoundary>
+            {/* Glare, part 2: warm bloom on top, as if the beam were hitting the screen */}
+            <div ref={(el) => (glareEls.current.bloom = el)} aria-hidden="true" style={{ ...box, zIndex: 31, opacity: 0 }} />
+            {GLARE_DEBUG && (
+              <div
+                ref={(el) => (glareEls.current.dbg = el)}
+                style={{ position: "fixed", left: 12, top: 12, zIndex: 60, padding: "4px 8px", font: "12px monospace", color: "#fff", background: "rgba(0,0,0,0.6)" }}
+              />
+            )}
+          </>,
           document.body
         )}
     </>

@@ -20,17 +20,17 @@ export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
   const [isZoomed, setIsZoomed] = useState(false);
 
   // Conditional styles based on context
-  const textColor = isMobileAccordion ? 'text-gray-900' : 'text-white';
-  const subTextColor = isMobileAccordion ? 'text-gray-400' : 'text-white';
-  const iconBg = isMobileAccordion ? 'bg-blue-50' : 'bg-white/10';
+  const textColor = isMobileAccordion ? 'text-gray-900 dark:text-zinc-100' : 'text-white';
+  const subTextColor = isMobileAccordion ? 'text-gray-400 dark:text-zinc-500' : 'text-white';
+  const iconBg = isMobileAccordion ? 'bg-blue-50 dark:bg-zinc-800' : 'bg-white/10';
   const iconColor = isMobileAccordion ? 'text-accent' : 'text-white';
-  const dividerColor = isMobileAccordion ? 'border-gray-100' : 'border-white/10';
-  const socialBg = isMobileAccordion ? 'bg-gray-100' : 'bg-white/10';
-  const socialText = isMobileAccordion ? 'text-gray-500' : 'text-white';
-  const socialHover = isMobileAccordion ? 'hover:bg-accent hover:text-white' : 'hover:bg-white/20';
+  const dividerColor = isMobileAccordion ? 'border-gray-100 dark:border-zinc-800' : 'border-white/10';
+  const socialBg = isMobileAccordion ? 'bg-gray-100 dark:bg-zinc-800' : 'bg-white/10';
+  const socialText = isMobileAccordion ? 'text-gray-500 dark:text-zinc-400' : 'text-white';
+  const socialHover = isMobileAccordion ? 'hover:bg-accent hover:text-white dark:hover:bg-accent dark:hover:text-black' : 'hover:bg-white/20';
 
   return (
-    <aside className={`flex flex-col ${isMobileAccordion ? 'bg-white dark:bg-zinc-900' : 'bg-accent dark:bg-zinc-900'} ${isMobileAccordion ? 'w-full pb-4' : 'h-full justify-center border-r border-white/10 dark:border-zinc-700 overflow-y-auto'}`}>
+    <aside className={`flex flex-col ${isMobileAccordion ? 'bg-white dark:bg-black' : 'bg-accent dark:bg-zinc-900'} ${isMobileAccordion ? 'w-full pb-4' : 'h-full justify-center border-r border-white/10 dark:border-zinc-700 overflow-y-auto'}`}>
       {!isMobileAccordion && (
         <div className="flex flex-col items-center px-6 pt-8 pb-6">
           <div className="relative mb-4">
@@ -72,14 +72,14 @@ export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
           {contactItems.map(({ icon: Icon, label, href, id }) => (
             <li key={id}>
               {href ? (
-                <a id={id} href={href} target={href.startsWith('mailto:') ? undefined : "_blank"} rel="noreferrer" className={`sidebar-link ${isMobileAccordion ? '!text-gray-500 hover:!text-accent' : ''}`}>
+                <a id={id} href={href} target={href.startsWith('mailto:') ? undefined : "_blank"} rel="noreferrer" className={`sidebar-link ${isMobileAccordion ? '!text-gray-600 dark:!text-zinc-300 hover:!text-accent dark:hover:!text-accent' : ''}`}>
                   <span className={`w-7 h-7 md:w-9 md:h-9 rounded-lg md:rounded-xl ${iconBg} dark:bg-zinc-800 flex items-center justify-center flex-shrink-0`}>
                     <Icon className={`${iconColor} text-[12px] md:text-[16px]`} />
                   </span>
                   <span className="text-xs md:text-sm truncate">{label}</span>
                 </a>
               ) : (
-                <span id={id} className={`sidebar-link cursor-default ${isMobileAccordion ? '!text-gray-500' : ''}`}>
+                <span id={id} className={`sidebar-link cursor-default ${isMobileAccordion ? '!text-gray-600 dark:!text-zinc-300' : ''}`}>
                   <span className={`w-7 h-7 md:w-9 md:h-9 rounded-lg md:rounded-xl ${iconBg} dark:bg-zinc-800 flex items-center justify-center flex-shrink-0`}>
                     <Icon className={`${iconColor} text-[12px] md:text-[16px]`} />
                   </span>

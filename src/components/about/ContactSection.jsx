@@ -1,12 +1,11 @@
-import { useRef, useState, useEffect, lazy, Suspense } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 import {
   FaPaperPlane, FaTimes, FaCheckCircle, FaExclamationCircle, FaShieldAlt
 } from 'react-icons/fa';
-import DeskPlaceholder from '../desk/DeskPlaceholder';
-
-const ContactDesk = lazy(() => import('../desk/ContactDesk'));
+import ContactDesk from '../desk/ContactDesk';
+import { preloadDeskModel } from '../desk/DeskModel';
 
 const RATE_LIMIT_KEY = 'portfolio_contact_limit';
 const MAX_REQUESTS = 3;
@@ -57,14 +56,9 @@ export default function ContactSection({ dark }) {
     return () => observer.disconnect();
   }, [dark]);
 
-  // Preload the GLB model after a short delay
+  // Preload the GLB model
   useEffect(() => {
-    const timer = setTimeout(() => {
-      import('../desk/DeskModel').then((mod) => {
-        mod.preloadDeskModel?.();
-      });
-    }, 500);
-    return () => clearTimeout(timer);
+    preloadDeskModel?.();
   }, []);
 
   // OTP States
@@ -201,9 +195,7 @@ export default function ContactSection({ dark }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 bg-black">
         {/* 3D Desk Scene */}
         <div className="relative min-h-[340px] sm:min-h-[420px] lg:min-h-[520px] overflow-hidden bg-black">
-          <Suspense fallback={<DeskPlaceholder isDark={true} />}>
-            <ContactDesk isActive={deskActive} isDark={true} />
-          </Suspense>
+          <ContactDesk isActive={deskActive} isDark={true} />
 
           {/* Model Credit */}
           <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[9px] text-zinc-500 select-none whitespace-nowrap z-20">
@@ -305,7 +297,7 @@ export default function ContactSection({ dark }) {
               id="submit-contact"
               type="submit"
               disabled={isSending}
-              className="bg-accent hover:bg-accent-dark text-white font-bold px-6 py-3 rounded-xl shadow active:scale-95 w-full flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="bg-white text-black font-bold px-6 py-3 shadow active:scale-95 w-full flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isSending ? (
                 <>

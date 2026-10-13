@@ -1,4 +1,5 @@
 import { useState, useRef, useLayoutEffect, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import ThemeToggle from '../components/ThemeToggle';
 import CursorLamp from '../components/desk/CursorLamp';
@@ -12,6 +13,8 @@ import {
 } from '../data/skills';
 import { testimonials } from '../data/testimonials';
 import { projects } from '../data/projects';
+import earthNight from '../assets/earth-night.jpg';
+import christianCutout from '../assets/christian-cutout.png';
 import {
   FaCode, FaHeart, FaChess, FaBasketballBall, FaMusic, FaTimes, FaStar, FaStarHalfAlt,
   FaDownload, FaArrowRight, FaLock, FaEye, FaEyeSlash
@@ -230,10 +233,10 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
         <WaveEdge className="absolute left-0 w-full h-28 md:h-44" style={{ top: 'calc(100% - 1px)' }} />
       </div>
 
-      <section className="flex flex-col justify-start pt-1 pb-6">
-        <div className="flex flex-col-reverse lg:flex-row items-start justify-between gap-8 lg:gap-8 w-full">
+      <section className="relative flex flex-col justify-start pt-1 pb-6">
+        <div className="relative flex flex-col lg:flex-row items-start justify-between gap-8 lg:gap-8 w-full">
           {/* Left Column: Heading & Action Buttons */}
-          <div className="flex-1 max-w-2xl text-left flex flex-col items-start">
+          <div className="relative z-10 flex-1 max-w-2xl text-left flex flex-col items-start w-full">
             {onToggle && (
               <div className="mb-4">
                 <ThemeToggle dark={dark} onToggle={onToggle} />
@@ -301,8 +304,8 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
             </div>
           </div>
 
-          {/* Right Column: 3D Interactive Desk Lamp */}
-          <div className="w-full lg:w-1/2 flex items-start justify-center lg:justify-end h-[360px] sm:h-[440px] lg:h-[500px]">
+          {/* Right Column: 3D Interactive Desk Lamp (Desktop only) */}
+          <div className="hidden lg:flex lg:w-1/2 h-[500px] items-start justify-end">
             <div className="w-full h-full max-w-xl">
               <CursorLamp className="w-full h-full" onGround={handleGround} dark={dark} enabled={!lampOff} />
             </div>
@@ -335,14 +338,69 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
           ))}
         </div>
 
+        {/* ── Who I Am ── */}
+        <section className="relative -mx-6 md:-mx-8 px-6 md:px-8 overflow-hidden">
+          {/* Earth at night: fades into the black page on every side */}
+          <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
+            <img
+              src={earthNight}
+              alt=""
+              loading="lazy"
+              className="w-full h-full object-cover object-center"
+              style={{
+                WebkitMaskImage: 'linear-gradient(to bottom, transparent, #ffffffff 50%, #ffffffff 90%, transparent)',
+                maskImage: 'linear-gradient(to bottom, transparent, #000000ff 50%, #000000ff 90%, transparent)',
+              }}
+            />
+            {/* keeps the text side readable */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/75 to-transparent" />
+          </div>
+
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 items-center gap-10 lg:gap-16 max-w-6xl mx-auto py-16 md:py-24">
+            {/* Text */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 0.5 }}
+              className="order-2 lg:order-1 text-left"
+            >
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-[1.1] mb-6 md:mb-8">
+                <span className="block">Why hire me?</span>
+                <span className="block">Let the work answers.</span>
+              </h2>
+
+              <div className="space-y-4 text-lg sm:text-base text-zinc-300 leading-relaxed max-w-xl">
+                <p>
+                  I graduated <span className="text-white font-semibold">Cum Laude</span> in Computer Science with a
+                  1.51 GWA, but most of what I know came from building things for real people. For the past two years
+                  I've been shipping 10+ web, mobile, and desktop apps for schools and research teams, from the
+                  database all the way to the screen someone actually taps.
+                </p>
+                <p>
+                  I'm most at home in React, Node.js/Express, and Django, backed by MySQL, SQLite, or SQL Server,
+                  whichever the project calls for. Every project has gone out on time, and my four client reviews
+                  average 4.9/5.
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
         {/* ── Top Projects Bento Grid ── */}
         <section>
-          <div className="mb-10 md:mb-14 text-left">
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight leading-[1.1] sm:leading-[1.1]">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.5 }}
+            className="mb-10 md:mb-14 text-left"
+          >
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold text-white tracking-tight leading-[1.1] sm:leading-[1.1]">
               <span className="block">Where innovation,</span>
               <span className="block">meets the podium.</span>
             </h2>
-          </div>
+          </motion.div>
 
           {(() => {
             const TOP_IDS = ['O See', 'KeTox', 'CamScope', 'OsmenaAccess'];
@@ -355,9 +413,10 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
                 {/* Hero card — large, spans 3 cols */}
                 {hero && (
                   <motion.div
-                    initial={{ opacity: 0, y: 24 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
+                    initial={{ opacity: 0, y: 32 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-60px' }}
+                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                     className="lg:col-span-3 relative group rounded-2xl overflow-hidden flex flex-col min-h-[460px] sm:min-h-[520px]"
                   >
                     <div className="relative w-full h-full flex-1 overflow-hidden min-h-[380px]">
@@ -384,9 +443,10 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
                   {rest.map((project, i) => (
                     <motion.div
                       key={project.id}
-                      initial={{ opacity: 0, y: 24 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.15 * (i + 1) }}
+                      initial={{ opacity: 0, y: 32 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: '-60px' }}
+                      transition={{ duration: 0.5, delay: 0.12 * (i + 1), ease: [0.22, 1, 0.36, 1] }}
                       className="flex flex-col group"
                     >
                       <div className="relative h-48 sm:h-52 rounded-2xl overflow-hidden border border-zinc-700/60 bg-zinc-800/80">
@@ -420,9 +480,15 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
         {/* 3D stars behind the cards */}
         <StarsBackground dark={dark} />
         <div className="relative z-10 max-w-2xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-center text-gray-900 dark:text-zinc-100 mb-8 sm:mb-12 tracking-tight">
+          <motion.h2
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.5 }}
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-center text-gray-900 dark:text-zinc-100 mb-8 sm:mb-12 tracking-tight"
+          >
             What Clients Say
-          </h2>
+          </motion.h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {testimonials.map((t, i) => (
@@ -439,140 +505,157 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
         <ContactSection dark={dark} />
       </section>
 
-      <AnimatePresence>
-        {selectedTestimonial && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedTestimonial(null)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-lg bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-2xl shadow-2xl p-6 md:p-8 z-10 max-h-[90vh] flex flex-col"
-            >
-              <button
-                onClick={() => setSelectedTestimonial(null)}
-                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-zinc-800 text-gray-500 hover:text-gray-900 dark:hover:text-zinc-100 transition-colors"
-              >
-                <FaTimes size={12} />
-              </button>
-
-              <div className="flex gap-1 mb-4 mt-2">
-                {Array.from({ length: Math.floor(selectedTestimonial.rating) }).map((_, i) => (
-                  <FaStar key={i} className="text-accent text-sm" />
-                ))}
-                {selectedTestimonial.rating % 1 !== 0 && (
-                  <FaStarHalfAlt className="text-accent text-sm" />
-                )}
-              </div>
-
-              <div className="max-h-[50vh] overflow-y-auto pr-4 mb-8 custom-scrollbar">
-                <p className="text-sm md:text-base text-gray-600 dark:text-zinc-300 leading-relaxed italic">
-                  "{selectedTestimonial.text}"
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3 pt-4 border-t border-gray-100 dark:border-zinc-800">
-                <div>
-                  <p className="text-base font-bold text-gray-900 dark:text-zinc-100">{selectedTestimonial.name}</p>
-                  <p className="text-xs text-gray-500 dark:text-zinc-400">{selectedTestimonial.role}</p>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {showPasswordModal && (
-          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowPasswordModal(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 16 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 16 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="relative w-full max-w-sm bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 shadow-2xl p-6 z-10"
-              style={{ borderRadius: 0 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                onClick={() => setShowPasswordModal(false)}
-                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-zinc-800 text-gray-500 hover:text-gray-900 dark:hover:text-zinc-100 transition-colors"
-                style={{ borderRadius: 0 }}
-              >
-                <FaTimes size={12} />
-              </button>
-
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 bg-accent/10 flex items-center justify-center flex-shrink-0">
-                  <FaLock className="text-accent" size={16} />
-                </div>
-                <div>
-                  <h3 className="text-sm font-extrabold text-gray-900 dark:text-zinc-100 uppercase" style={{ letterSpacing: '1px' }}>Security Check</h3>
-                  <p className="text-xs text-gray-500 dark:text-zinc-400">To avoid bots & scrapers :&lt;</p>
-                </div>
-              </div>
-
-              <div className="relative mb-1">
-                <input
-                  ref={passwordInputRef}
-                  id="resume-password-input"
-                  type={showPassword ? 'text' : 'password'}
-                  value={passwordInput}
-                  onChange={(e) => { setPasswordInput(e.target.value); setPasswordError(false); }}
-                  onKeyDown={(e) => e.key === 'Enter' && handleDownload()}
-                  placeholder="Password"
-                  className={`w-full px-4 py-3 pr-10 text-sm bg-gray-50 dark:bg-zinc-800 border ${passwordError
-                    ? 'border-red-400 dark:border-red-500 focus:ring-red-400'
-                    : 'border-gray-200 dark:border-zinc-700 focus:ring-accent'
-                    } text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200`}
-                  style={{ borderRadius: 0 }}
+      {typeof document !== 'undefined' &&
+        createPortal(
+          <AnimatePresence>
+            {selectedTestimonial && (
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setSelectedTestimonial(null)}
+                  className="fixed inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-zinc-200 transition-colors"
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="relative w-full max-w-xl md:max-w-2xl bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-6 sm:p-8 z-10 max-h-[90vh] flex flex-col"
                 >
-                  {showPassword ? <FaEyeSlash size={13} /> : <FaEye size={13} />}
-                </button>
+                  <button
+                    onClick={() => setSelectedTestimonial(null)}
+                    className="absolute top-4 right-4 sm:top-5 sm:right-5 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-gray-500 hover:text-gray-900 dark:hover:text-zinc-100 transition-colors"
+                    aria-label="Close modal"
+                  >
+                    <FaTimes size={12} />
+                  </button>
+
+                  <div className="flex gap-1 mb-4">
+                    {Array.from({ length: Math.floor(selectedTestimonial.rating) }).map((_, i) => (
+                      <FaStar key={i} className="text-accent text-sm" />
+                    ))}
+                    {selectedTestimonial.rating % 1 !== 0 && (
+                      <FaStarHalfAlt className="text-accent text-sm" />
+                    )}
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto pr-3 my-2 custom-scrollbar">
+                    <p className="text-sm md:text-base text-gray-600 dark:text-zinc-300 leading-relaxed font-normal">
+                      "{selectedTestimonial.text}"
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-3 pt-4 mt-2 border-t border-gray-100 dark:border-zinc-800">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent/60 to-accent/20 flex items-center justify-center flex-shrink-0">
+                      <span className="text-white text-xs font-bold">{selectedTestimonial.name.charAt(0)}</span>
+                    </div>
+                    <div>
+                      <p className="text-base font-bold text-gray-900 dark:text-zinc-100">{selectedTestimonial.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-zinc-400">
+                        @{selectedTestimonial.name.toLowerCase().replace(/\s+/g, '')}
+                        <span className="mx-1.5 opacity-60">•</span>
+                        {selectedTestimonial.role}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
               </div>
-
-              <p className="text-[11px] text-red-500 dark:text-red-400 italic mb-4 font-medium">Password: 909-251*</p>
-
-              {passwordError && (
-                <motion.p
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-xs text-red-500 dark:text-red-400 mb-3"
-                >
-                  Incorrect password. Please try again.
-                </motion.p>
-              )}
-
-              <button
-                id="resume-download-confirm"
-                onClick={handleDownload}
-                className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark text-white text-xs font-bold py-3 transition-all duration-200 active:scale-95 shadow"
-                style={{ borderRadius: 0, letterSpacing: '1px' }}
-              >
-                <FaDownload size={12} /> Download Resume
-              </button>
-            </motion.div>
-          </div>
+            )}
+          </AnimatePresence>,
+          document.body
         )}
-      </AnimatePresence>
+
+      {typeof document !== 'undefined' &&
+        createPortal(
+          <AnimatePresence>
+            {showPasswordModal && (
+              <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setShowPasswordModal(false)}
+                  className="fixed inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
+                />
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: 16 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 16 }}
+                  transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                  className="relative w-full max-w-sm bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 shadow-2xl p-6 z-10"
+                  style={{ borderRadius: 0 }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    onClick={() => setShowPasswordModal(false)}
+                    className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-zinc-800 text-gray-500 hover:text-gray-900 dark:hover:text-zinc-100 transition-colors"
+                    style={{ borderRadius: 0 }}
+                  >
+                    <FaTimes size={12} />
+                  </button>
+
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="w-10 h-10 bg-accent/10 flex items-center justify-center flex-shrink-0">
+                      <FaLock className="text-accent" size={16} />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-extrabold text-gray-900 dark:text-zinc-100 uppercase" style={{ letterSpacing: '1px' }}>Security Check</h3>
+                      <p className="text-xs text-gray-500 dark:text-zinc-400">To avoid bots & scrapers :&lt;</p>
+                    </div>
+                  </div>
+
+                  <div className="relative mb-1">
+                    <input
+                      ref={passwordInputRef}
+                      id="resume-password-input"
+                      type={showPassword ? 'text' : 'password'}
+                      value={passwordInput}
+                      onChange={(e) => { setPasswordInput(e.target.value); setPasswordError(false); }}
+                      onKeyDown={(e) => e.key === 'Enter' && handleDownload()}
+                      placeholder="Password"
+                      className={`w-full px-4 py-3 pr-10 text-sm bg-gray-50 dark:bg-zinc-800 border ${passwordError
+                        ? 'border-red-400 dark:border-red-500 focus:ring-red-400'
+                        : 'border-gray-200 dark:border-zinc-700 focus:ring-accent'
+                        } text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200`}
+                      style={{ borderRadius: 0 }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-zinc-200 transition-colors"
+                    >
+                      {showPassword ? <FaEyeSlash size={13} /> : <FaEye size={13} />}
+                    </button>
+                  </div>
+
+                  <p className="text-[11px] text-red-500 dark:text-red-400 italic mb-4 font-medium">Password: 909-251*</p>
+
+                  {passwordError && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-xs text-red-500 dark:text-red-400 mb-3"
+                    >
+                      Incorrect password. Please try again.
+                    </motion.p>
+                  )}
+
+                  <button
+                    id="resume-download-confirm"
+                    onClick={handleDownload}
+                    className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent-dark text-white text-xs font-bold py-3 transition-all duration-200 active:scale-95 shadow"
+                    style={{ borderRadius: 0, letterSpacing: '1px' }}
+                  >
+                    <FaDownload size={12} /> Download Resume
+                  </button>
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>,
+          document.body
+        )}
     </motion.div>
   );
 }
