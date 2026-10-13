@@ -38,14 +38,15 @@ const ICON_URL_ALT = {
 function TechItem({ name, icon, color }) {
   const src = ICON_URL_ALT[icon] || ICON_URL(icon);
   return (
-    <div className="flex items-center gap-3 px-3 py-2 bg-transparent whitespace-nowrap flex-shrink-0 group cursor-default">
+    <div className="flex items-center gap-3 px-3 py-2 bg-transparent whitespace-nowrap flex-shrink-0 group cursor-default select-none">
       <img
         src={src}
         alt={name}
-        className="w-7 h-7 object-contain group-hover:scale-110 transition-transform duration-300"
+        className="w-7 h-7 object-contain group-hover:scale-110 transition-transform duration-300 pointer-events-none select-none"
         loading="lazy"
+        draggable={false}
       />
-      <span className="text-xl font-semibold text-zinc-300 group-hover:text-white transition-colors">
+      <span className="text-xl font-semibold text-zinc-300 group-hover:text-white transition-colors select-none">
         {name}
       </span>
     </div>
@@ -73,16 +74,8 @@ export default function TechMarquee() {
 
     animRef.current = requestAnimationFrame(tick);
 
-    // Pause on hover
-    const pause = () => cancelAnimationFrame(animRef.current);
-    const resume = () => { animRef.current = requestAnimationFrame(tick); };
-    el.parentElement.addEventListener('mouseenter', pause);
-    el.parentElement.addEventListener('mouseleave', resume);
-
     return () => {
       cancelAnimationFrame(animRef.current);
-      el.parentElement?.removeEventListener('mouseenter', pause);
-      el.parentElement?.removeEventListener('mouseleave', resume);
     };
   }, []);
 

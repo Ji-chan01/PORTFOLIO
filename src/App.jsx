@@ -11,7 +11,7 @@ import { FaSun, FaMoon, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 function getInitialTheme() {
   const saved = localStorage.getItem('portfolio-theme');
   if (saved) return saved === 'dark';
-  return true; // Default to dark mode
+  return false; // Default to light mode
 }
 
 export default function App() {
