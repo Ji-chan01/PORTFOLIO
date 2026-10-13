@@ -113,7 +113,7 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
   useLayoutEffect(() => {
     const updateSlider = () => {
       const target = hoveredBtn === 'resume' ? resumeBtnRef.current : talkBtnRef.current;
-      if (target) {
+      if (target && target.offsetWidth > 0) {
         setSlider({ left: target.offsetLeft, width: target.offsetWidth });
       }
     };
@@ -249,9 +249,30 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
               <span className="text-accent block mt-1">&amp; UI/UX Designer</span>
             </h2>
 
+            {/* Mobile Layout: Separate buttons, each taking 100% width */}
+            <div className="flex flex-col gap-3 w-full mt-8 sm:hidden">
+              <button
+                id="about-lets-talk-mobile"
+                onClick={scrollToContact}
+                className="w-full flex justify-center items-center gap-2 text-xs font-bold py-3.5 px-6 bg-accent text-white border border-accent active:scale-[0.98] transition-transform shadow-sm"
+                style={{ borderRadius: 0, letterSpacing: '1px' }}
+              >
+                LET'S TALK <FaArrowRight size={11} />
+              </button>
+              <button
+                id="about-download-resume-mobile"
+                onClick={openPasswordModal}
+                className="w-full flex justify-center items-center gap-2 text-xs font-bold py-3.5 px-6 bg-transparent text-gray-900 dark:text-zinc-100 border border-accent hover:bg-accent/10 active:scale-[0.98] transition-colors"
+                style={{ borderRadius: 0, letterSpacing: '1px' }}
+              >
+                <FaDownload size={11} /> DOWNLOAD RESUME
+              </button>
+            </div>
+
+            {/* Desktop Layout: Joined slider buttons */}
             <div
               onMouseLeave={() => setHoveredBtn('talk')}
-              className="relative inline-flex flex-row items-center justify-start mt-8 border border-accent bg-transparent p-0 overflow-hidden w-fit"
+              className="relative hidden sm:inline-flex flex-row items-center justify-start mt-8 border border-accent bg-transparent p-0 overflow-hidden w-fit"
               style={{ borderRadius: 0 }}
             >
               {/* Solid Accent Background Slider without opacity fade */}

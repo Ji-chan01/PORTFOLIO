@@ -53,7 +53,7 @@ export default function App() {
       {/* Desktop view */}
       <div className="hidden lg:flex h-screen overflow-hidden">
         <main className="flex-1 flex flex-col h-full overflow-hidden">
-          <TabNav activeTab={activeTab} onTabChange={setActiveTab} />
+          <TabNav activeTab={activeTab} onTabChange={setActiveTab} onProfileClick={() => setIsZoomed(true)} />
           <div id="scroll-container-desktop" className="flex-1 overflow-y-auto">
             <AnimatePresence mode="wait">
               {renderTab()}
@@ -122,7 +122,7 @@ export default function App() {
         </main>
 
         <div className="flex-shrink-0 relative z-20">
-          <TabNav activeTab={activeTab} onTabChange={(t) => { setActiveTab(t); setSidebarOpen(false); }} />
+          <TabNav activeTab={activeTab} onTabChange={(t) => { setActiveTab(t); setSidebarOpen(false); }} onProfileClick={() => setIsZoomed(true)} />
         </div>
       </div>
 
@@ -151,7 +151,7 @@ export default function App() {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src="https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto/briol_yj9lus"
+                src="https://res.cloudinary.com/dlqxpz9pu/image/upload/v1791361795/8a7d83c8-6bdf-4065-a50e-9dd5bb86786d_jfmfog.jpg"
                 alt="Christian Jireh Zoomed"
                 className="max-w-full max-h-[80vh] rounded-3xl shadow-2xl object-contain border-2 border-white/20"
               />

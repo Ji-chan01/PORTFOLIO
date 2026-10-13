@@ -38,7 +38,7 @@ export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
               onClick={() => setIsZoomed(true)}
               className="w-28 h-28 rounded-full bg-zinc-100 dark:bg-zinc-800 glow-accent overflow-hidden ring-4 ring-white/20 dark:ring-accent dark:ring-opacity-30 cursor-pointer transition-transform hover:scale-105 active:scale-95"
             >
-              <img src="https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto/briol_yj9lus" loading="lazy" alt="Christian Jireh" className="w-full h-full object-cover" />
+              <img src="https://res.cloudinary.com/dlqxpz9pu/image/upload/v1791361795/8a7d83c8-6bdf-4065-a50e-9dd5bb86786d_jfmfog.jpg" loading="lazy" alt="Christian Jireh" className="w-full h-full object-cover" />
             </div>
           </div>
 
@@ -149,7 +149,7 @@ export default function Sidebar({ dark, onToggle, isMobileAccordion = false }) {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src="https://res.cloudinary.com/dlqxpz9pu/image/upload/f_auto,q_auto/briol_yj9lus"
+                src="https://res.cloudinary.com/dlqxpz9pu/image/upload/v1791361795/8a7d83c8-6bdf-4065-a50e-9dd5bb86786d_jfmfog.jpg"
                 alt="Christian Jireh Zoomed"
                 className="max-w-full max-h-[85vh] rounded-3xl shadow-2xl object-contain border-4 border-white/20"
               />
