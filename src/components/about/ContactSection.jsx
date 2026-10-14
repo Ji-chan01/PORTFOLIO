@@ -207,7 +207,16 @@ export default function ContactSection({ dark }) {
             >
               Computer Desk
             </a>{' '}
-            by CR!STALLL is licensed under{' '}
+            by{' '}
+            <a
+              href="https://sketchfab.com/CR1STALLL"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-accent transition-colors duration-300"
+            >
+              CR1STALLL
+            </a>{' '}
+            is licensed under{' '}
             <a
               href="http://creativecommons.org/licenses/by/4.0/"
               target="_blank"

@@ -140,7 +140,7 @@ function getScrollParent(el) {
   return null;
 }
 
-function Lamp({ phRef, host, stageRef, mouse, lastMove, onGround, darkRef, enabledRef, glareEls, isMobile = false }) {
+function Lamp({ phRef, host, stageRef, mouse, lastMove, onGround, onLight, darkRef, enabledRef, glareEls, isMobile = false }) {
   const { scene: original } = useGLTF(MODEL_URL);
   // Clone per mount: useGLTF caches one shared scene and we re-parent the head nodes.
   const scene = useMemo(() => original.clone(true), [original]);
@@ -156,6 +156,7 @@ function Lamp({ phRef, host, stageRef, mouse, lastMove, onGround, darkRef, enabl
   const mats = useRef({ bulb: null, lining: null });
   const level = useRef(0);
   const idleGlow = useRef(0); // resting glow (dark mode), fades in/out when the theme changes
+  const lightActiveRef = useRef(false);
 
   const ray = useMemo(() => new THREE.Raycaster(), []);
   // Invisible wall slightly in front of the lamp; the cursor is projected onto it
@@ -304,6 +305,12 @@ function Lamp({ phRef, host, stageRef, mouse, lastMove, onGround, darkRef, enabl
     level.current = THREE.MathUtils.damp(level.current, active ? 1 : 0, active ? SMOOTH.on : on ? SMOOTH.off : SMOOTH.disabled, dt);
     const k = level.current;
 
+    const isLit = k > 0.08;
+    if (onLight?.current && lightActiveRef.current !== isLit) {
+      lightActiveRef.current = isLit;
+      onLight.current(isLit);
+    }
+
     // 3. Cursor (anywhere on the page) -> point in front of the lamp
     const m = mouse.current;
     if (on && m.x >= 0) {
@@ -418,12 +425,14 @@ function Lamp({ phRef, host, stageRef, mouse, lastMove, onGround, darkRef, enabl
   );
 }
 
-export default function CursorLamp({ className = "", style, onGround, dark = false, enabled = true }) {
+export default function CursorLamp({ className = "", style, onGround, onLight, dark = false, enabled = true }) {
   const phRef = useRef(null);
   const mouse = useRef({ x: -1, y: -1 });
   const lastMove = useRef(0);
   const onGroundRef = useRef(onGround);
   onGroundRef.current = onGround;
+  const onLightRef = useRef(onLight);
+  onLightRef.current = onLight;
   const darkRef = useRef(dark);
   darkRef.current = dark;
   const enabledRef = useRef(enabled);
@@ -554,7 +563,7 @@ export default function CursorLamp({ className = "", style, onGround, dark = fal
                       <Lightformer form="rect" intensity={1.6} color="#FFFFFF" position={[3, 3, 4]} scale={[5, 2, 1]} target={[0, 0, 0]} />
                       <Lightformer form="ring" intensity={1} color="#FFD9A0" position={[0, 0.5, 5]} scale={3} target={[0, 0, 0]} />
                     </Environment>
-                    <Lamp phRef={phRef} host={host} stageRef={stageRef} mouse={mouse} lastMove={lastMove} onGround={onGroundRef} darkRef={darkRef} enabledRef={enabledRef} glareEls={glareEls} isMobile={false} />
+                    <Lamp phRef={phRef} host={host} stageRef={stageRef} mouse={mouse} lastMove={lastMove} onGround={onGroundRef} onLight={onLightRef} darkRef={darkRef} enabledRef={enabledRef} glareEls={glareEls} isMobile={false} />
                   </Suspense>
                 </Canvas>
               </div>

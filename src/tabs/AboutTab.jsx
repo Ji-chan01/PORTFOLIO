@@ -5,10 +5,11 @@ import ThemeToggle from '../components/ThemeToggle';
 import CursorLamp from '../components/desk/CursorLamp';
 import SkillBar from '../components/about/SkillBar';
 import TechMarquee from '../components/about/TechMarquee';
+import KeySkills from '../components/about/KeySkills';
 import TestimonialCard from '../components/about/TestimonialCard';
 import StarsBackground from '../components/about/StarsBackground';
 import ContactSection from '../components/about/ContactSection';
-import RotatingWord from '../components/about/RotatingWord';
+// import RotatingWord from '../components/about/RotatingWord';
 import StageBackdrop from '../components/about/StageBackdrop';
 import {
   frontendSkills, mobileSkills, backendSkills, designSkills
@@ -256,6 +257,8 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
   const resumeBtnRef = useRef(null);
   const [slider, setSlider] = useState({ left: 0, width: 0 });
   const [lampOff, setLampOff] = useState(false); // true while the stats cards are on screen
+  const [lampLit, setLampLit] = useState(false); // true when the lamp light is actively on
+  const [hoveringCredits, setHoveringCredits] = useState(false);
 
   const scrollToContact = () => {
     const el = document.getElementById('contact-section');
@@ -394,7 +397,7 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
           {/* Left Column: Heading & Action Buttons */}
           <div className="relative z-10 flex-1 max-w-2xl text-left flex flex-col items-start w-full">
             {onToggle && (
-              <div className="mb-4">
+              <div className="mb-4 hidden lg:block">
                 <ThemeToggle dark={dark} onToggle={onToggle} />
               </div>
             )}
@@ -483,8 +486,41 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
 
           {/* Right Column: 3D Interactive Desk Lamp (Desktop only) */}
           <div className="hidden lg:flex lg:w-1/2 h-[500px] items-start justify-end">
-            <div className="w-full h-full max-w-xl">
-              <CursorLamp className="w-full h-full" onGround={handleGround} dark={dark} enabled={!lampOff} />
+            <div className="w-full h-full max-w-xl relative">
+              <CursorLamp className="w-full h-full" onGround={handleGround} onLight={setLampLit} dark={dark} enabled={!lampOff} />
+              <p
+                onMouseEnter={() => setHoveringCredits(true)}
+                onMouseLeave={() => setHoveringCredits(false)}
+                className={`absolute bottom-[-5px] right-2 z-40 text-[9px] text-zinc-500 select-none whitespace-nowrap transition-opacity duration-500 ${lampLit && !hoveringCredits ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
+                  }`}
+              >
+                <a
+                  href="https://sketchfab.com/3d-models/desk-lamp-7377ec591df04445a1aae370017aaa13"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-accent transition-colors duration-300"
+                >
+                  Desk lamp
+                </a>{' '}
+                by{' '}
+                <a
+                  href="https://sketchfab.com/BlueHour"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-accent transition-colors duration-300"
+                >
+                  KaramellGlass
+                </a>{' '}
+                is licensed under{' '}
+                <a
+                  href="https://creativecommons.org/licenses/by/4.0/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-accent transition-colors duration-300"
+                >
+                  Creative Commons Attribution
+                </a>
+              </p>
             </div>
           </div>
         </div>
@@ -556,7 +592,7 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
           >
             <h2 className="text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-[1.1] sm:leading-[1.1]">
               <span className="block">
-                Where <RotatingWord className="text-[#64748B]" interval={2000} />,
+                Where <span className="text-[#64748B]" >innovation</span>,
               </span>
               <span className="block mt-2 sm:mt-3">
                 meets the{' '}
@@ -583,7 +619,7 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
                     />
                   </motion.svg>
                 </span>
-                .
+
               </span>
             </h2>
           </motion.div>
@@ -658,8 +694,14 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
         </section>
 
         {/* ── Tech Stack Marquee ── */}
+        {/* techRef marks where the black slab ends, so Key Skills lives inside it (above the wave) */}
         <div ref={techRef} className="-mx-6 md:-mx-8 py-6 sm:py-10">
           <TechMarquee />
+
+          {/* ── Key Skills (from résumé) ── */}
+          <div className="px-6 md:px-8">
+            <KeySkills />
+          </div>
         </div>
 
 

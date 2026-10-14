@@ -90,6 +90,72 @@ export default function DeskControls({
     c.addEventListener('end', onEnd);
     c.addEventListener('change', invalidate);
 
+    // On mobile: allow page scrolling once the 3D desk hits its maximum tilt limits
+    const dom = gl.domElement;
+    let isTracking = false;
+    let lastY = 0;
+    let lastX = 0;
+    let scroller = null;
+
+    function getScrollParent(el) {
+      let p = el?.parentElement;
+      while (p && p !== document.body) {
+        const style = getComputedStyle(p);
+        if (/(auto|scroll)/.test(style.overflowY)) {
+          return p;
+        }
+        p = p.parentElement;
+      }
+      return document.getElementById('scroll-container-mobile') || document.getElementById('scroll-container-desktop') || window;
+    }
+
+    const onPointerDown = (e) => {
+      if (e.pointerType !== 'touch' && window.innerWidth >= 1024) return;
+      isTracking = true;
+      lastY = e.clientY;
+      lastX = e.clientX;
+      scroller = getScrollParent(dom);
+    };
+
+    const onPointerMove = (e) => {
+      if (!isTracking) return;
+      const clientY = e.clientY;
+      const clientX = e.clientX;
+      const deltaY = clientY - lastY;
+      lastY = clientY;
+      lastX = clientX;
+
+      if (Math.abs(deltaY) < 0.5) return;
+
+      const ctrlInst = ctrl.current;
+      if (!ctrlInst) return;
+
+      const polar = ctrlInst.getPolarAngle();
+      const atMax = polar >= ctrlInst.maxPolarAngle - 0.04;
+      const atMin = polar <= ctrlInst.minPolarAngle + 0.04;
+
+      // Swiping UP (deltaY < 0): reached max tilt point -> scroll screen DOWN
+      // Swiping DOWN (deltaY > 0): reached min tilt point -> scroll screen UP
+      if ((deltaY < 0 && atMax) || (deltaY > 0 && atMin)) {
+        if (scroller) {
+          if (scroller === window) {
+            window.scrollBy({ top: -deltaY, behavior: 'auto' });
+          } else {
+            scroller.scrollTop -= deltaY;
+          }
+        }
+      }
+    };
+
+    const onPointerUp = () => {
+      isTracking = false;
+    };
+
+    dom.addEventListener('pointerdown', onPointerDown, { passive: true });
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('pointerup', onPointerUp, { passive: true });
+    window.addEventListener('pointercancel', onPointerUp, { passive: true });
+
     ctrl.current = c;
     invalidate();
 
@@ -98,6 +164,10 @@ export default function DeskControls({
       c.removeEventListener('start', onStart);
       c.removeEventListener('end', onEnd);
       c.removeEventListener('change', invalidate);
+      dom.removeEventListener('pointerdown', onPointerDown);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerUp);
       c.dispose();
       ctrl.current = null;
     };

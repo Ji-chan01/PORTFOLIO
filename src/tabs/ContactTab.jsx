@@ -203,9 +203,11 @@ export default function ContactTab() {
 
               {/* Credit line */}
               <p className="absolute bottom-5 left-1/2 -translate-x-1/2 text-[9px] text-zinc-500 select-none whitespace-nowrap z-20">
-                <a href="https://skfb.ly/oVKwM" target="_blank" rel="noopener noreferrer" className='hover:text-primary-500 transition-colors duration-300'>
+                <a href="https://skfb.ly/oVKwM" target="_blank" rel="noopener noreferrer" className='hover:text-accent transition-colors duration-300'>
                   Computer Desk
-                </a> by CR!STALLL is licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className='hover:text-primary-500 transition-colors duration-300'>
+                </a> by <a href="https://sketchfab.com/CR1STALLL" target="_blank" rel="noopener noreferrer" className='hover:text-accent transition-colors duration-300'>
+                  CR1STALLL
+                </a> is licensed under <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className='hover:text-accent transition-colors duration-300'>
                   Creative Commons Attribution
                 </a>
               </p>

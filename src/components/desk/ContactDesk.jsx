@@ -122,11 +122,23 @@ function ShadowPlane() {
 }
 
 /* ═══════════════════════════════════════
+   Restarts rendering when frameloop switches back from "never" to "demand"
+   ═══════════════════════════════════════ */
+function ResumeOnVisible({ active }) {
+  const invalidate = useThree((s) => s.invalidate);
+  useEffect(() => {
+    if (active) invalidate();
+  }, [active, invalidate]);
+  return null;
+}
+
+/* ═══════════════════════════════════════
    Scene content – wraps everything inside the Canvas
    ═══════════════════════════════════════ */
-function SceneContent({ isActive, isDark, onLoaded, enableShadows }) {
+function SceneContent({ isActive, isDark, onLoaded, enableShadows, visible }) {
   return (
     <>
+      <ResumeOnVisible active={visible} />
       <EnvironmentSetup />
       <Lighting isDark={isDark} />
       {enableShadows && <ShadowPlane />}
@@ -163,17 +175,29 @@ export default function ContactDesk({ isActive = false, isDark = true }) {
     return () => window.removeEventListener('resize', handler);
   }, []);
 
-  // IntersectionObserver – mount canvas only when in viewport
+  // IntersectionObserver – only used to PAUSE rendering while off-screen.
+  // The canvas itself stays mounted, so the desk is built at page load and is
+  // already there when the visitor scrolls to it.
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const obs = new IntersectionObserver(
       ([entry]) => setIsVisible(entry.isIntersecting),
-      { threshold: 0.05 }
+      { threshold: 0, rootMargin: '300px 0px' } // wake up a little before it scrolls in
     );
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
+
+  // Keep rendering for a moment after the model loads (even off-screen) so the
+  // GPU uploads textures and compiles shaders now, not on first scroll.
+  const [warmed, setWarmed] = useState(false);
+  useEffect(() => {
+    if (!modelLoaded) return undefined;
+    const t = setTimeout(() => setWarmed(true), 600);
+    return () => clearTimeout(t);
+  }, [modelLoaded]);
+  const shouldRender = isVisible || !warmed;
 
   // Check WebGL support
   useEffect(() => {
@@ -205,15 +229,15 @@ export default function ContactDesk({ isActive = false, isDark = true }) {
       role="img"
       aria-label="3D computer desk scene that reacts when you interact with the contact form"
     >
-      {/* 3D Canvas – only mount when visible and WebGL is available */}
-      {isVisible && !webglFailed && (
+      {/* 3D Canvas – always mounted (when WebGL is available); paused via frameloop when off-screen */}
+      {!webglFailed && (
         <div
           className="absolute inset-0 transition-opacity duration-700"
           style={{ opacity: modelLoaded ? 1 : 0 }}
         >
           <Canvas
             shadows={enableShadows}
-            frameloop="demand"
+            frameloop={shouldRender ? 'demand' : 'never'}
             dpr={dpr}
             camera={{
               fov: CAMERA_FOV,
@@ -240,6 +264,7 @@ export default function ContactDesk({ isActive = false, isDark = true }) {
               isDark={isDark}
               onLoaded={handleModelLoaded}
               enableShadows={enableShadows}
+              visible={shouldRender}
             />
           </Canvas>
         </div>
