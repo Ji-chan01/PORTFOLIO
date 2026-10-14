@@ -8,17 +8,23 @@ import ContactTab from './tabs/ContactTab';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FaSun, FaMoon, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
-function getInitialTheme() {
-  const saved = localStorage.getItem('portfolio-theme');
-  if (saved) return saved === 'dark';
-  return false; // Default to light mode
+function getThemeForLayout(isDesktop) {
+  try {
+    const key = isDesktop ? 'portfolio-theme-desktop' : 'portfolio-theme-mobile';
+    const saved = localStorage.getItem(key);
+    if (saved !== null) return saved === 'dark';
+  } catch (e) {
+    // ignore local storage access errors
+  }
+  // Default: Light mode on desktop (false), Dark mode on mobile (true)
+  return !isDesktop;
 }
 
 // Single source of truth for the layout, so only ONE tree (desktop or mobile) is mounted at a time.
 // (Mounting both and hiding one with CSS made the hidden AboutTab measure everything as 0.)
 function useIsDesktop() {
   const query = '(min-width: 1024px)';
-  const [match, setMatch] = useState(() => window.matchMedia(query).matches);
+  const [match, setMatch] = useState(() => (typeof window !== 'undefined' ? window.matchMedia(query).matches : false));
   useEffect(() => {
     const mq = window.matchMedia(query);
     const onChange = (e) => setMatch(e.matches);
@@ -30,16 +36,22 @@ function useIsDesktop() {
 }
 
 export default function App() {
-  const [dark, setDark] = useState(getInitialTheme);
+  const isDesktop = useIsDesktop();
+  const [dark, setDark] = useState(() => getThemeForLayout(
+    typeof window !== 'undefined' ? window.matchMedia('(min-width: 1024px)').matches : false
+  ));
   const [activeTab, setActiveTab] = useState('About');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
-  const isDesktop = useIsDesktop();
 
-  // Apply dark class + persist preference
+  // Sync theme when switching between desktop and mobile layout
+  useEffect(() => {
+    setDark(getThemeForLayout(isDesktop));
+  }, [isDesktop]);
+
+  // Apply dark class
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark);
-    localStorage.setItem('portfolio-theme', dark ? 'dark' : 'light');
   }, [dark]);
 
   // Scroll to top for the new tab, but only AFTER the old tab has finished its exit animation.
@@ -51,7 +63,18 @@ export default function App() {
     if (mobileScroll) mobileScroll.scrollTop = 0;
   };
 
-  const toggleTheme = () => setDark((v) => !v);
+  const toggleTheme = () => {
+    setDark((prev) => {
+      const next = !prev;
+      try {
+        const key = isDesktop ? 'portfolio-theme-desktop' : 'portfolio-theme-mobile';
+        localStorage.setItem(key, next ? 'dark' : 'light');
+      } catch (e) {
+        // ignore local storage access errors
+      }
+      return next;
+    });
+  };
 
   const renderTab = () => {
     switch (activeTab) {

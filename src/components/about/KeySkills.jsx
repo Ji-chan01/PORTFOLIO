@@ -24,7 +24,7 @@ const SKILLS = [
   },
   {
     title: ['Mobile & Desktop', 'Developer'],
-    detail: 'O See, a React Native campus navigator, and Osmeña Access, a VB.NET school portal.',
+    detail: 'Cross-platform mobile apps with React Native & Expo, and desktop software built with VB.NET & MySQL.',
     icon: FaMobileAlt,
     tint: '147,197,253',
   },

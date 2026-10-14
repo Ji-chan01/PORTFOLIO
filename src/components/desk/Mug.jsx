@@ -38,7 +38,7 @@ export default function Mug({
   onPointerOut,
   onClick,
   reducedMotion = false,
-  isDark = true,
+  isDark = false,
 }) {
   const groupRef = useRef();
 

@@ -11,6 +11,21 @@
     <meta property="og:type" content="website" />
     <link rel="icon" type="image/x-icon" href="/src/assets/ico.ico" />
     <title>Christian Jireh A. Briol | UI/UX Designer & Full-Stack Developer</title>
+    <script>
+      (function () {
+        try {
+          var isDesktop = window.matchMedia ? window.matchMedia('(min-width: 1024px)').matches : (window.innerWidth >= 1024);
+          var storageKey = isDesktop ? 'portfolio-theme-desktop' : 'portfolio-theme-mobile';
+          var saved = localStorage.getItem(storageKey);
+          var isDark = saved !== null ? (saved === 'dark') : !isDesktop;
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

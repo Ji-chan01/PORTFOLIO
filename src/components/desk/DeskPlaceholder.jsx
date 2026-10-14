@@ -2,7 +2,7 @@
  * DeskPlaceholder – static loading placeholder shown while the 3D scene loads.
  * Displays a themed gradient with a shimmer animation and "Loading desk…" text.
  */
-export default function DeskPlaceholder({ isDark = true }) {
+export default function DeskPlaceholder({ isDark = false }) {
   const bgColor = isDark
     ? 'linear-gradient(135deg, #18181b 0%, #1e1b2e 50%, #18181b 100%)'
     : 'linear-gradient(135deg, #f5f5f5 0%, #e8edf5 50%, #f5f5f5 100%)';

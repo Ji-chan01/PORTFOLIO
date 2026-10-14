@@ -160,7 +160,7 @@ function addScreenOverlay(mesh, camera) {
   return { plane, material, texture };
 }
 
-export default function DeskModel({ isActive = false, isDark = true, onLoaded }) {
+export default function DeskModel({ isActive = false, isDark = false, onLoaded }) {
   const groupRef = useRef();
   const screenRef = useRef(null);            // { plane, material, texture }
   const isActiveRef = useRef(isActive);

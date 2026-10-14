@@ -41,7 +41,7 @@ export default function ContactSection({ dark }) {
   const [isDark, setIsDark] = useState(
     typeof dark === 'boolean'
       ? dark
-      : (typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : true)
+      : (typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : false)
   );
 
   useEffect(() => {
@@ -195,7 +195,7 @@ export default function ContactSection({ dark }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 bg-black">
         {/* 3D Desk Scene */}
         <div className="relative min-h-[340px] sm:min-h-[420px] lg:min-h-[520px] overflow-hidden bg-black">
-          <ContactDesk isActive={deskActive} isDark={true} />
+          <ContactDesk isActive={deskActive} isDark={isDark} />
 
           {/* Model Credit */}
           <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-[9px] text-zinc-500 select-none whitespace-nowrap z-20">

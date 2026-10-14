@@ -338,7 +338,7 @@ function SceneContent({ isDark, onPresetChange }) {
 /* ═══════════════════════════════════════════════
    DeskScene – the exported component with Canvas + Overlay
    ═══════════════════════════════════════════════ */
-export default function DeskScene({ isDark = true }) {
+export default function DeskScene({ isDark = false }) {
   const [activePreset, setActivePreset] = useState('default');
   const containerRef = useRef(null);
   const [isVisible, setIsVisible] = useState(true);

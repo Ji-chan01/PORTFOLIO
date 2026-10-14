@@ -193,7 +193,7 @@ export default function Laptop({
   onPointerOver,
   onPointerOut,
   onClick,
-  isDark = true,
+  isDark = false,
 }) {
   const groupRef = useRef();
   const screenLightRef = useRef();

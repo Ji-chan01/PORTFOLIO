@@ -158,7 +158,7 @@ function SceneContent({ isActive, isDark, onLoaded, enableShadows, visible }) {
 /* ═══════════════════════════════════════
    ContactDesk – main exported component
    ═══════════════════════════════════════ */
-export default function ContactDesk({ isActive = false, isDark = true }) {
+export default function ContactDesk({ isActive = false, isDark = false }) {
   const containerRef = useRef(null);
   const [isVisible, setIsVisible] = useState(true);
   const [modelLoaded, setModelLoaded] = useState(false);

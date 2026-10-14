@@ -38,7 +38,7 @@ export default function ContactTab() {
 
   // Detect dark mode from the document class
   const [isDark, setIsDark] = useState(
-    typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : true
+    typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : false
   );
 
   // Watch for theme changes
@@ -199,7 +199,7 @@ export default function ContactTab() {
 
             {/* 3D Desk Scene (replaces the Google Map) */}
             <div className="flex-1 overflow-hidden min-h-[30vh] min-[1264px]:min-h-0 relative bg-black">
-              <ContactDesk isActive={deskActive} isDark={true} />
+              <ContactDesk isActive={deskActive} isDark={isDark} />
 
               {/* Credit line */}
               <p className="absolute bottom-5 left-1/2 -translate-x-1/2 text-[9px] text-zinc-500 select-none whitespace-nowrap z-20">
