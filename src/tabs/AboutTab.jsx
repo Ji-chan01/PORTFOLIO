@@ -8,17 +8,170 @@ import TechMarquee from '../components/about/TechMarquee';
 import TestimonialCard from '../components/about/TestimonialCard';
 import StarsBackground from '../components/about/StarsBackground';
 import ContactSection from '../components/about/ContactSection';
+import RotatingWord from '../components/about/RotatingWord';
+import StageBackdrop from '../components/about/StageBackdrop';
 import {
   frontendSkills, mobileSkills, backendSkills, designSkills
 } from '../data/skills';
 import { testimonials } from '../data/testimonials';
 import { projects } from '../data/projects';
-import earthNight from '../assets/earth-night.jpg';
 import christianCutout from '../assets/christian-cutout.png';
 import {
   FaCode, FaHeart, FaChess, FaBasketballBall, FaMusic, FaTimes, FaStar, FaStarHalfAlt,
-  FaDownload, FaArrowRight, FaLock, FaEye, FaEyeSlash
+  FaDownload, FaArrowRight, FaLock, FaEye, FaEyeSlash,
+  FaGraduationCap, FaRocket, FaLayerGroup, FaClock
 } from 'react-icons/fa';
+
+// "Why hire me?" timeline rows (alternate left / right)
+const WHY_ME = [
+  {
+    icon: FaGraduationCap,
+    title: 'Honors Graduate',
+    meta: 'Computer Science · April 2026',
+    bullets: [
+      'Graduated Cum Laude in Computer Science',
+      'Finished with a 1.51 GWA',
+      'Most of what I know came from building things for real people',
+    ],
+  },
+  {
+    icon: FaRocket,
+    title: 'Shipping Since Day One',
+    meta: 'Freelance · 2+ years',
+    bullets: [
+      '10+ web, mobile, and desktop apps delivered',
+      'Built for schools and research teams',
+      'Everything from the database to the screen someone actually taps',
+    ],
+  },
+  {
+    icon: FaLayerGroup,
+    title: 'The Stack I Reach For',
+    meta: 'Frontend · Backend · Databases',
+    bullets: [
+      'Most at home in React, Node.js/Express, and Django',
+      'Backed by MySQL, SQLite, or SQL Server, whichever the project calls for',
+    ],
+  },
+  {
+    icon: FaClock,
+    title: 'Reliable by Default',
+    meta: '100% on-time delivery',
+    bullets: [
+      'Every project has gone out on time',
+      'Full stack development and UI/UX design, with a good sense of both frontend and backend development, solo or with a team',
+    ],
+  },
+];
+
+// One timeline row. Hidden until the growing line reaches its icon, then the icon glows
+// and the card + bullets slide in from their side.
+function WhyMeRow({ item, left, active, nodeRef }) {
+  const reduce = useReducedMotion();
+  const Icon = item.icon;
+  const show = active || reduce;
+
+  return (
+    <div className="relative grid grid-cols-1 md:grid-cols-2 md:gap-x-20 pl-14 md:pl-0">
+      <span
+        ref={nodeRef}
+        className={`absolute left-5 md:left-1/2 top-6 -translate-x-1/2 z-10 flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-zinc-950 border transition-colors duration-500 ${active ? 'border-accent text-accent' : 'border-gray-300 dark:border-white/15 text-gray-400 dark:text-zinc-500'
+          }`}
+      >
+        <span className={`absolute inset-0 rounded-full bg-accent/50 blur-md transition-opacity duration-500 ${active ? 'opacity-100' : 'opacity-0'}`} />
+        <Icon size={15} className="relative" />
+      </span>
+
+      <motion.div
+        initial={false}
+        animate={show ? { opacity: 1, x: 0 } : { opacity: 0, x: left ? -140 : 140 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+        className={`${left ? 'md:col-start-1' : 'md:col-start-2'} p-6 text-left`}
+      >
+        <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">{item.title}</h3>
+        <p className="text-xs italic text-gray-500 dark:text-zinc-400 mt-1 mb-4">{item.meta}</p>
+        <ul className="space-y-2.5 text-sm text-gray-600 dark:text-zinc-300 leading-relaxed">
+          {item.bullets.map((b, j) => (
+            <motion.li
+              key={b}
+              initial={false}
+              animate={show ? { opacity: 1, x: 0 } : { opacity: 0, x: left ? -50 : 50 }}
+              transition={{ duration: 0.5, ease: 'easeOut', delay: show ? 0.2 + j * 0.15 : 0 }}
+              className="flex gap-3"
+            >
+              <span className="mt-2 h-1.5 w-1.5 rounded-full bg-accent shrink-0" />
+              <span>{b}</span>
+            </motion.li>
+          ))}
+        </ul>
+      </motion.div>
+    </div>
+  );
+}
+
+// Timeline: no line at first. It is drawn from the top as you scroll, and each icon
+// lights up (with its card) when the end of the line reaches it.
+function WhyMeTimeline() {
+  const ref = useRef(null);
+  const fillRef = useRef(null);
+  const nodeRefs = useRef([]);
+  const [reached, setReached] = useState(0);
+
+  useEffect(() => {
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const el = ref.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const head = window.innerHeight * 0.65; // the line's tip sits at 65% of the screen height
+      const h = Math.max(0, Math.min(r.height, head - r.top));
+      if (fillRef.current) fillRef.current.style.height = `${h}px`;
+
+      let n = 0;
+      nodeRefs.current.forEach((node, i) => {
+        if (!node) return;
+        const nr = node.getBoundingClientRect();
+        if (h >= nr.top + nr.height / 2 - r.top) n = i + 1;
+      });
+      setReached(n);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    // capture = true so this also fires when the page scrolls inside a container, not just the window
+    window.addEventListener('scroll', onScroll, true);
+    window.addEventListener('resize', onScroll);
+    update();
+    return () => {
+      window.removeEventListener('scroll', onScroll, true);
+      window.removeEventListener('resize', onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <div
+        ref={fillRef}
+        aria-hidden="true"
+        className="absolute top-0 left-5 md:left-1/2 -translate-x-1/2 w-px h-0 bg-accent text-accent transition-[filter] duration-500"
+        style={{ filter: `drop-shadow(0 0 ${reached > 0 ? 8 : 3}px currentColor)` }}
+      />
+      <div className="space-y-10 md:space-y-16">
+        {WHY_ME.map((item, i) => (
+          <WhyMeRow
+            key={item.title}
+            item={item}
+            left={i % 2 === 0}
+            active={i < reached}
+            nodeRef={(el) => (nodeRefs.current[i] = el)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const fadeIn = {
   initial: { opacity: 0, y: 24 },
@@ -98,6 +251,7 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
   const [showPassword, setShowPassword] = useState(false);
   const [hoveredBtn, setHoveredBtn] = useState('talk');
   const passwordInputRef = useRef(null);
+  const heroSceneRef = useRef(null);
   const talkBtnRef = useRef(null);
   const resumeBtnRef = useRef(null);
   const [slider, setSlider] = useState({ left: 0, width: 0 });
@@ -191,6 +345,7 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
       const root = rootRef.current, stats = statsRef.current, tech = techRef.current;
       if (!root || !stats || !tech) return;
       const r = root.getBoundingClientRect();
+      if (!r.width) return; // not laid out (hidden): nothing to measure, and don't store bogus 0 positions
       bottomRef.current = tech.getBoundingClientRect().bottom - r.top + PAD_BOTTOM;
       // Mobile (lamp stacked above the text): start at the stats row instead of the lamp
       if (window.innerWidth < 1024) topRef.current = stats.getBoundingClientRect().top - r.top - 24;
@@ -215,12 +370,13 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
   return (
     <motion.div
       ref={rootRef}
+      data-lamp-root="true"
       key="about"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
       transition={{ duration: 0.35 }}
-      className="relative isolate px-6 md:px-8 pt-3 md:pt-4 space-y-24 md:space-y-32"
+      className="relative isolate px-6 md:px-8 pt-3 md:pt-2 space-y-24 md:space-y-32"
     >
       {/* Solid, fully opaque desk surface (top edge set from the lamp's ground line) */}
       <div
@@ -233,7 +389,7 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
         <WaveEdge className="absolute left-0 w-full h-28 md:h-44" style={{ top: 'calc(100% - 1px)' }} />
       </div>
 
-      <section className="relative flex flex-col justify-start pt-1 pb-6">
+      <section className="relative flex flex-col justify-start pt-12 pb-6 !mt-0">
         <div className="relative flex flex-col lg:flex-row items-start justify-between gap-8 lg:gap-8 w-full">
           {/* Left Column: Heading & Action Buttons */}
           <div className="relative z-10 flex-1 max-w-2xl text-left flex flex-col items-start w-full">
@@ -359,69 +515,82 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
           ))}
         </div>
 
-        {/* ── Who I Am ── */}
+        {/* ── Why Hire Me (alternating timeline) ── */}
         <section className="relative -mx-6 md:-mx-8 px-6 md:px-8 overflow-hidden">
-          {/* Earth at night: fades into the black page on every side */}
-          <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
-            <img
-              src={earthNight}
-              alt=""
-              loading="lazy"
-              className="w-full h-full object-cover object-center"
-              style={{
-                WebkitMaskImage: 'linear-gradient(to bottom, transparent, #ffffffff 50%, #ffffffff 90%, transparent)',
-                maskImage: 'linear-gradient(to bottom, transparent, #000000ff 50%, #000000ff 90%, transparent)',
-              }}
-            />
-            {/* keeps the text side readable */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/75 to-transparent" />
-          </div>
+          {/* Earth at night (dark mode only), fades into the page on every side */}
 
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 items-center gap-10 lg:gap-16 max-w-6xl mx-auto py-16 md:py-24">
-            {/* Text */}
+
+          <div className="relative z-10 max-w-5xl mx-auto py-16 md:py-24">
+            {/* Header */}
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-80px' }}
               transition={{ duration: 0.5 }}
-              className="order-2 lg:order-1 text-left"
+              className="text-center mb-14 md:mb-20 flex flex-col items-center"
             >
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-[1.1] mb-6 md:mb-8">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[1.1] text-gray-900 dark:text-white">
                 <span className="block">Why hire me?</span>
-                <span className="block">Let the work answers.</span>
+                <span className="block text-accent">Let the work answer.</span>
               </h2>
-
-              <div className="space-y-4 text-lg sm:text-base text-zinc-300 leading-relaxed max-w-xl">
-                <p>
-                  I graduated <span className="text-white font-semibold">Cum Laude</span> in Computer Science with a
-                  1.51 GWA, but most of what I know came from building things for real people. For the past two years
-                  I've been shipping 10+ web, mobile, and desktop apps for schools and research teams, from the
-                  database all the way to the screen someone actually taps.
-                </p>
-                <p>
-                  I'm most at home in React, Node.js/Express, and Django, backed by MySQL, SQLite, or SQL Server,
-                  whichever the project calls for. Every project has gone out on time, and my four client reviews
-                  average 4.9/5.
-                </p>
-              </div>
             </motion.div>
+
+            {/* Timeline */}
+            <WhyMeTimeline />
           </div>
         </section>
 
-        {/* ── Top Projects Bento Grid ── */}
-        <section>
+        {/* ── Innovation Statement (Full Screen) ── */}
+        <section
+          ref={heroSceneRef}
+          className="relative -mx-6 md:-mx-8 px-6 md:px-8 min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center text-center overflow-hidden"
+        >
+          <StageBackdrop />
+
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.5 }}
-            className="mb-10 md:mb-14 text-left"
+            transition={{ duration: 0.6 }}
+            className="relative z-10 max-w-4xl mx-auto flex flex-col items-center justify-center pointer-events-none"
           >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold text-white tracking-tight leading-[1.1] sm:leading-[1.1]">
-              <span className="block">Where innovation,</span>
-              <span className="block">meets the podium.</span>
+            <h2 className="text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-[1.1] sm:leading-[1.1]">
+              <span className="block">
+                Where <RotatingWord className="text-[#64748B]" interval={2000} />,
+              </span>
+              <span className="block mt-2 sm:mt-3">
+                meets the{' '}
+                <span className="relative inline-block">
+                  podium
+                  {/* curved underline, revealed left to right when the heading scrolls into view */}
+                  <motion.svg
+                    aria-hidden="true"
+                    viewBox="0 0 100 8"
+                    preserveAspectRatio="none"
+                    className="absolute left-0 w-full h-[6px] sm:h-[8px] -bottom-[0.14em] overflow-visible pointer-events-none"
+                    initial={{ clipPath: 'inset(-10px 100% -10px -10px)' }}
+                    whileInView={{ clipPath: 'inset(-10px -10px -10px -10px)' }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
+                  >
+                    <path
+                      d="M0 2 Q50 6 100 2"
+                      fill="none"
+                      stroke="#1E50BE"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  </motion.svg>
+                </span>
+                .
+              </span>
             </h2>
           </motion.div>
+        </section>
+
+        {/* ── Top Projects Bento Grid ── */}
+        <section className="px-6 md:px-8">
 
           {(() => {
             const TOP_IDS = ['O See', 'KeTox', 'CamScope', 'OsmenaAccess'];

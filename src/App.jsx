@@ -14,11 +14,27 @@ function getInitialTheme() {
   return false; // Default to light mode
 }
 
+// Single source of truth for the layout, so only ONE tree (desktop or mobile) is mounted at a time.
+// (Mounting both and hiding one with CSS made the hidden AboutTab measure everything as 0.)
+function useIsDesktop() {
+  const query = '(min-width: 1024px)';
+  const [match, setMatch] = useState(() => window.matchMedia(query).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const onChange = (e) => setMatch(e.matches);
+    setMatch(mq.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+  return match;
+}
+
 export default function App() {
   const [dark, setDark] = useState(getInitialTheme);
   const [activeTab, setActiveTab] = useState('About');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
+  const isDesktop = useIsDesktop();
 
   // Apply dark class + persist preference
   useEffect(() => {
@@ -26,13 +42,14 @@ export default function App() {
     localStorage.setItem('portfolio-theme', dark ? 'dark' : 'light');
   }, [dark]);
 
-  // Scroll to top when tab changes
-  useEffect(() => {
+  // Scroll to top for the new tab, but only AFTER the old tab has finished its exit animation.
+  // (Doing it right when activeTab changes made the old page jump to its top while still fading out.)
+  const scrollToTop = () => {
     const desktopScroll = document.getElementById('scroll-container-desktop');
     const mobileScroll = document.getElementById('scroll-container-mobile');
     if (desktopScroll) desktopScroll.scrollTop = 0;
     if (mobileScroll) mobileScroll.scrollTop = 0;
-  }, [activeTab]);
+  };
 
   const toggleTheme = () => setDark((v) => !v);
 
@@ -51,19 +68,22 @@ export default function App() {
 
 
       {/* Desktop view */}
-      <div className="hidden lg:flex h-screen overflow-hidden">
+      {isDesktop && (
+      <div className="flex h-screen overflow-hidden">
         <main className="flex-1 flex flex-col h-full overflow-hidden">
           <TabNav activeTab={activeTab} onTabChange={setActiveTab} onProfileClick={() => setIsZoomed(true)} />
           <div id="scroll-container-desktop" className="flex-1 overflow-y-auto">
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait" onExitComplete={scrollToTop}>
               {renderTab()}
             </AnimatePresence>
           </div>
         </main>
       </div>
+      )}
 
       {/* Mobile view */}
-      <div className="lg:hidden fixed inset-0 flex flex-col overflow-hidden overscroll-none">
+      {!isDesktop && (
+      <div className="fixed inset-0 flex flex-col overflow-hidden overscroll-none">
         <header className="flex items-center justify-between px-4 py-3 bg-white dark:bg-black border-b border-gray-200 dark:border-zinc-800 z-20 flex-shrink-0">
           <div className="flex items-center gap-3">
             <div
@@ -116,7 +136,7 @@ export default function App() {
         </AnimatePresence>
 
         <main id="scroll-container-mobile" className="flex-1 overflow-y-auto relative">
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait" onExitComplete={scrollToTop}>
             {renderTab()}
           </AnimatePresence>
         </main>
@@ -125,6 +145,7 @@ export default function App() {
           <TabNav activeTab={activeTab} onTabChange={(t) => { setActiveTab(t); setSidebarOpen(false); }} onProfileClick={() => setIsZoomed(true)} />
         </div>
       </div>
+      )}
 
       <AnimatePresence>
         {isZoomed && (

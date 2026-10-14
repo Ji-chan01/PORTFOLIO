@@ -73,6 +73,7 @@ const GLARE_TILT_FULL = 0.75; // tilt where it reaches full strength (~43 deg)
 const GLARE_REACH = 1.6; // how far from the bulb (world units) the glare lands, along the direction the shade points
 const GLARE_RADIUS = 1.9; // glare radius in lamp-heights-ish units (multiplied by pixels per unit)
 const GLARE_BLUR = 7; // max blur in px at the centre of the glare
+const STAGE_PAD_BOTTOM = 160; // how far the canvas extends below the lamp's placeholder (for the desk light pool)
 const GLARE_DEBUG = false; // true = small label at the top-left showing the live head tilt, so you can tune the two TILT values
 
 const DOME_FLOOR = 0.03; // minimum dome thickness at its far ends; hides the thin hairline where the slab edge peeks out
@@ -139,13 +140,14 @@ function getScrollParent(el) {
   return null;
 }
 
-function Lamp({ phRef, host, mouse, lastMove, onGround, darkRef, enabledRef, glareEls, isMobile = false }) {
+function Lamp({ phRef, host, stageRef, mouse, lastMove, onGround, darkRef, enabledRef, glareEls, isMobile = false }) {
   const { scene: original } = useGLTF(MODEL_URL);
   // Clone per mount: useGLTF caches one shared scene and we re-parent the head nodes.
   const scene = useMemo(() => original.clone(true), [original]);
 
   const hostRef = useRef(host);
   hostRef.current = host;
+  const liveHost = useRef({ left: 0, top: 0, width: 0, height: 0 });
 
   const head = useMemo(() => new THREE.Group(), []);
   const body = useMemo(() => new THREE.Group(), []);
@@ -255,9 +257,17 @@ function Lamp({ phRef, host, mouse, lastMove, onGround, darkRef, enabledRef, gla
   }, [scene, head, body, target]);
 
   useFrame((state, dt) => {
-    const h = hostRef.current;
+    let h = hostRef.current;
     const ph = phRef.current;
-    if (!h || !ph) return;
+    const stageEl = stageRef && stageRef.current;
+    if (stageEl) {
+      // The canvas lives INSIDE the scrolling content, so it scrolls natively with the page (no lag).
+      // Its screen position changes while scrolling, so read it live every frame.
+      const r = stageEl.getBoundingClientRect();
+      h = liveHost.current;
+      h.left = r.left; h.top = r.top; h.width = r.width; h.height = r.height;
+    }
+    if (!h || !ph || !h.width || !h.height) return;
     const { camera, size } = state;
 
     // 1. Frame the lamp inside the placeholder, while the canvas covers the whole content area
@@ -420,6 +430,8 @@ export default function CursorLamp({ className = "", style, onGround, dark = fal
   enabledRef.current = enabled;
   const [host, setHost] = useState(null);
   const [scrollerEl, setScrollerEl] = useState(null);
+  const [rootEl, setRootEl] = useState(null); // the page root ([data-lamp-root]) the canvas is rendered into
+  const stageRef = useRef(null);
   const [isMobile, setIsMobile] = useState(
     typeof window !== "undefined" ? window.innerWidth < 1024 : false
   );
@@ -453,10 +465,25 @@ export default function CursorLamp({ className = "", style, onGround, dark = fal
     if (!ph) return;
     const scroller = getScrollParent(ph);
     setScrollerEl(scroller);
+    const rootEl = ph.closest("[data-lamp-root]");
+    setRootEl(rootEl);
 
     const measure = () => {
       const pr = ph.getBoundingClientRect();
       const visible = pr.width > 0 && pr.height > 0; // false for the hidden desktop/mobile duplicate
+      if (rootEl) {
+        // Stage mode: the canvas is a static box inside the page (top of page -> a bit below the lamp).
+        // These numbers are relative to the page content, so they do not change while scrolling.
+        const rr = rootEl.getBoundingClientRect();
+        const width = rr.width;
+        const height = Math.max(0, Math.min(rr.height, pr.bottom - rr.top + STAGE_PAD_BOTTOM));
+        setHost((p) =>
+          p && p.visible === visible && p.left === 0 && p.top === 0 && p.width === width && p.height === height
+            ? p
+            : { visible, left: 0, top: 0, width, height }
+        );
+        return;
+      }
       let left = 0, top = 0, width = window.innerWidth, height = window.innerHeight;
       if (scroller) {
         const r = scroller.getBoundingClientRect();
@@ -476,6 +503,7 @@ export default function CursorLamp({ className = "", style, onGround, dark = fal
     const ro = new ResizeObserver(measure);
     ro.observe(ph);
     if (scroller) ro.observe(scroller);
+    if (rootEl) ro.observe(rootEl);
     window.addEventListener("resize", measure);
     return () => {
       ro.disconnect();
@@ -484,7 +512,8 @@ export default function CursorLamp({ className = "", style, onGround, dark = fal
   }, []);
 
   const box = host && {
-    position: "fixed",
+    position: rootEl ? "absolute" : "fixed", // absolute inside the page = scrolls natively with it
+    margin: 0, // the page root uses space-y-* (margin-top on every child); the lamp layers must ignore it
     left: host.left,
     top: host.top,
     width: host.width,
@@ -505,7 +534,7 @@ export default function CursorLamp({ className = "", style, onGround, dark = fal
             {/* Glare, part 1: blurs the page behind the lamp (below the 3D canvas, so the lamp itself stays sharp) */}
             <div ref={(el) => (glareEls.current.blur = el)} aria-hidden="true" style={{ ...box, zIndex: 29, opacity: 0 }} />
             <LampBoundary>
-              <div style={{ ...box, zIndex: 30 }}>
+              <div ref={stageRef} style={{ ...box, zIndex: 30 }}>
                 <Canvas
                   shadows
                   dpr={[1, 1.5]}
@@ -525,7 +554,7 @@ export default function CursorLamp({ className = "", style, onGround, dark = fal
                       <Lightformer form="rect" intensity={1.6} color="#FFFFFF" position={[3, 3, 4]} scale={[5, 2, 1]} target={[0, 0, 0]} />
                       <Lightformer form="ring" intensity={1} color="#FFD9A0" position={[0, 0.5, 5]} scale={3} target={[0, 0, 0]} />
                     </Environment>
-                    <Lamp phRef={phRef} host={host} mouse={mouse} lastMove={lastMove} onGround={onGroundRef} darkRef={darkRef} enabledRef={enabledRef} glareEls={glareEls} isMobile={false} />
+                    <Lamp phRef={phRef} host={host} stageRef={stageRef} mouse={mouse} lastMove={lastMove} onGround={onGroundRef} darkRef={darkRef} enabledRef={enabledRef} glareEls={glareEls} isMobile={false} />
                   </Suspense>
                 </Canvas>
               </div>
@@ -539,7 +568,7 @@ export default function CursorLamp({ className = "", style, onGround, dark = fal
               />
             )}
           </>,
-          document.body
+          rootEl || document.body
         )}
     </>
   );

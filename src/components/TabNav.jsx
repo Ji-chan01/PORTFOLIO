@@ -28,7 +28,7 @@ const socialLinks = [
 
 export default function TabNav({ activeTab, onTabChange, onProfileClick }) {
   return (
-    <nav className="border-t-0 bg-white/70 dark:bg-black/70 backdrop-blur-md z-10 px-6 md:px-24 py-2">
+    <nav className="border-t-0 bg-white/70 dark:bg-black/70 backdrop-blur-md z-10 px-6 md:px-24 py-0">
       <div className="flex items-center justify-between h-16 w-full">
         {/* Left: Picture and Name (Desktop) */}
         <div className="hidden lg:flex items-center gap-3 min-w-[240px]">
