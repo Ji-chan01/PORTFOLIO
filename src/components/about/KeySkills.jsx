@@ -18,7 +18,7 @@ const SKILLS = [
   },
   {
     title: ['UI/UX', 'Designer'],
-    detail: 'Figma interfaces behind CamScope and KetoX, both 1st place at DSTF Masbate.',
+    detail: 'Designing clean, user-focused interfaces and visuals with Figma, Photoshop, and Canva',
     icon: SiFigma,
     tint: '242,78,30',
   },
@@ -30,7 +30,7 @@ const SKILLS = [
   },
   {
     title: ['Team', 'Leader'],
-    detail: 'Led the O See capstone team: A* pathfinding, 360° directions, and offline use.',
+    detail: 'Led the O See capstone team to build a hybrid Android campus navigator for Osmeña Colleges.',
     icon: FaUsers,
     tint: '250,204,21',
   },
