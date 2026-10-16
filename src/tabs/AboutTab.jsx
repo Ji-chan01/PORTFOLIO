@@ -413,7 +413,7 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
               <button
                 id="about-lets-talk-mobile"
                 onClick={scrollToContact}
-                className="w-full flex justify-center items-center gap-2 text-xs font-bold py-3.5 px-6 bg-accent text-white border border-accent active:scale-[0.98] transition-transform shadow-sm"
+                className="w-full flex justify-center items-center gap-2 text-xs font-bold py-3.5 px-6 bg-accent text-white dark:text-black border border-accent active:scale-[0.98] transition-transform shadow-sm"
                 style={{ borderRadius: 0, letterSpacing: '1px' }}
               >
                 LET'S TALK <FaArrowRight size={11} />
@@ -459,7 +459,7 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
                 onClick={scrollToContact}
                 onMouseEnter={() => setHoveredBtn('talk')}
                 className={`relative z-10 flex justify-center items-center gap-2 text-xs font-bold px-5 sm:px-6 py-3.5 transition-colors duration-150 active:scale-95 whitespace-nowrap ${hoveredBtn === 'talk'
-                  ? 'text-white'
+                  ? 'text-white dark:text-black'
                   : 'text-gray-700 dark:text-zinc-300 hover:text-accent'
                   }`}
                 style={{ borderRadius: 0, letterSpacing: '1px' }}
@@ -474,7 +474,7 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
                 onClick={openPasswordModal}
                 onMouseEnter={() => setHoveredBtn('resume')}
                 className={`relative z-10 flex justify-center items-center gap-2 text-xs font-bold px-5 sm:px-6 py-3.5 transition-colors duration-150 active:scale-95 whitespace-nowrap ${hoveredBtn === 'resume'
-                  ? 'text-white'
+                  ? 'text-white dark:text-black'
                   : 'text-gray-700 dark:text-zinc-300 hover:text-accent'
                   }`}
                 style={{ borderRadius: 0, letterSpacing: '1px' }}
