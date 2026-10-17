@@ -2,7 +2,7 @@ import { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import ThemeToggle from '../components/ThemeToggle';
-import CursorLamp from '../components/desk/CursorLamp';
+import CursorLamp from '../components/3d design/lamp/CursorLamp';
 import SkillBar from '../components/about/SkillBar';
 import TechMarquee from '../components/about/TechMarquee';
 import KeySkills from '../components/about/KeySkills';
@@ -16,7 +16,6 @@ import {
 } from '../data/skills';
 import { testimonials } from '../data/testimonials';
 import { projects } from '../data/projects';
-import christianCutout from '../assets/christian-cutout.png';
 import {
   FaCode, FaHeart, FaChess, FaBasketballBall, FaMusic, FaTimes, FaStar, FaStarHalfAlt,
   FaDownload, FaArrowRight, FaLock, FaEye, FaEyeSlash,

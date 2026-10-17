@@ -4,8 +4,8 @@ import emailjs from '@emailjs/browser';
 import {
   FaPaperPlane, FaTimes, FaCheckCircle, FaExclamationCircle, FaShieldAlt
 } from 'react-icons/fa';
-import ContactDesk from '../desk/ContactDesk';
-import { preloadDeskModel } from '../desk/DeskModel';
+import ContactDesk from '../3d design/desk/ContactDesk';
+import { preloadDeskModel } from '../3d design/desk/DeskModel';
 
 const RATE_LIMIT_KEY = 'portfolio_contact_limit';
 const MAX_REQUESTS = 3;
