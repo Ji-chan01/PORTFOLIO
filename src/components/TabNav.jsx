@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { FaFacebookF, FaGithub, FaEnvelope } from 'react-icons/fa';
 
-const tabs = ['About', 'Resume', 'Portfolio'];
+const tabs = ['About', 'Portfolio'];
 
 const socialLinks = [
   {

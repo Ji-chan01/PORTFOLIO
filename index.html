@@ -11,6 +11,56 @@
     <meta property="og:type" content="website" />
     <link rel="icon" type="image/x-icon" href="/my pic.ico" />
     <title>Christian Jireh A. Briol | UI/UX Designer & Full-Stack Developer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- async so it can never block the first paint (splash); the gate below hides the app until the font is ready -->
+    <link id="gf" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Google+Sans+Flex:wght@300;400;500;600;700;800;900&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&family=Google+Sans+Flex:wght@300;400;500;600;700;800;900&display=swap"></noscript>
+    <script>
+      /* Font gate: no fallback-font flash. Adds .fonts-ready once Google Sans is usable (2 s failsafe). */
+      (function () {
+        var h = document.documentElement;
+        function done() { if (!h.classList.contains('fonts-ready')) { h.classList.add('fonts-ready'); window.dispatchEvent(new Event('fonts-ready')); } }
+        if (!document.fonts || !document.fonts.load) { done(); return; }
+        function go() {
+          requestAnimationFrame(function () {
+            Promise.all(['400', '500', '700'].map(function (w) { return document.fonts.load(w + ' 1em "Google Sans"'); })).then(done, done);
+          });
+        }
+        var l = document.getElementById('gf');
+        if (l && l.sheet) go(); else if (l) l.addEventListener('load', go);
+        setTimeout(done, 2000);
+      })();
+    </script>
+    <style>
+      /* Splash (pure HTML/CSS/JS so it paints before the React bundle) */
+      #splash{--bg:#0866FF;--fg:#fff;--bg2:#fff;--fg2:#0866FF;--accent-dot:#E0FFFF;
+        position:fixed;inset:0;z-index:9999;overflow:hidden;animation:splash-failsafe .01s 25s forwards;
+        font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+      .dark #splash{--bg:#00F5A0;--fg:#000;--bg2:#000;--fg2:#00F5A0;--accent-dot:#0a192f;}
+      .sp-layer{position:absolute;inset:0;display:grid;place-items:center;background:var(--bg);color:var(--fg)}
+      .sp-wipe{background:var(--bg2);color:var(--fg2);clip-path:circle(0px at 50% 50%)}
+      .sp-content{text-align:center;padding:0 1rem}
+      .sp-title{font-weight:800;font-size:clamp(2rem,8.5vw,6.5rem);line-height:1;letter-spacing:-.04em;white-space:nowrap;
+        animation:splash-title-in .7s cubic-bezier(.16,1,.3,1) both}
+      .sp-tag{margin-top:1.4rem;font-weight:500;font-size:clamp(.62rem,2.6vw,1.3rem);line-height:1;letter-spacing:.22em;
+        display:flex;flex-wrap:wrap;justify-content:center;gap:0 .9em;
+        animation:splash-tag-in .7s cubic-bezier(.16,1,.3,1) .18s both}
+      .sp-tag .w{transition:color .2s}
+      .sp-tag .w.hit{color:var(--accent-dot)}
+      .sp-tag .sep{opacity:.55}
+      .sp-tag .bl{display:inline-block;width:0;height:0}
+      .sp-foot{position:absolute;left:1.25rem;bottom:calc(1rem + env(safe-area-inset-bottom,0px));margin:0;font-size:.72rem;letter-spacing:.02em;opacity:.6;
+        animation:splash-tag-in .7s cubic-bezier(.16,1,.3,1) .3s both}
+      .sp-dot{position:absolute;left:0;top:0;border-radius:50%;background:var(--accent-dot);opacity:0;z-index:10;will-change:transform;box-shadow:0 0 12px rgba(0,0,0,0.18)}
+      .splash-lock{overflow:hidden}
+      html:not(.fonts-ready) #root{opacity:0}
+      @keyframes splash-title-in{from{opacity:0;transform:translateY(36px)}to{opacity:1;transform:translateY(0)}}
+      @keyframes splash-tag-in{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+      @keyframes splash-failsafe{to{visibility:hidden}}
+      .no-splash #splash{display:none}
+      @media (prefers-reduced-motion:reduce){#splash{display:none}}
+    </style>
     <script>
       (function () {
         try {
@@ -18,6 +68,7 @@
           var storageKey = isDesktop ? 'portfolio-theme-desktop' : 'portfolio-theme-mobile';
           var saved = localStorage.getItem(storageKey);
           var isDark = saved !== null ? (saved === 'dark') : !isDesktop;
+          if (sessionStorage.getItem('splash-seen')) document.documentElement.classList.add('no-splash');
           if (isDark) {
             document.documentElement.classList.add('dark');
           } else {
@@ -28,7 +79,109 @@
     </script>
   </head>
   <body>
+    <div id="splash" aria-hidden="true">
+      <div class="sp-layer sp-base">
+        <div class="sp-content">
+          <div class="sp-title">CJB PORTFOLIO</div>
+          <div class="sp-tag"><span class="w">DEVELOPMENT</span><span class="sep">&bull;</span><span class="w">DESIGN</span><span class="sep">&bull;</span><span class="w">ARCHITECTURE<i class="bl"></i></span></div>
+        </div>
+        <p class="sp-foot">&copy; 2026 Christian Jireh A. Briol. All rights reserved.</p>
+        <span class="sp-dot"></span>
+      </div>
+    </div>
     <div id="root"></div>
+    <script>
+      /* Splash choreography: gold dot bounces word to word, settles as a full stop,
+         then grows into the inverted theme colour; text rises/fades; page lifts in from below. */
+      (function () {
+        var html = document.documentElement, splash = document.getElementById('splash'), root = document.getElementById('root');
+        function kill() { if (splash) splash.remove(); html.classList.remove('splash-lock'); }
+        var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!splash || html.classList.contains('no-splash') || reduce || !splash.animate) { kill(); return; }
+        html.classList.add('splash-lock');
+
+        var BEAT = 500;                        // ms per bounce
+        var base = splash.querySelector('.sp-base');
+        var wipe = base.cloneNode(true);       // identical layout, inverted colours
+        wipe.className = 'sp-layer sp-wipe';
+        wipe.querySelector('.sp-dot').remove();
+        splash.appendChild(wipe);
+
+        var dot = base.querySelector('.sp-dot'), tag = base.querySelector('.sp-tag');
+        var words = [].slice.call(base.querySelectorAll('.w')), marker = base.querySelector('.bl');
+        var appReady = !!window.__appReady, fontsReady = html.classList.contains('fonts-ready');
+        window.addEventListener('app-ready', function () { appReady = true; });
+        window.addEventListener('fonts-ready', function () { fontsReady = true; });
+
+        function geo() {                       // read live layout (fonts/resizes can shift it)
+          var cs = getComputedStyle(tag), fs = parseFloat(cs.fontSize), ls = parseFloat(cs.letterSpacing) || 0;
+          var D = Math.max(12, Math.round(fs * 0.65)), R = D / 2;
+          var pts = words.map(function (w) { var r = w.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + fs * 0.12 - R }; });
+          var m = marker.getBoundingClientRect();
+          pts.push({ x: m.left - ls + R + Math.max(8, Math.round(fs * 0.45)), y: m.bottom - R });   // sits comfortably spaced after the last word
+          return { D: D, R: R, pts: pts };
+        }
+        var g = geo();
+        window.addEventListener('resize', function () { g = geo(); });
+        dot.style.width = dot.style.height = g.D + 'px';
+
+        var land = [700, 700 + BEAT, 700 + 2 * BEAT, 700 + 2.8 * BEAT], hit = [];
+        function pos(t) {
+          var p = g.pts, H = Math.min(innerHeight * 0.14, 110), u;
+          if (t < land[0]) { u = Math.max(0, t / land[0]); return { x: p[0].x, y: p[0].y - (1 - u * u) * Math.min(innerHeight * 0.22, 170) }; }
+          for (var i = 1; i < land.length; i++) if (t < land[i]) {
+            u = (t - land[i - 1]) / (land[i] - land[i - 1]);
+            return { x: p[i - 1].x + (p[i].x - p[i - 1].x) * u, y: p[i - 1].y + (p[i].y - p[i - 1].y) * u - 4 * H * u * (1 - u) };
+          }
+          return p[p.length - 1];
+        }
+        function place(c) { dot.style.transform = 'translate(' + (c.x - g.R) + 'px,' + (c.y - g.R) + 'px)'; }
+
+        var t0;
+        function frame(now) {
+          var t = now - t0, c = pos(t);
+          place(c);
+          for (var i = 0; i < 3; i++) if (t >= land[i] && !hit[i]) { hit[i] = 1; words[i].classList.add('hit'); }
+          if (t < land[3]) requestAnimationFrame(frame); else setTimeout(grow, 350);
+        }
+        setTimeout(function () {
+          g = geo();
+          dot.style.width = dot.style.height = g.D + 'px';
+          place(pos(0));
+          dot.style.transition = 'opacity 0.25s ease-out';
+          dot.style.opacity = '1';
+          t0 = performance.now();
+          requestAnimationFrame(frame);
+        }, 850);
+
+        function grow() {                      // the dot becomes the new background
+          var c = pos(1e9), W = innerWidth, Hh = innerHeight;
+          var r = Math.hypot(Math.max(c.x, W - c.x), Math.max(c.y, Hh - c.y)) + 4;
+          var a = wipe.animate([{ clipPath: 'circle(0px at ' + c.x + 'px ' + c.y + 'px)' }, { clipPath: 'circle(' + r + 'px at ' + c.x + 'px ' + c.y + 'px)' }],
+            { duration: 1100, easing: 'cubic-bezier(.7,0,.3,1)', fill: 'forwards' });
+          a.onfinish = function () { waitReady(exit); };
+        }
+        function waitReady(cb) {               // page painted AND font loaded, so nothing swaps under the curtain
+          var done = false;
+          function check() { if (!done && appReady && fontsReady) { done = true; cb(); } }
+          window.addEventListener('app-ready', check); window.addEventListener('fonts-ready', check);
+          setTimeout(function () { if (!done) { done = true; cb(); } }, 5000);
+          check();
+        }
+        function exit() {
+          try { sessionStorage.setItem('splash-seen', '1'); } catch (e) {}
+          [].forEach.call(wipe.querySelectorAll('.sp-content,.sp-foot'), function (el) {
+            el.animate([{ transform: 'translateY(0)', opacity: 1 }, { transform: 'translateY(-90px)', opacity: 0 }],
+              { duration: 650, easing: 'cubic-bezier(.5,0,.75,0)', fill: 'forwards' });
+          });
+          setTimeout(function () {             // curtain: splash and page move up together
+            var o = { duration: 1000, easing: 'cubic-bezier(.76,0,.24,1)' };
+            splash.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-100%)' }], { duration: o.duration, easing: o.easing, fill: 'forwards' }).onfinish = kill;
+            if (root) root.animate([{ transform: 'translateY(100vh)' }, { transform: 'translateY(0)' }], o);
+          }, 450);
+        }
+      })();
+    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

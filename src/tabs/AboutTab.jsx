@@ -1,14 +1,15 @@
-import { useState, useRef, useLayoutEffect, useEffect } from 'react';
+import { useState, useRef, useLayoutEffect, useEffect, lazy } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import ThemeToggle from '../components/ThemeToggle';
-import CursorLamp from '../components/3d design/lamp/CursorLamp';
+import LazyMount from '../components/LazyMount';
 import SkillBar from '../components/about/SkillBar';
 import TechMarquee from '../components/about/TechMarquee';
 import KeySkills from '../components/about/KeySkills';
 import TestimonialCard from '../components/about/TestimonialCard';
-import StarsBackground from '../components/about/StarsBackground';
-import ContactSection from '../components/about/ContactSection';
+// Heavy three.js chunks: downloaded after first paint / when near the viewport
+const CursorLamp = lazy(() => import('../components/3d design/lamp/CursorLamp'));
+const ContactSection = lazy(() => import('../components/about/ContactSection'));
 // import RotatingWord from '../components/about/RotatingWord';
 import StageBackdrop from '../components/about/StageBackdrop';
 import {
@@ -258,6 +259,24 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
   const [lampOff, setLampOff] = useState(false); // true while the stats cards are on screen
   const [lampLit, setLampLit] = useState(false); // true when the lamp light is actively on
   const [hoveringCredits, setHoveringCredits] = useState(false);
+  const [wide] = useState(() => window.matchMedia('(min-width: 1024px)').matches); // lamp is desktop-only
+  const [loadContact, setLoadContact] = useState(false);
+  const keySkillsRef = useRef(null);
+
+  useEffect(() => {
+    const el = keySkillsRef.current;
+    if (loadContact || !el) return undefined;
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setLoadContact(true);
+        // Pre-fetch the dynamic import chunk right away
+        import('../components/about/ContactSection');
+        io.disconnect();
+      }
+    }, { rootMargin: '100px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [loadContact]);
 
   const scrollToContact = () => {
     const el = document.getElementById('contact-section');
@@ -486,7 +505,11 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
           {/* Right Column: 3D Interactive Desk Lamp (Desktop only) */}
           <div className="hidden lg:flex lg:w-1/2 h-[500px] items-start justify-end">
             <div className="w-full h-full max-w-xl relative">
-              <CursorLamp className="w-full h-full" onGround={handleGround} onLight={setLampLit} dark={dark} enabled={!lampOff} />
+              {wide && (
+                <LazyMount eager className="w-full h-full">
+                  <CursorLamp className="w-full h-full" onGround={handleGround} onLight={setLampLit} dark={dark} enabled={!lampOff} />
+                </LazyMount>
+              )}
               <p
                 onMouseEnter={() => setHoveringCredits(true)}
                 onMouseLeave={() => setHoveringCredits(false)}
@@ -698,7 +721,7 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
           <TechMarquee />
 
           {/* ── Key Skills (from résumé) ── */}
-          <div className="px-6 md:px-8">
+          <div ref={keySkillsRef} className="px-6 md:px-8">
             <KeySkills />
           </div>
         </div>
@@ -708,8 +731,6 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
 
       {/* ── Testimonials ── */}
       <section className="relative -mx-6 md:-mx-8 px-6 md:px-8 pt-20 md:pt-28 pb-6 sm:pb-10">
-        {/* 3D stars behind the cards */}
-        <StarsBackground dark={dark} />
         <div className="relative z-10 max-w-2xl mx-auto">
           <motion.h2
             initial={{ opacity: 0, y: 24 }}
@@ -722,9 +743,32 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
           </motion.h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {testimonials.map((t, i) => (
-              <TestimonialCard key={t.id} testimonial={t} index={i} onClick={setSelectedTestimonial} />
-            ))}
+            {testimonials.map((t, i) => {
+              // 2-column grid (desktop/tablet): 2nd card is top-right, 2nd-to-last (or bottom-left) card is bottom-left
+              const isTopRight = i === 1;
+              const isBottomLeft = testimonials.length > 2
+                ? (testimonials.length % 2 === 0
+                    ? i === testimonials.length - 2
+                    : i === testimonials.length - 1)
+                : false;
+
+              // 1-column stack (mobile): 1st card is top-right, last card is bottom-left
+              const isMobileTopRight = i === 0;
+              const isMobileBottomLeft = i === testimonials.length - 1;
+
+              return (
+                <TestimonialCard
+                  key={t.id}
+                  testimonial={t}
+                  index={i}
+                  isTopRight={isTopRight}
+                  isBottomLeft={isBottomLeft}
+                  isMobileTopRight={isMobileTopRight}
+                  isMobileBottomLeft={isMobileBottomLeft}
+                  onClick={setSelectedTestimonial}
+                />
+              );
+            })}
           </div>
         </div>
       </section>
@@ -733,7 +777,9 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
       <section id="contact-section" className="relative -mx-6 md:-mx-8 px-6 md:px-8 py-16 md:py-24" style={{ background: DESK_COLOR }}>
         {/* Matching wave: black rises into the light testimonials area */}
         <WaveEdge flip className="absolute left-0 w-full h-28 md:h-44" style={{ bottom: 'calc(100% - 1px)' }} />
-        <ContactSection dark={dark} />
+        <LazyMount eager={loadContact} className="min-h-[640px]">
+          <ContactSection dark={dark} />
+        </LazyMount>
       </section>
 
       {typeof document !== 'undefined' &&

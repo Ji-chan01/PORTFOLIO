@@ -2,9 +2,7 @@ import { useState, useEffect } from 'react';
 import TabNav from './components/TabNav';
 import Sidebar from './components/Sidebar';
 import AboutTab from './tabs/AboutTab';
-import ResumeTab from './tabs/ResumeTab';
 import PortfolioTab from './tabs/PortfolioTab';
-import ContactTab from './tabs/ContactTab';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FaSun, FaMoon, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
@@ -79,7 +77,6 @@ export default function App() {
   const renderTab = () => {
     switch (activeTab) {
       case 'About': return <AboutTab key="About" onTabChange={setActiveTab} dark={dark} onToggle={toggleTheme} />;
-      case 'Resume': return <ResumeTab key="Resume" />;
       case 'Portfolio': return <PortfolioTab key="Portfolio" />;
       case 'Contact': return <AboutTab key="About" onTabChange={setActiveTab} dark={dark} onToggle={toggleTheme} />;
       default: return <AboutTab key="About" onTabChange={setActiveTab} dark={dark} onToggle={toggleTheme} />;
