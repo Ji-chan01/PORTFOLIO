@@ -1,24 +1,20 @@
 import { useState, useRef, useLayoutEffect, useEffect, lazy } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion, useInView } from 'framer-motion';
 import ThemeToggle from '../components/ThemeToggle';
 import LazyMount from '../components/LazyMount';
-import SkillBar from '../components/about/SkillBar';
 import TechMarquee from '../components/about/TechMarquee';
 import KeySkills from '../components/about/KeySkills';
 import TestimonialCard from '../components/about/TestimonialCard';
 // Heavy three.js chunks: downloaded after first paint / when near the viewport
 const CursorLamp = lazy(() => import('../components/3d design/lamp/CursorLamp'));
 const ContactSection = lazy(() => import('../components/about/ContactSection'));
-// import RotatingWord from '../components/about/RotatingWord';
 import StageBackdrop from '../components/about/StageBackdrop';
-import {
-  frontendSkills, mobileSkills, backendSkills, designSkills
-} from '../data/skills';
 import { testimonials } from '../data/testimonials';
 import { projects } from '../data/projects';
+import { optimizeImage, imageSrcSet } from '../lib/cloudinary';
 import {
-  FaCode, FaHeart, FaChess, FaBasketballBall, FaMusic, FaTimes, FaStar, FaStarHalfAlt,
+  FaTimes, FaStar, FaStarHalfAlt,
   FaDownload, FaArrowRight, FaLock, FaEye, FaEyeSlash,
   FaGraduationCap, FaRocket, FaLayerGroup, FaClock
 } from 'react-icons/fa';
@@ -174,17 +170,16 @@ function WhyMeTimeline() {
   );
 }
 
-const fadeIn = {
-  initial: { opacity: 0, y: 24 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.45 },
-};
-
 // Two-layer animated wave. flip = black fills BELOW the curve (for the top edge of a black section).
 function WaveEdge({ flip = false, className = '', style }) {
   const reduceMotion = useReducedMotion();
+  const svgRef = useRef(null);
+  // Only morph while on (or just near) the screen: an off-screen wave is pure wasted work on every frame.
+  const inView = useInView(svgRef, { margin: '200px 0px' });
+  const animating = inView && !reduceMotion;
   return (
     <svg
+      ref={svgRef}
       aria-hidden="true"
       viewBox="0 0 1440 200"
       preserveAspectRatio="none"
@@ -196,36 +191,17 @@ function WaveEdge({ flip = false, className = '', style }) {
         fill={DESK_COLOR}
         fillOpacity={0.35}
         initial={{ d: BACK_A }}
-        animate={reduceMotion ? { d: BACK_A } : { d: [BACK_A, BACK_B] }}
-        transition={{ duration: 6, ease: 'easeInOut', repeat: Infinity, repeatType: 'mirror' }}
+        animate={animating ? { d: [BACK_A, BACK_B] } : { d: BACK_A }}
+        transition={animating ? { duration: 6, ease: 'easeInOut', repeat: Infinity, repeatType: 'mirror' } : { duration: 0 }}
       />
       {/* Front layer: solid black, continues the section */}
       <motion.path
         fill={DESK_COLOR}
         initial={{ d: FRONT_A }}
-        animate={reduceMotion ? { d: FRONT_A } : { d: [FRONT_A, FRONT_B] }}
-        transition={{ duration: 4.5, ease: 'easeInOut', repeat: Infinity, repeatType: 'mirror' }}
+        animate={animating ? { d: [FRONT_A, FRONT_B] } : { d: FRONT_A }}
+        transition={animating ? { duration: 4.5, ease: 'easeInOut', repeat: Infinity, repeatType: 'mirror' } : { duration: 0 }}
       />
     </svg>
-  );
-}
-
-function SkillGroup({ title, skills, barColor, delay = 0 }) {
-  return (
-    <div className="mb-6">
-      <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 mb-3">
-        {title}
-      </h4>
-      {skills.map((s, i) => (
-        <SkillBar
-          key={s.name}
-          name={s.name}
-          level={s.level}
-          color={barColor}
-          delay={delay + i * 120}
-        />
-      ))}
-    </div>
   );
 }
 
@@ -244,7 +220,7 @@ const FRONT_B = makeWave(100, -40, 240);
 const BACK_A = makeWave(120, -40, 240);
 const BACK_B = makeWave(120, 240, -40);
 
-export default function AboutTab({ onTabChange, dark, onToggle }) {
+export default function AboutTab({ dark, onToggle }) {
   const [selectedTestimonial, setSelectedTestimonial] = useState(null);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
@@ -269,8 +245,11 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
     const io = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         setLoadContact(true);
-        // Pre-fetch the dynamic import chunk right away
-        import('../components/about/ContactSection');
+        // Pre-fetch the contact chunk, then the 3D desk model it will need (download only, no parsing)
+        import('../components/about/ContactSection')
+          .then(() => import('../components/3d design/desk/DeskModel'))
+          .then((m) => m.preloadDeskModel())
+          .catch(() => { /* prefetch is best-effort; the section loads normally when scrolled to */ });
         io.disconnect();
       }
     }, { rootMargin: '100px' });
@@ -654,7 +633,6 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
             const TOP_IDS = ['O See', 'KeTox', 'CamScope', 'OsmenaAccess'];
             const topProjects = TOP_IDS.map(n => projects.find(p => p.name === n)).filter(Boolean);
             const [hero, ...rest] = topProjects;
-            const getOptUrl = (url) => url ? url.replace('/upload/', '/upload/w_800,f_auto,q_auto/') : '';
 
             return (
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
@@ -669,7 +647,11 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
                   >
                     <div className="relative w-full h-full flex-1 overflow-hidden min-h-[380px]">
                       <img
-                        src={hero.image}
+                        src={optimizeImage(hero.image, 1000)}
+                        srcSet={imageSrcSet(hero.image, [600, 1000, 1400])}
+                        sizes="(min-width: 1024px) 60vw, 100vw"
+                        loading="lazy"
+                        decoding="async"
                         alt={hero.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                       />
@@ -699,7 +681,11 @@ export default function AboutTab({ onTabChange, dark, onToggle }) {
                     >
                       <div className="relative h-48 sm:h-52 rounded-2xl overflow-hidden border border-zinc-700/60 bg-zinc-800/80">
                         <img
-                          src={project.image}
+                          src={optimizeImage(project.image, 800)}
+                          srcSet={imageSrcSet(project.image, [500, 800, 1100])}
+                          sizes="(min-width: 1024px) 40vw, 100vw"
+                          loading="lazy"
+                          decoding="async"
                           alt={project.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                         />

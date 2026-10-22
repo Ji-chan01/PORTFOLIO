@@ -3,7 +3,6 @@ import { projects } from '../data/projects';
 import ProjectCard from '../components/portfolio/ProjectCard';
 
 export default function PortfolioTab() {
-
   return (
     <motion.div
       key="portfolio"
@@ -20,7 +19,8 @@ export default function PortfolioTab() {
         and UI/UX design — each built end-to-end with a design-first approach.
       </p>
 
-      <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
+      {/* Masonry grid using CSS columns */}
+      <div className="masonry-grid">
         {projects.map((project, i) => (
           <ProjectCard
             key={project.id}

@@ -1,17 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useSyncExternalStore } from 'react';
 import TabNav from './components/TabNav';
 import Sidebar from './components/Sidebar';
 import AboutTab from './tabs/AboutTab';
 import PortfolioTab from './tabs/PortfolioTab';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FaSun, FaMoon, FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { PROFILE_IMAGE_URL } from './lib/constants';
+import { optimizeImage } from './lib/cloudinary';
 
 function getThemeForLayout(isDesktop) {
   try {
     const key = isDesktop ? 'portfolio-theme-desktop' : 'portfolio-theme-mobile';
     const saved = localStorage.getItem(key);
     if (saved !== null) return saved === 'dark';
-  } catch (e) {
+  } catch {
     // ignore local storage access errors
   }
   // Default: Light mode on desktop (false), Dark mode on mobile (true)
@@ -20,32 +22,40 @@ function getThemeForLayout(isDesktop) {
 
 // Single source of truth for the layout, so only ONE tree (desktop or mobile) is mounted at a time.
 // (Mounting both and hiding one with CSS made the hidden AboutTab measure everything as 0.)
+const DESKTOP_QUERY = '(min-width: 1024px)';
+const subscribeDesktop = (onChange) => {
+  const mq = window.matchMedia(DESKTOP_QUERY);
+  mq.addEventListener('change', onChange);
+  return () => mq.removeEventListener('change', onChange);
+};
+const getDesktopSnapshot = () => window.matchMedia(DESKTOP_QUERY).matches;
+
 function useIsDesktop() {
-  const query = '(min-width: 1024px)';
-  const [match, setMatch] = useState(() => (typeof window !== 'undefined' ? window.matchMedia(query).matches : false));
-  useEffect(() => {
-    const mq = window.matchMedia(query);
-    const onChange = (e) => setMatch(e.matches);
-    setMatch(mq.matches);
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
-  }, []);
-  return match;
+  return useSyncExternalStore(subscribeDesktop, getDesktopSnapshot, () => false);
 }
 
 export default function App() {
   const isDesktop = useIsDesktop();
-  const [dark, setDark] = useState(() => getThemeForLayout(
-    typeof window !== 'undefined' ? window.matchMedia('(min-width: 1024px)').matches : false
-  ));
+  const [dark, setDark] = useState(() => getThemeForLayout(isDesktop));
   const [activeTab, setActiveTab] = useState('About');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
 
   // Sync theme when switching between desktop and mobile layout
-  useEffect(() => {
+  // (adjusting state while rendering avoids an extra render pass compared to doing it in an effect)
+  const [prevIsDesktop, setPrevIsDesktop] = useState(isDesktop);
+  if (prevIsDesktop !== isDesktop) {
+    setPrevIsDesktop(isDesktop);
     setDark(getThemeForLayout(isDesktop));
-  }, [isDesktop]);
+  }
+
+  // Close the photo viewer with Escape
+  useEffect(() => {
+    if (!isZoomed) return undefined;
+    const onKeyDown = (e) => { if (e.key === 'Escape') setIsZoomed(false); };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isZoomed]);
 
   // Apply dark class
   useEffect(() => {
@@ -67,21 +77,18 @@ export default function App() {
       try {
         const key = isDesktop ? 'portfolio-theme-desktop' : 'portfolio-theme-mobile';
         localStorage.setItem(key, next ? 'dark' : 'light');
-      } catch (e) {
+      } catch {
         // ignore local storage access errors
       }
       return next;
     });
   };
 
-  const renderTab = () => {
-    switch (activeTab) {
-      case 'About': return <AboutTab key="About" onTabChange={setActiveTab} dark={dark} onToggle={toggleTheme} />;
-      case 'Portfolio': return <PortfolioTab key="Portfolio" />;
-      case 'Contact': return <AboutTab key="About" onTabChange={setActiveTab} dark={dark} onToggle={toggleTheme} />;
-      default: return <AboutTab key="About" onTabChange={setActiveTab} dark={dark} onToggle={toggleTheme} />;
-    }
-  };
+  const renderTab = () => (
+    activeTab === 'Portfolio'
+      ? <PortfolioTab key="Portfolio" />
+      : <AboutTab key="About" dark={dark} onToggle={toggleTheme} />
+  );
 
   return (
     <div className="min-h-screen bg-[#f5f5f5] dark:bg-black transition-colors duration-300">
@@ -106,12 +113,14 @@ export default function App() {
       <div className="fixed inset-0 flex flex-col overflow-hidden overscroll-none">
         <header className="flex items-center justify-between px-4 py-3 bg-white dark:bg-black border-b border-gray-200 dark:border-zinc-800 z-20 flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div
+            <button
+              type="button"
               onClick={() => setIsZoomed(true)}
               className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden cursor-pointer active:scale-95 transition-transform ring-2 ring-accent/30"
+              aria-label="View photo"
             >
-              <img src="https://res.cloudinary.com/dlqxpz9pu/image/upload/v1791361795/8a7d83c8-6bdf-4065-a50e-9dd5bb86786d_jfmfog.jpg" loading="lazy" alt="Christian Jireh Briol" className="w-full h-full object-cover" />
-            </div>
+              <img src={optimizeImage(PROFILE_IMAGE_URL, 128)} decoding="async" alt="Christian Jireh Briol" className="w-full h-full object-cover" />
+            </button>
             <div>
               <p className="text-sm md:text-base font-bold text-gray-900 dark:text-zinc-100 leading-tight">Christian Jireh Briol</p>
               <p className="text-[10px] md:text-xs text-accent font-semibold">UI/UX Designer · Full-Stack Dev</p>
@@ -150,7 +159,7 @@ export default function App() {
               transition={{ duration: 0.28, ease: 'easeInOut' }}
               className="overflow-hidden bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800 flex-shrink-0 z-20 shadow-lg"
             >
-              <Sidebar dark={dark} onToggle={toggleTheme} isMobileAccordion={true} />
+              <Sidebar />
             </motion.div>
           )}
         </AnimatePresence>
@@ -192,7 +201,7 @@ export default function App() {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src="https://res.cloudinary.com/dlqxpz9pu/image/upload/v1791361795/8a7d83c8-6bdf-4065-a50e-9dd5bb86786d_jfmfog.jpg"
+                src={optimizeImage(PROFILE_IMAGE_URL, 1400)}
                 alt="Christian Jireh Zoomed"
                 className="max-w-full max-h-[80vh] rounded-3xl shadow-2xl object-contain border-2 border-white/20"
               />

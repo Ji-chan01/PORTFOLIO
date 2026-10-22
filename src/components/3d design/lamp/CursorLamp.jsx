@@ -1,6 +1,6 @@
-import { Component, Suspense, useRef, useLayoutEffect, useMemo, useState, useEffect } from "react";
+import { Component, Suspense, useRef, useLayoutEffect, useMemo, useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Lightformer, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 
@@ -19,6 +19,13 @@ import * as THREE from "three";
 
 const MODEL_URL = "/desk_lamp.glb";
 const IDLE_MS = 1000;
+
+// Rendering policy: the canvas only draws while the lamp is doing something (cursor moving, light fading,
+// parts easing back to rest) and sleeps otherwise, instead of redrawing 60 times a second forever.
+// Set PAUSE_WHEN_IDLE to false to go back to continuous rendering.
+const PAUSE_WHEN_IDLE = true;
+// After the last activity keep drawing for this long, so every fade/ease has finished before the canvas sleeps.
+const SETTLE_MS = 2500;
 
 // Lamp geometry measured from desk_lamp.glb (units ~ meters)
 const PIVOT = new THREE.Vector3(0.33, 2.2, 0); // head hinge
@@ -140,13 +147,26 @@ function getScrollParent(el) {
   return null;
 }
 
-function Lamp({ phRef, host, stageRef, mouse, lastMove, onGround, onLight, darkRef, enabledRef, glareEls, isMobile = false }) {
+function Lamp({ phRef, host, stageRef, mouse, lastMove, onGround, onLight, darkRef, enabledRef, glareEls, wakeRef, isMobile = false }) {
   const { scene: original } = useGLTF(MODEL_URL);
   // Clone per mount: useGLTF caches one shared scene and we re-parent the head nodes.
   const scene = useMemo(() => original.clone(true), [original]);
 
   const hostRef = useRef(host);
   hostRef.current = host;
+
+  // --- On-demand rendering: wake() asks for frames for a while; the frame loop keeps asking until that time is up ---
+  const invalidate = useThree((s) => s.invalidate);
+  const awakeUntil = useRef(0);
+  const wake = useCallback((ms = SETTLE_MS) => {
+    awakeUntil.current = Math.max(awakeUntil.current, performance.now() + ms);
+    invalidate();
+  }, [invalidate]);
+  useEffect(() => {
+    wakeRef.current = wake; // lets the page-level listeners below wake this canvas
+    return () => { wakeRef.current = null; };
+  }, [wake, wakeRef]);
+  useEffect(() => { wake(); }, [wake, host]); // first draw, and again whenever the layout changes
   const liveHost = useRef({ left: 0, top: 0, width: 0, height: 0 });
 
   const head = useMemo(() => new THREE.Group(), []);
@@ -257,7 +277,11 @@ function Lamp({ phRef, host, stageRef, mouse, lastMove, onGround, onLight, darkR
     };
   }, [scene, head, body, target]);
 
-  useFrame((state, dt) => {
+  useFrame((state, rawDt) => {
+    // Still within the awake window? Ask for one more frame. When nothing asks, the canvas goes to sleep.
+    if (performance.now() < awakeUntil.current) invalidate();
+    // After a sleep the first delta can be several seconds, which would make every ease snap instead of fade. Cap it.
+    const dt = Math.min(rawDt, 0.05);
     let h = hostRef.current;
     const ph = phRef.current;
     const stageEl = stageRef && stageRef.current;
@@ -437,8 +461,9 @@ export default function CursorLamp({ className = "", style, onGround, onLight, d
   darkRef.current = dark;
   const enabledRef = useRef(enabled);
   enabledRef.current = enabled;
+  const wakeRef = useRef(null);      // set by <Lamp>: wakes the sleeping canvas
+  const visibleRef = useRef(true);   // is the lamp area on screen?
   const [host, setHost] = useState(null);
-  const [scrollerEl, setScrollerEl] = useState(null);
   const [rootEl, setRootEl] = useState(null); // the page root ([data-lamp-root]) the canvas is rendered into
   const stageRef = useRef(null);
   const [isMobile, setIsMobile] = useState(
@@ -458,8 +483,13 @@ export default function CursorLamp({ className = "", style, onGround, onLight, d
       mouse.current.x = e.clientX;
       mouse.current.y = e.clientY;
       lastMove.current = performance.now();
+      // Only wake the renderer when the lamp is both on screen and enabled; otherwise there is nothing to draw
+      if (visibleRef.current && enabledRef.current) wakeRef.current?.(IDLE_MS + SETTLE_MS);
     };
-    const onLeave = () => (lastMove.current = 0); // cursor left the window: switch off and relax
+    const onLeave = () => {
+      lastMove.current = 0; // cursor left the window: switch off and relax
+      wakeRef.current?.();
+    };
     window.addEventListener("pointermove", onMove);
     document.documentElement.addEventListener("mouseleave", onLeave);
     return () => {
@@ -468,12 +498,26 @@ export default function CursorLamp({ className = "", style, onGround, onLight, d
     };
   }, []);
 
+  // Track whether the lamp area is on screen (no point drawing the lamp while it is scrolled away)
+  useEffect(() => {
+    const ph = phRef.current;
+    if (!ph || typeof IntersectionObserver === "undefined") return undefined;
+    const io = new IntersectionObserver(([entry]) => {
+      visibleRef.current = entry.isIntersecting;
+      if (entry.isIntersecting) wakeRef.current?.(); // scrolled back: draw so the frame is up to date
+    });
+    io.observe(ph);
+    return () => io.disconnect();
+  }, [isMobile]);
+
+  // Theme switched, or the lamp was enabled/disabled (stats cards scrolled in/out): let the change play out
+  useEffect(() => { wakeRef.current?.(); }, [enabled, dark]);
+
   // Measure the placeholder and the scrollable content area it lives in
   useLayoutEffect(() => {
     const ph = phRef.current;
     if (!ph) return;
     const scroller = getScrollParent(ph);
-    setScrollerEl(scroller);
     const rootEl = ph.closest("[data-lamp-root]");
     setRootEl(rootEl);
 
@@ -545,6 +589,7 @@ export default function CursorLamp({ className = "", style, onGround, onLight, d
             <LampBoundary>
               <div ref={stageRef} style={{ ...box, zIndex: 30 }}>
                 <Canvas
+                  frameloop={PAUSE_WHEN_IDLE ? "demand" : "always"}
                   shadows
                   dpr={[1, 1.5]}
                   gl={{ alpha: true, antialias: true }}
@@ -563,7 +608,7 @@ export default function CursorLamp({ className = "", style, onGround, onLight, d
                       <Lightformer form="rect" intensity={1.6} color="#FFFFFF" position={[3, 3, 4]} scale={[5, 2, 1]} target={[0, 0, 0]} />
                       <Lightformer form="ring" intensity={1} color="#FFD9A0" position={[0, 0.5, 5]} scale={3} target={[0, 0, 0]} />
                     </Environment>
-                    <Lamp phRef={phRef} host={host} stageRef={stageRef} mouse={mouse} lastMove={lastMove} onGround={onGroundRef} onLight={onLightRef} darkRef={darkRef} enabledRef={enabledRef} glareEls={glareEls} isMobile={false} />
+                    <Lamp phRef={phRef} host={host} stageRef={stageRef} mouse={mouse} lastMove={lastMove} onGround={onGroundRef} onLight={onLightRef} darkRef={darkRef} enabledRef={enabledRef} glareEls={glareEls} wakeRef={wakeRef} isMobile={false} />
                   </Suspense>
                 </Canvas>
               </div>

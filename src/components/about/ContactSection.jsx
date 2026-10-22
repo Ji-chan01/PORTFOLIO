@@ -5,20 +5,18 @@ import {
   FaPaperPlane, FaTimes, FaCheckCircle, FaExclamationCircle, FaShieldAlt
 } from 'react-icons/fa';
 import ContactDesk from '../3d design/desk/ContactDesk';
-import { preloadDeskModel } from '../3d design/desk/DeskModel';
 
 const RATE_LIMIT_KEY = 'portfolio_contact_limit';
 const MAX_REQUESTS = 3;
 
+// localStorage can throw (blocked storage, some in-app browsers, private mode): never let that break the form.
 const getRateLimit = () => {
   const today = new Date().toDateString();
-  const stored = localStorage.getItem(RATE_LIMIT_KEY);
-  if (!stored) return { count: 0, date: today };
-
   try {
+    const stored = localStorage.getItem(RATE_LIMIT_KEY);
+    if (!stored) return { count: 0, date: today };
     const data = JSON.parse(stored);
-    if (data.date !== today) return { count: 0, date: today };
-    return data;
+    return data.date === today ? data : { count: 0, date: today };
   } catch {
     return { count: 0, date: today };
   }
@@ -27,7 +25,11 @@ const getRateLimit = () => {
 const incrementRateLimit = () => {
   const data = getRateLimit();
   data.count += 1;
-  localStorage.setItem(RATE_LIMIT_KEY, JSON.stringify(data));
+  try {
+    localStorage.setItem(RATE_LIMIT_KEY, JSON.stringify(data));
+  } catch {
+    // storage unavailable: the limit simply isn't remembered
+  }
 };
 
 export default function ContactSection({ dark }) {
@@ -55,11 +57,6 @@ export default function ContactSection({ dark }) {
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     return () => observer.disconnect();
   }, [dark]);
-
-  // Preload the GLB model
-  useEffect(() => {
-    preloadDeskModel?.();
-  }, []);
 
   // OTP States
   const [generatedOtp, setGeneratedOtp] = useState(null);
@@ -392,7 +389,7 @@ export default function ContactSection({ dark }) {
                   <button
                     type="submit"
                     disabled={isSending || userOtp.length !== 6}
-                    className="flex-2 bg-accent hover:bg-accent-dark text-white font-bold px-8 py-3 rounded-xl shadow active:scale-95 flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-[2] bg-accent hover:bg-accent-dark text-white font-bold px-8 py-3 rounded-xl shadow active:scale-95 flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isSending ? (
                       <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">

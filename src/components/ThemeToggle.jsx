@@ -1,5 +1,4 @@
 import { FaSun, FaMoon } from 'react-icons/fa';
-import { motion } from 'framer-motion';
 
 export default function ThemeToggle({ dark, onToggle }) {
   return (

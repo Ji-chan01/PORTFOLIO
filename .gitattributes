@@ -1,0 +1,9 @@
+# Normalise line endings so Windows/macOS/Linux checkouts don't show phantom changes.
+* text=auto
+
+# Binary assets: never touch their bytes.
+*.glb binary
+*.ico binary
+*.png binary
+*.jpg binary
+*.pdf binary

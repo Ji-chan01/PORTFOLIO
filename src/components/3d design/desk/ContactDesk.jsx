@@ -150,7 +150,7 @@ function SceneContent({ isActive, isDark, onLoaded, enableShadows, visible }) {
         polarMin={POLAR_MIN}
         polarMax={POLAR_MAX}
       />
-      <DeskModel isActive={isActive} isDark={isDark} onLoaded={onLoaded} />
+      <DeskModel isActive={isActive} onLoaded={onLoaded} />
     </>
   );
 }

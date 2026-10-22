@@ -94,7 +94,6 @@ export default function DeskControls({
     const dom = gl.domElement;
     let isTracking = false;
     let lastY = 0;
-    let lastX = 0;
     let scroller = null;
 
     function getScrollParent(el) {
@@ -113,17 +112,14 @@ export default function DeskControls({
       if (e.pointerType !== 'touch' && window.innerWidth >= 1024) return;
       isTracking = true;
       lastY = e.clientY;
-      lastX = e.clientX;
       scroller = getScrollParent(dom);
     };
 
     const onPointerMove = (e) => {
       if (!isTracking) return;
       const clientY = e.clientY;
-      const clientX = e.clientX;
       const deltaY = clientY - lastY;
       lastY = clientY;
-      lastX = clientX;
 
       if (Math.abs(deltaY) < 0.5) return;
 

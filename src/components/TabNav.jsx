@@ -1,5 +1,8 @@
 import { motion } from 'framer-motion';
 import { FaFacebookF, FaGithub, FaEnvelope } from 'react-icons/fa';
+import { PROFILE_IMAGE_URL, FACEBOOK_URL, GITHUB_URL } from '../lib/constants';
+import { getEmailHref } from '../lib/contact';
+import { optimizeImage } from '../lib/cloudinary';
 
 const tabs = ['About', 'Portfolio'];
 
@@ -7,21 +10,19 @@ const socialLinks = [
   {
     name: 'Facebook',
     icon: FaFacebookF,
-    href: 'https://www.facebook.com/jichannn',
+    href: FACEBOOK_URL,
     id: 'nav-social-fb'
   },
   {
     name: 'GitHub',
     icon: FaGithub,
-    href: 'https://github.com/Ji-chan01',
+    href: GITHUB_URL,
     id: 'nav-social-github'
   },
   {
     name: 'Gmail',
     icon: FaEnvelope,
-    href: typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-      ? 'mailto:briolchristian040@gmail.com'
-      : 'https://mail.google.com/mail/?view=cm&fs=1&to=briolchristian040@gmail.com',
+    href: getEmailHref(),
     id: 'nav-social-email'
   }
 ];
@@ -34,6 +35,12 @@ export default function TabNav({ activeTab, onTabChange, onProfileClick }) {
         <div className="hidden lg:flex items-center gap-3 min-w-[240px]">
           <div
             onClick={onProfileClick}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onProfileClick();
+              }
+            }}
             className="w-9 h-9 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 ring-2 ring-accent/30 flex-shrink-0 cursor-pointer hover:scale-105 active:scale-95 transition-transform"
             role="button"
             tabIndex={0}
@@ -41,15 +48,12 @@ export default function TabNav({ activeTab, onTabChange, onProfileClick }) {
             aria-label="View photo"
           >
             <img
-              src="https://res.cloudinary.com/dlqxpz9pu/image/upload/v1791361795/8a7d83c8-6bdf-4065-a50e-9dd5bb86786d_jfmfog.jpg"
+              src={optimizeImage(PROFILE_IMAGE_URL, 128)}
               alt="Christian Jireh Briol"
               className="w-full h-full object-cover"
-              loading="lazy"
+              decoding="async"
             />
           </div>
-          {/* <span className="text-lg font-bold text-gray-900 dark:text-zinc-100 tracking-tight whitespace-nowrap">
-              CHRISTIAN JIREH BRIOL
-            </span> */}
         </div>
 
         {/* Center: Tabs */}

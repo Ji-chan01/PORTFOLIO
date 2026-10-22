@@ -10,7 +10,7 @@ export default function TestimonialCard({
   isMobileTopRight = false,
   isMobileBottomLeft = false
 }) {
-  const { name, role, rating, text } = testimonial;
+  const { name, rating, text } = testimonial;
 
   const showHeartEyes = isTopRight || isMobileTopRight;
   const showWow = isBottomLeft || isMobileBottomLeft;
@@ -38,6 +38,14 @@ export default function TestimonialCard({
       viewport={{ once: true, margin: '-40px' }}
       transition={{ duration: 0.5, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
       onClick={() => onClick(testimonial)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick(testimonial);
+        }
+      }}
       className="relative rounded-2xl bg-white dark:bg-zinc-800/50 border border-gray-200 dark:border-zinc-700/60 shadow-sm p-6 flex flex-col gap-4 cursor-pointer hover:shadow-md hover:border-accent/40 dark:hover:border-accent/50 dark:hover:bg-zinc-800/80 transition-all duration-300 h-[260px]"
     >
       {/* Dynamic Smiling face with heart-eyes on top-right card */}

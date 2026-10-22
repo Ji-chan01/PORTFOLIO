@@ -3,7 +3,7 @@ import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
-import gsap from 'gsap';
+import { animate } from 'framer-motion';
 import { createScreenTexture } from './useScreenTexture';
 
 /*
@@ -23,6 +23,12 @@ import { createScreenTexture } from './useScreenTexture';
 
 const MODEL_PATH = '/computer_desk_opt.glb';
 const TWEEN_DURATION = 0.5;
+// Quadratic easing, the same curves the old GSAP "power2.out / power2.in" used
+const easeOutQuad = (t) => 1 - (1 - t) * (1 - t);
+const easeInQuad = (t) => t * t;
+
+// Let three.js keep downloaded files in memory, so a prefetch (preloadDeskModel) and the real load share one download.
+THREE.Cache.enabled = true;
 
 const SCREEN_RECT = { x0: 0.07, x1: 0.93, y0: 0.30, y1: 0.95 };
 const FLIP_FRONT = false;
@@ -160,11 +166,12 @@ function addScreenOverlay(mesh, camera) {
   return { plane, material, texture };
 }
 
-export default function DeskModel({ isActive = false, isDark = false, onLoaded }) {
+export default function DeskModel({ isActive = false, onLoaded }) {
   const groupRef = useRef();
   const screenRef = useRef(null);            // { plane, material, texture }
   const isActiveRef = useRef(isActive);
   const anim = useRef({ o: 0 });
+  const tween = useRef(null);            // running opacity animation, if any
   const { invalidate, camera } = useThree();
 
   const reducedMotion = useMemo(
@@ -176,20 +183,19 @@ export default function DeskModel({ isActive = false, isDark = false, onLoaded }
     const s = screenRef.current;
     if (!s || DEBUG) return;
     const target = active ? 1 : 0;
+    tween.current?.stop();            // replace any animation in flight, continuing from its current value
     if (instant || reducedMotion) {
-      gsap.killTweensOf(anim.current);
       anim.current.o = target;
       s.material.opacity = target;
       invalidate();
       return;
     }
-    gsap.to(anim.current, {
-      o: target,
+    tween.current = animate(anim.current.o, target, {
       duration: TWEEN_DURATION,
-      ease: active ? 'power2.out' : 'power2.in',
-      overwrite: 'auto',
-      onUpdate: () => {
-        s.material.opacity = anim.current.o;
+      ease: active ? easeOutQuad : easeInQuad,
+      onUpdate: (v) => {
+        anim.current.o = v;
+        s.material.opacity = v;
         invalidate();
       },
     });
@@ -241,7 +247,7 @@ export default function DeskModel({ isActive = false, isDark = false, onLoaded }
 
     return () => {
       cancelled = true;
-      gsap.killTweensOf(anim.current);
+      tween.current?.stop();
       screenRef.current?.texture.dispose();
       screenRef.current = null;
       if (model) {
@@ -268,9 +274,7 @@ export default function DeskModel({ isActive = false, isDark = false, onLoaded }
   return <group ref={groupRef} />;
 }
 
-/** Start fetching the model early (e.g. when the Contact tab is hovered). */
+/** Download the model early WITHOUT parsing it; the real load later reuses the cached bytes (see THREE.Cache above). */
 export function preloadDeskModel() {
-  const loader = new GLTFLoader();
-  loader.setMeshoptDecoder(MeshoptDecoder);
-  loader.load(MODEL_PATH, () => { }, undefined, () => { });
+  new THREE.FileLoader().setResponseType('arraybuffer').load(MODEL_PATH, () => { }, undefined, () => { });
 }
