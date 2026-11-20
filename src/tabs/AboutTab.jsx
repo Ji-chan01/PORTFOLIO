@@ -401,7 +401,7 @@ export default function AboutTab({ dark, onToggle }) {
 
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 dark:text-zinc-100 leading-tight mb-4 text-left">
               <span className="text-5xl sm:text-6xl md:text-7xl block">Hi, I'm Christian.</span>
-              <span className="block mt-2">I'm a Full Stack Developer</span>
+              <span className="block mt-2">I'm a Software Developer</span>
               <span className="text-accent block mt-1">&amp; UI/UX Designer</span>
             </h2>
 
@@ -734,8 +734,8 @@ export default function AboutTab({ dark, onToggle }) {
               const isTopRight = i === 1;
               const isBottomLeft = testimonials.length > 2
                 ? (testimonials.length % 2 === 0
-                    ? i === testimonials.length - 2
-                    : i === testimonials.length - 1)
+                  ? i === testimonials.length - 2
+                  : i === testimonials.length - 1)
                 : false;
 
               // 1-column stack (mobile): 1st card is top-right, last card is bottom-left
